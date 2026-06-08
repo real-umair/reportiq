@@ -212,7 +212,10 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true);
 
   // Forms states
-  const [showAuthForm, setShowAuthForm] = useState<"login" | "signup" | null>(null);
+  const [showAuthForm, setShowAuthForm] = useState<"login" | "signup" | "forgot" | null>(null);
+  const [isResetPassword, setIsResetPassword] = useState(() => {
+    return window.location.pathname === "/reset-password";
+  });
   const [selectedPlan, setSelectedPlan] = useState<"free" | "starter" | "pro">("free");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
@@ -487,13 +490,24 @@ export default function App() {
       return;
     }
 
-    if (!authPassword.trim()) {
+    if (showAuthForm !== "forgot" && !authPassword.trim()) {
       setAuthError("Password is required.");
       setAuthSubmitting(false);
       return;
     }
 
     try {
+      if (showAuthForm === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(emailInput, {
+          redirectTo: `${window.location.origin}/reset-password`
+        });
+        if (error) throw error;
+        alert("Password reset email sent! Please check your inbox.");
+        setAuthEmail("");
+        setShowAuthForm("login");
+        return;
+      }
+
       if (showAuthForm === "signup") {
         if (!authAgencyName.trim()) {
           setAuthError("All fields are required for sign up.");
@@ -564,6 +578,28 @@ export default function App() {
     setSelectedReportId(null);
     window.location.href = "/";
   };
+
+  // If reset password routing matches
+  if (isResetPassword) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <FileText className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-lg font-bold font-display text-slate-950">Reset Password</h3>
+          </div>
+          <p className="text-xs text-slate-500 mb-6 font-sans">
+            Enter your new password to regain access to your ReportIQ account.
+          </p>
+          <ResetPasswordForm onComplete={() => {
+            setIsResetPassword(false);
+            window.history.pushState(null, "", "/");
+            setShowAuthForm("login");
+          }} />
+        </div>
+      </div>
+    );
+  }
 
   // If public reports URL matches
   if (publicSlug) {
@@ -931,7 +967,7 @@ export default function App() {
               <div className="flex items-center gap-2 mb-2">
                 <FileText className="w-5 h-5 text-indigo-600" />
                 <h3 className="text-lg font-bold font-display text-slate-950">
-                  {signupSuccess ? "Verify Email" : showAuthForm === "signup" ? "Create Account" : "Access Platform"}
+                  {signupSuccess ? "Verify Email" : showAuthForm === "signup" ? "Create Account" : showAuthForm === "forgot" ? "Reset Password" : "Access Platform"}
                 </h3>
               </div>
               <p className="text-xs text-slate-500 mb-6">
@@ -939,6 +975,8 @@ export default function App() {
                   ? "Your account verification link has been sent"
                   : showAuthForm === "signup"
                   ? "Onboard your agency brand metrics in seconds and compose free"
+                  : showAuthForm === "forgot"
+                  ? "Enter your email address to receive a password reset link."
                   : "Welcome back! Enter credentials to continue"}
               </p>
 
@@ -1053,23 +1091,39 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
-                      Account Password *
-                    </label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
-                      <input
-                        type="password"
-                        required
-                        placeholder="Min. 6 alphanumeric"
-                        value={authPassword}
-                        onChange={e => setAuthPassword(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-2.5 pl-10 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100"
-                        minLength={6}
-                      />
+                  {showAuthForm !== "forgot" && (
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500">
+                          Account Password *
+                        </label>
+                        {showAuthForm === "login" && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAuthError(null);
+                              setShowAuthForm("forgot");
+                            }}
+                            className="text-[10px] text-indigo-600 hover:underline font-semibold cursor-pointer"
+                          >
+                            Forgot Password?
+                          </button>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+                        <input
+                          type="password"
+                          required
+                          placeholder="Min. 6 alphanumeric"
+                          value={authPassword}
+                          onChange={e => setAuthPassword(e.target.value)}
+                          className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-2.5 pl-10 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100"
+                          minLength={6}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="pt-2">
                     <button
@@ -1084,6 +1138,8 @@ export default function App() {
                         </>
                       ) : showAuthForm === "signup" ? (
                         "Register Onboard & Start"
+                      ) : showAuthForm === "forgot" ? (
+                        "Send Reset Link"
                       ) : (
                         "Access Portal Workspace"
                       )}
@@ -1100,6 +1156,20 @@ export default function App() {
                             setAuthError(null);
                             setSignupSuccess(false);
                             setResendMessage(null);
+                            setShowAuthForm("login");
+                          }}
+                          className="text-indigo-600 hover:underline font-semibold cursor-pointer"
+                        >
+                          Sign In &rarr;
+                        </button>
+                      </span>
+                    ) : showAuthForm === "forgot" ? (
+                      <span>
+                        Back to{" "}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuthError(null);
                             setShowAuthForm("login");
                           }}
                           className="text-indigo-600 hover:underline font-semibold cursor-pointer"
@@ -1906,5 +1976,116 @@ export default function App() {
         </div>
       )}
     </div>
+  );
+}
+
+export function ResetPasswordForm({ onComplete }: { onComplete: () => void }) {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+      setSuccess(true);
+      setTimeout(() => {
+        onComplete();
+      }, 2000);
+    } catch (err: any) {
+      console.error("Password reset update failure:", err);
+      setError(err.message || "Failed to update password.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="text-center py-4 space-y-3 font-sans">
+        <div className="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto border border-green-100">
+          <Check className="w-6 h-6 animate-bounce" />
+        </div>
+        <h4 className="text-sm font-bold text-slate-900 font-display">Password Updated!</h4>
+        <p className="text-xs text-slate-500">Redirecting you to login...</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 font-sans text-sm">
+      {error && (
+        <div className="p-3.5 bg-red-50 border border-red-100 text-red-700 text-xs font-medium rounded-xl flex gap-1.5 items-start animate-fade-in">
+          <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
+          <span className="leading-relaxed text-left">{error}</span>
+        </div>
+      )}
+      <div>
+        <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+          New Password
+        </label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+          <input
+            type="password"
+            required
+            placeholder="Min. 6 alphanumeric"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-2.5 pl-10 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100"
+            minLength={6}
+          />
+        </div>
+      </div>
+      <div>
+        <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+          Confirm Password
+        </label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+          <input
+            type="password"
+            required
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-2.5 pl-10 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100"
+            minLength={6}
+          />
+        </div>
+      </div>
+      <div className="pt-2">
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+        >
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Updating...
+            </>
+          ) : (
+            "Update Password"
+          )}
+        </button>
+      </div>
+    </form>
   );
 }
