@@ -1986,6 +1986,53 @@ export function ResetPasswordForm({ onComplete }: { onComplete: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    const initializeSession = async () => {
+      try {
+        // 1. Handle PKCE code flow (search params query)
+        const searchParams = new URLSearchParams(window.location.search);
+        const code = searchParams.get("code");
+        if (code) {
+          console.log("ResetPasswordForm: Found PKCE code, exchanging for session...");
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) {
+            console.error("ResetPasswordForm: PKCE exchange error:", error);
+            setError(error.message);
+          } else {
+            console.log("ResetPasswordForm: PKCE exchange success!");
+          }
+          return;
+        }
+
+        // 2. Handle implicit grant flow (hash parameters fragment)
+        const hash = window.location.hash;
+        if (hash && hash.startsWith("#")) {
+          const hashParams = new URLSearchParams(hash.substring(1));
+          const accessToken = hashParams.get("access_token");
+          const refreshToken = hashParams.get("refresh_token");
+          if (accessToken && refreshToken) {
+            console.log("ResetPasswordForm: Found session tokens in hash fragment, setting session manually...");
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken
+            });
+            if (error) {
+              console.error("ResetPasswordForm: setSession error:", error);
+              setError(error.message);
+            } else {
+              console.log("ResetPasswordForm: setSession success!");
+            }
+          }
+        }
+      } catch (err: any) {
+        console.error("ResetPasswordForm: Error initializing session:", err);
+        setError("Could not establish auth session. Please request another reset email link.");
+      }
+    };
+
+    initializeSession();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
