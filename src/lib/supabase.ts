@@ -82,28 +82,39 @@ export const supabaseAuth = {
   },
 
   async signUp(email: string, password: string, fullName: string, agencyName: string, plan: Plan = "free") {
-    const response = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        fullName,
-        agencyName,
-        plan
-      })
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          full_name: fullName,
+          agency_name: agencyName
+        }
+      }
     });
 
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error || "Signup failed");
+    if (error) throw error;
+    if (!data.user) throw new Error("Signup failed");
+
+    // Upsert public profile record using current credentials/session
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .upsert({
+        id: data.user.id,
+        email: email,
+        full_name: fullName,
+        agency_name: agencyName,
+        plan: plan,
+        brand_color: "#6366f1",
+        reports_generated_this_month: 0,
+        white_label: false
+      });
+
+    if (profileError) {
+      console.warn("Failed to automatically upsert profile row during client-side signup (may require email confirmation first):", profileError);
     }
 
-    const resJson = await response.json();
-    
-    // Automatically sign in client-side after backend admin signup succeeds
+    // Automatically sign in client-side
     const signInResult = await this.signIn(email, password);
     return signInResult;
   },

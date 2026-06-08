@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabaseDb } from "../lib/supabase";
 import { Report, Profile, Client } from "../types";
 import { FileText, Calendar, Building2, Eye, ShieldAlert, CheckCircle2, Award, Printer, Download, Paperclip, Image, Link, Globe, ExternalLink } from "lucide-react";
