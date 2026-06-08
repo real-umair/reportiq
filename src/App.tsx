@@ -630,7 +630,10 @@ export default function App() {
                 Docs
               </button>
               <button
-                onClick={() => window.location.pathname = "/portal"}
+                onClick={() => {
+                  setIsClientPortal(true);
+                  window.history.pushState(null, "", "/portal");
+                }}
                 className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1"
               >
                 <Globe className="w-3 h-3" />
