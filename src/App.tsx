@@ -250,7 +250,14 @@ export default function App() {
   const [teamRole, setTeamRole] = useState<'owner' | 'viewer' | 'editor' | 'admin'>("owner");
 
   // Marketing pages states
-  const [activeMarketingPage, setActiveMarketingPage] = useState<"about" | "contact" | "privacy" | "terms" | "docs" | null>(null);
+  const [activeMarketingPage, setActiveMarketingPage] = useState<"about" | "contact" | "privacy" | "terms" | "docs" | null>(() => {
+    const path = window.location.pathname;
+    if (path === "/about") return "about";
+    if (path === "/contact") return "contact";
+    if (path === "/privacy") return "privacy";
+    if (path === "/terms") return "terms";
+    return null;
+  });
   const [contactSubmitting, setContactSubmitting] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
   const [paymentBanner, setPaymentBanner] = useState<{ type: "success" | "cancel"; plan: string } | null>(null);
@@ -259,23 +266,30 @@ export default function App() {
 
   // Sync state transitions back to the browser's address bar
   useEffect(() => {
-    if (publicSlug || isClientPortal) return;
+    if (publicSlug || isClientPortal || isResetPassword) return;
 
     let path = "/";
-    if (activeTab === "reports") {
-      path = selectedReportId ? `/reports/${selectedReportId}` : "/reports";
-    } else if (activeTab === "clients") {
-      path = "/clients";
-    } else if (activeTab === "settings") {
-      path = "/settings";
-    } else if (activeTab === "dashboard") {
-      path = "/";
+    if (!user) {
+      if (activeMarketingPage === "about") path = "/about";
+      else if (activeMarketingPage === "contact") path = "/contact";
+      else if (activeMarketingPage === "privacy") path = "/privacy";
+      else if (activeMarketingPage === "terms") path = "/terms";
+    } else {
+      if (activeTab === "reports") {
+        path = selectedReportId ? `/reports/${selectedReportId}` : "/reports";
+      } else if (activeTab === "clients") {
+        path = "/clients";
+      } else if (activeTab === "settings") {
+        path = "/settings";
+      } else if (activeTab === "dashboard") {
+        path = "/";
+      }
     }
 
     if (window.location.pathname !== path) {
       window.history.pushState(null, "", path);
     }
-  }, [activeTab, selectedReportId, publicSlug, isClientPortal]);
+  }, [activeTab, selectedReportId, publicSlug, isClientPortal, isResetPassword, user, activeMarketingPage]);
 
   // Handle browser back/forward buttons (popstate)
   useEffect(() => {
@@ -294,6 +308,18 @@ export default function App() {
         return;
       } else {
         setIsClientPortal(false);
+      }
+
+      if (path === "/about") {
+        setActiveMarketingPage("about");
+      } else if (path === "/contact") {
+        setActiveMarketingPage("contact");
+      } else if (path === "/privacy") {
+        setActiveMarketingPage("privacy");
+      } else if (path === "/terms") {
+        setActiveMarketingPage("terms");
+      } else {
+        setActiveMarketingPage(null);
       }
 
       if (path.startsWith("/reports")) {
@@ -641,7 +667,10 @@ export default function App() {
 
             <div className="hidden md:flex items-center gap-6">
               <button
-                onClick={() => setActiveMarketingPage("about")}
+                onClick={() => {
+                  setActiveMarketingPage("about");
+                  window.history.pushState(null, "", "/about");
+                }}
                 className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
               >
                 About
@@ -650,6 +679,7 @@ export default function App() {
                 onClick={() => {
                   setContactSuccess(false);
                   setActiveMarketingPage("contact");
+                  window.history.pushState(null, "", "/contact");
                 }}
                 className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
               >
@@ -676,13 +706,19 @@ export default function App() {
                 Client Portal
               </button>
               <button
-                onClick={() => setActiveMarketingPage("privacy")}
+                onClick={() => {
+                  setActiveMarketingPage("privacy");
+                  window.history.pushState(null, "", "/privacy");
+                }}
                 className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
               >
                 Privacy
               </button>
               <button
-                onClick={() => setActiveMarketingPage("terms")}
+                onClick={() => {
+                  setActiveMarketingPage("terms");
+                  window.history.pushState(null, "", "/terms");
+                }}
                 className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
               >
                 Terms
@@ -908,7 +944,10 @@ export default function App() {
             <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
             <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-500">
               <button
-                onClick={() => setActiveMarketingPage("about")}
+                onClick={() => {
+                  setActiveMarketingPage("about");
+                  window.history.pushState(null, "", "/about");
+                }}
                 className="hover:text-indigo-600 transition-colors cursor-pointer"
               >
                 About Us
@@ -917,6 +956,7 @@ export default function App() {
                 onClick={() => {
                   setContactSuccess(false);
                   setActiveMarketingPage("contact");
+                  window.history.pushState(null, "", "/contact");
                 }}
                 className="hover:text-indigo-600 transition-colors cursor-pointer"
               >
@@ -933,13 +973,19 @@ export default function App() {
                 Documentation
               </button>
               <button
-                onClick={() => setActiveMarketingPage("privacy")}
+                onClick={() => {
+                  setActiveMarketingPage("privacy");
+                  window.history.pushState(null, "", "/privacy");
+                }}
                 className="hover:text-indigo-600 transition-colors cursor-pointer"
               >
                 Privacy Policy
               </button>
               <button
-                onClick={() => setActiveMarketingPage("terms")}
+                onClick={() => {
+                  setActiveMarketingPage("terms");
+                  window.history.pushState(null, "", "/terms");
+                }}
                 className="hover:text-indigo-600 transition-colors cursor-pointer"
               >
                 Terms of Service
@@ -1209,6 +1255,7 @@ export default function App() {
                 onClick={() => {
                   setActiveMarketingPage(null);
                   setContactSuccess(false);
+                  window.history.pushState(null, "", "/");
                 }}
                 className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors"
                 title="Close"
