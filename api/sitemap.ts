@@ -35,6 +35,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   </url>
 </urlset>`;
 
-  res.setHeader('Content-Type', 'application/xml');
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
   res.status(200).send(sitemap);
 }
