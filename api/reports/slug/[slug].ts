@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { supabase } from "../../_utils/supabase.js";
+import { supabase, supabaseAdmin } from "../../_utils/supabase.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
@@ -44,9 +44,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       createdAt: dbReport.created_at,
     };
 
+    // Use admin client to bypass guest RLS restriction for profiles/clients metadata lookup
+    const activeClient = supabaseAdmin || supabase;
+
     let profile = null;
     if (report.userId) {
-      const { data: dbProfile } = await supabase
+      const { data: dbProfile } = await activeClient
         .from("profiles")
         .select("*")
         .eq("id", report.userId)
@@ -55,13 +58,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (dbProfile) {
         profile = {
           uid: dbProfile.id,
-          email: dbProfile.email,
           fullName: dbProfile.full_name,
           agencyName: dbProfile.agency_name,
           logoUrl: dbProfile.logo_url,
           brandColor: dbProfile.brand_color || "#6366f1",
-          plan: dbProfile.plan || "free",
-          reportsGeneratedThisMonth: dbProfile.reports_generated_this_month || 0,
           brandLogoUrl: dbProfile.brand_logo_url || null,
           avatarUrl: dbProfile.avatar_url || null,
         };
@@ -70,7 +70,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let client = null;
     if (report.clientId) {
-      const { data: dbClient } = await supabase
+      const { data: dbClient } = await activeClient
         .from("clients")
         .select("*")
         .eq("id", report.clientId)
@@ -79,12 +79,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (dbClient) {
         client = {
           id: dbClient.id,
-          userId: dbClient.user_id,
           name: dbClient.name,
-          email: dbClient.email,
           company: dbClient.company,
           logoUrl: dbClient.logo_url,
-          notes: dbClient.notes,
           createdAt: dbClient.created_at,
         };
       }

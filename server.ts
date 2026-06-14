@@ -41,13 +41,34 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabaseAdmin = supabaseServiceRoleKey ? createClient(supabaseUrl, supabaseServiceRoleKey) : null;
 
+// Authentication middleware to check Supabase user JWT token
+const requireAuth = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    if (!authHeader || typeof authHeader !== "string" || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ error: "Access denied. No session token provided." });
+      return;
+    }
+    const token = authHeader.substring(7);
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      res.status(401).json({ error: "Access denied. Invalid session or token." });
+      return;
+    }
+    (req as any).user = user;
+    next();
+  } catch (err: any) {
+    res.status(401).json({ error: err.message || "Authentication failed." });
+  }
+};
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
 // API endpoints
-app.post("/api/reports/generate", async (req, res) => {
+app.post("/api/reports/generate", requireAuth, async (req, res) => {
   try {
     const {
       clientName,
@@ -154,7 +175,7 @@ app.post("/api/reports/generate", async (req, res) => {
   }
 });
 
-app.post("/api/extract-document", upload.single("file"), async (req, res) => {
+app.post("/api/extract-document", requireAuth, upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       res.status(400).json({ error: "No file was uploaded." });
@@ -197,7 +218,7 @@ app.post("/api/extract-document", upload.single("file"), async (req, res) => {
   }
 });
 
-app.post("/api/reports/generate-section", async (req, res) => {
+app.post("/api/reports/generate-section", requireAuth, async (req, res) => {
   try {
     const { topic, tone, clientName } = req.body;
     if (!topic) {
@@ -580,7 +601,7 @@ ${description}
 });
 
 // Real-time Supabase Data Synchronization
-app.post("/api/supabase/sync", async (req, res) => {
+app.post("/api/supabase/sync", requireAuth, async (req, res) => {
   try {
     const { clients, reports } = req.body;
     console.log(`Synchronizing database records to Supabase instance at ${supabaseUrl}...`);
@@ -653,7 +674,7 @@ app.post("/api/supabase/sync", async (req, res) => {
 });
 
 // Direct email dispatch support
-app.post("/api/reports/send-email", async (req, res) => {
+app.post("/api/reports/send-email", requireAuth, async (req, res) => {
   try {
     const { toEmail, subject, text, html, smtpHost, smtpPort, smtpUser, smtpPass } = req.body;
     if (!toEmail) {
@@ -882,7 +903,6 @@ app.post("/api/reports/:id/feedback", async (req, res) => {
         }
       }
     }
-
     res.json({ success: true, feedback: feedbackData });
   } catch (err: any) {
     console.error("[Feedback Endpoint] Global error:", err);
@@ -927,10 +947,13 @@ app.get("/api/reports/slug/:slug", async (req, res) => {
       createdAt: dbReport.created_at,
     };
 
+    // Use admin client to bypass guest RLS restriction for profiles/clients metadata
+    const activeClient = supabaseAdmin || supabase;
+
     // Query Corresponding Profile
     let profile = null;
     if (report.userId) {
-      const { data: dbProfile } = await supabase
+      const { data: dbProfile } = await activeClient
         .from("profiles")
         .select("*")
         .eq("id", report.userId)
@@ -939,13 +962,10 @@ app.get("/api/reports/slug/:slug", async (req, res) => {
       if (dbProfile) {
         profile = {
           uid: dbProfile.id,
-          email: dbProfile.email,
           fullName: dbProfile.full_name,
           agencyName: dbProfile.agency_name,
           logoUrl: dbProfile.logo_url,
           brandColor: dbProfile.brand_color || "#6366f1",
-          plan: dbProfile.plan || "free",
-          reportsGeneratedThisMonth: dbProfile.reports_generated_this_month || 0,
           brandLogoUrl: dbProfile.brand_logo_url || null,
           avatarUrl: dbProfile.avatar_url || null,
         };
@@ -955,7 +975,7 @@ app.get("/api/reports/slug/:slug", async (req, res) => {
     // Query Corresponding Client
     let client = null;
     if (report.clientId) {
-      const { data: dbClient } = await supabase
+      const { data: dbClient } = await activeClient
         .from("clients")
         .select("*")
         .eq("id", report.clientId)
@@ -964,12 +984,9 @@ app.get("/api/reports/slug/:slug", async (req, res) => {
       if (dbClient) {
         client = {
           id: dbClient.id,
-          userId: dbClient.user_id,
           name: dbClient.name,
-          email: dbClient.email,
           company: dbClient.company,
           logoUrl: dbClient.logo_url,
-          notes: dbClient.notes,
           createdAt: dbClient.created_at,
         };
       }
@@ -1073,7 +1090,6 @@ async function initializeDatabaseSchema() {
     CREATE POLICY "Anyone can insert support tickets" ON public.support_tickets FOR INSERT WITH CHECK (true);
 
     DROP POLICY IF EXISTS "Anyone can read support tickets" ON public.support_tickets;
-    CREATE POLICY "Anyone can read support tickets" ON public.support_tickets FOR SELECT USING (true);
 
     -- Bootstrap Supabase storage buckets and permissions
     INSERT INTO storage.buckets (id, name, public) VALUES ('report-images', 'report-images', true) ON CONFLICT (id) DO NOTHING;
@@ -1083,7 +1099,10 @@ async function initializeDatabaseSchema() {
     CREATE POLICY "Public Select Storage Images" ON storage.objects FOR SELECT USING (bucket_id = 'report-images' OR bucket_id = 'report-docs');
 
     DROP POLICY IF EXISTS "Anyone can insert details" ON storage.objects;
-    CREATE POLICY "Anyone can insert details" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'report-images' OR bucket_id = 'report-docs');
+    CREATE POLICY "Anyone can insert details" ON storage.objects FOR INSERT WITH CHECK (
+      (bucket_id = 'report-images' OR bucket_id = 'report-docs' OR bucket_id = 'avatars' OR bucket_id = 'logos')
+      AND auth.uid() IS NOT NULL
+    );
 
     -- Define RLS Policies
     DROP POLICY IF EXISTS "Users can only see own profile" ON public.profiles;
@@ -1112,7 +1131,13 @@ async function initializeDatabaseSchema() {
     CREATE POLICY "Anyone can submit feedback" ON public.report_feedback FOR INSERT WITH CHECK (true);
 
     DROP POLICY IF EXISTS "Report owners can view feedback" ON public.report_feedback;
-    CREATE POLICY "Report owners can view feedback" ON public.report_feedback FOR SELECT USING (true);
+    CREATE POLICY "Report owners can view feedback" ON public.report_feedback FOR SELECT USING (
+      EXISTS (
+        SELECT 1 FROM public.reports 
+        WHERE public.reports.id = report_feedback.report_id 
+        AND public.reports.user_id = auth.uid()
+      )
+    );
   `;
 
   try {

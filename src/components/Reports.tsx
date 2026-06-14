@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { supabaseDb, supabase } from "../lib/supabase";
+import { supabaseDb, supabase, getAuthHeaders } from "../lib/supabase";
 import { Report, Client, Profile, ReportSection, PLAN_LIMITS, ReportAttachment } from "../types";
 import { FileText, Lock, ClipboardList, Plus, Sparkles, Trash2, Check, Copy, ExternalLink, Calendar, Users, List, Send, ShieldAlert, ArrowLeft, PlusCircle, Pencil, Save, Mail, Share2, X, Download, Printer, Paperclip, Image, Link, Globe, Building2, Award } from "lucide-react";
 
@@ -297,11 +297,13 @@ export default function Reports({
     try {
       setGenerating(true);
 
+      const authHeaders = await getAuthHeaders();
       // Call Express server-side Groq API proxy route (keeps key hidden!)
       const response = await fetch("/api/reports/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...authHeaders,
         },
         body: JSON.stringify({
           clientName: matchedClient.name,
@@ -1048,9 +1050,13 @@ Prepare your file as .txt, .docx, .pdf, or .xlsx and upload it to generate a hig
                             setGeneratingSectionError(null);
                             try {
                               const activeClient = clients.find(c => c.id === editingReport?.clientId);
+                              const authHeaders = await getAuthHeaders();
                               const res = await fetch("/api/reports/generate-section", {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: { 
+                                  "Content-Type": "application/json",
+                                  ...authHeaders
+                                },
                                 body: JSON.stringify({
                                   topic: newSectionTopic.trim(),
                                   tone: newSectionTone,
@@ -2559,8 +2565,12 @@ Prepare your file as .txt, .docx, .pdf, or .xlsx and upload it to generate a hig
                             const formData = new FormData();
                             formData.append("file", file);
                             
+                            const authHeaders = await getAuthHeaders();
                             const res = await fetch("/api/extract-document", {
                               method: "POST",
+                              headers: {
+                                ...authHeaders,
+                              },
                               body: formData
                             });
                             

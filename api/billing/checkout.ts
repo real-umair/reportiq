@@ -1,9 +1,14 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { supabaseAdmin, supabase } from "../_utils/supabase.js";
+import { supabaseAdmin, supabase, getAuthUser } from "../_utils/supabase.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const user = await getAuthUser(req);
+  if (!user) {
+    return res.status(401).json({ error: "Access denied. Invalid or missing session token." });
   }
 
   try {

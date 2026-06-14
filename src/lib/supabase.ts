@@ -481,3 +481,9 @@ export const supabaseDb = {
     if (error) throw error;
   }
 };
+
+// Retrieve authorization Bearer header for JWT verification
+export async function getAuthHeaders() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token ? { "Authorization": `Bearer ${session.access_token}` } : {};
+}

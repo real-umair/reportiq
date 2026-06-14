@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { supabaseDb, supabase } from "../lib/supabase";
+import { supabaseDb, supabase, getAuthHeaders } from "../lib/supabase";
 import { Profile, PLAN_LIMITS, Plan } from "../types";
 import { Settings as SettingsIcon, CreditCard, Check, ShieldAlert, CheckCircle2, Award, Sparkles, Lock } from "lucide-react";
 
@@ -161,9 +161,13 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
       const productId = targetPlan === "pro" ? "pro" : "starter";
       console.log(`[Polar Billing Link] Requesting checkout for ${targetPlan} / ${productId}...`);
       
+      const authHeaders = await getAuthHeaders();
       const response = await fetch("/api/billing/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...authHeaders
+        },
         body: JSON.stringify({ 
           productId, 
           email: profile?.email || ""

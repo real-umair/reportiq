@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { supabase, supabaseAuth, supabaseDb } from "./lib/supabase";
+import { supabase, supabaseAuth, supabaseDb, getAuthHeaders } from "./lib/supabase";
 import { Profile, Client, Report, Integration } from "./types";
 import {
   FileText,
@@ -87,9 +87,13 @@ export default function App() {
     }
 
     try {
+      const authHeaders = await getAuthHeaders();
       const response = await fetch("/api/billing/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...authHeaders
+        },
         body: JSON.stringify({ 
           productId: targetPlan, 
           email: profile?.email || ""

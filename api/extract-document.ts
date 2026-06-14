@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import multer from "multer";
 import path from "path";
 import { createRequire } from "module";
+import { getAuthUser } from "./_utils/supabase.js";
 
 const require = createRequire(import.meta.url);
 // @ts-ignore
@@ -35,6 +36,11 @@ export const config = {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const user = await getAuthUser(req);
+  if (!user) {
+    return res.status(401).json({ error: "Access denied. Invalid or missing session token." });
   }
 
   try {
