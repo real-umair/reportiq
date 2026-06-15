@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft, BookOpen } from 'lucide-react';
 
 export interface ToolField {
   name: string;
@@ -15,6 +15,7 @@ interface ToolPageProps {
   apiEndpoint: string;
   metaTitle: string;
   metaDescription: string;
+  instructions: string[];
 }
 
 export default function ToolPage({
@@ -24,6 +25,7 @@ export default function ToolPage({
   apiEndpoint,
   metaTitle,
   metaDescription,
+  instructions,
 }: ToolPageProps) {
   // Update document metadata dynamically
   useEffect(() => {
@@ -302,9 +304,27 @@ export default function ToolPage({
                 Fill out the required form fields on the left and click generate to create your report summary.
               </p>
             </div>
-          )}
+        )}
         </div>
       </div>
+
+      {/* Instructions & SEO tips section */}
+      {instructions && instructions.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-3xs mb-8 text-left">
+          <h2 className="text-base font-bold font-display text-slate-950 mb-4 flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-indigo-600" />
+            How to Use This Tool & SEO Tips
+          </h2>
+          <ul className="space-y-3.5 text-slate-600 text-xs sm:text-sm list-none pl-0">
+            {instructions.map((ins, i) => (
+              <li key={i} className="leading-relaxed flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0 mt-2"></span>
+                <span dangerouslySetInnerHTML={{ __html: ins }} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Global Bottom Marketing CTA banner */}
       <div className="bg-slate-900 border border-slate-800 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-left shadow-lg">

@@ -9,6 +9,13 @@ export default function ToolProjectStatus() {
     { name: 'nextSteps', label: 'Next Steps', placeholder: 'Start high fidelity prototyping next week', type: 'textarea' },
   ];
 
+  const instructions = [
+    "Enter the project name, completed tasks, active blockers, and the next milestones.",
+    "Click generate to create a structured status report outlining project health for stakeholders.",
+    "<strong>SEO Tip:</strong> Drive traffic by linking your templates to pages targeting keywords like <strong>project status report template</strong> or <strong>weekly project status report layout</strong>.",
+    "Be transparent about blockers to keep client expectations aligned."
+  ];
+
   return (
     <ToolPage
       title="Free Project Status Report Generator"
@@ -16,7 +23,9 @@ export default function ToolProjectStatus() {
       fields={fields}
       apiEndpoint="/api/tools/project-status"
       metaTitle="Free Project Status Report Generator | ReportIQ"
-      metaDescription="Generate professional project status reports with AI. Free, no signup required."
+      metaDescription="Generate professional project status reports with AI. Free project status report template and weekly project status report layout."
+      instructions={instructions}
     />
   );
 }
+
