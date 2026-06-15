@@ -17,6 +17,8 @@ const pdfParse = require("pdf-parse");
 import mammoth from "mammoth";
 import * as XLSX from "xlsx";
 import toolsHandler from "./api/tools.js";
+import blogPostsHandler from "./api/blog/posts.js";
+import blogPostHandler from "./api/blog/post.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -822,6 +824,25 @@ app.get("/sitemap.xml", async (req, res) => {
   }
 });
 
+// Blog backend routes
+app.get("/api/blog/posts", async (req, res) => {
+  try {
+    await blogPostsHandler(req as any, res as any);
+  } catch (err: any) {
+    console.error("Local blog posts handler error:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
+  }
+});
+
+app.get("/api/blog/post", async (req, res) => {
+  try {
+    await blogPostHandler(req as any, res as any);
+  } catch (err: any) {
+    console.error("Local blog post handler error:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
+  }
+});
+
 app.post("/api/reports/:id/feedback", async (req, res) => {
   try {
     const { id } = req.params;
@@ -1179,6 +1200,33 @@ async function initializeDatabaseSchema() {
         AND public.reports.user_id = auth.uid()
       )
     );
+
+    -- Create public.blogs table
+    CREATE TABLE IF NOT EXISTS public.blogs (
+      id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+      title text NOT NULL,
+      slug text UNIQUE NOT NULL,
+      content text NOT NULL,
+      excerpt text,
+      cover_image_url text,
+      author text DEFAULT 'ReportIQ Team',
+      tags text[] DEFAULT '{}',
+      meta_title text,
+      meta_description text,
+      published boolean DEFAULT false,
+      published_at timestamptz,
+      view_count integer DEFAULT 0,
+      created_at timestamptz DEFAULT now(),
+      updated_at timestamptz DEFAULT now()
+    );
+
+    ALTER TABLE public.blogs ENABLE ROW LEVEL SECURITY;
+    
+    DROP POLICY IF EXISTS "Published blogs viewable by all" ON public.blogs;
+    CREATE POLICY "Published blogs viewable by all" ON public.blogs FOR SELECT USING (published = true);
+
+    DROP POLICY IF EXISTS "Admin can manage all blogs" ON public.blogs;
+    CREATE POLICY "Admin can manage all blogs" ON public.blogs FOR ALL USING (true);
   `;
 
   try {

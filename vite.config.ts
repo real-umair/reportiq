@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env.SUPABASE_URL': JSON.stringify(env.SUPABASE_URL || ""),
       'process.env.SUPABASE_ANON_KEY': JSON.stringify(env.SUPABASE_ANON_KEY || ""),
+      'process.env.ADMIN_EMAIL': JSON.stringify(env.ADMIN_EMAIL || "farooquiumair18@gmail.com"),
     },
     server: {
       proxy: {

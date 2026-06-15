@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
+Allow: /blog/
+Allow: /tools/
+Disallow: /dashboard
+Disallow: /reports
+Disallow: /clients
+Disallow: /settings
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: https://www.reportiq.xyz/sitemap.xml

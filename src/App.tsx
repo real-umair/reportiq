@@ -46,6 +46,11 @@ import ToolInvoice from "./components/tools/ToolInvoice";
 import ToolProjectStatus from "./components/tools/ToolProjectStatus";
 import ToolOnboarding from "./components/tools/ToolOnboarding";
 
+// Blog component imports
+import BlogHome from "./components/blog/BlogHome";
+import BlogPost from "./components/blog/BlogPost";
+import BlogAdmin from "./components/blog/BlogAdmin";
+
 export default function App() {
   // Public shareable link detection routing
   const [publicSlug, setPublicSlug] = useState<string | null>(() => {
@@ -65,6 +70,16 @@ export default function App() {
     const path = window.location.pathname;
     return (path === "/tools" || path.startsWith("/tools/")) ? path : null;
   });
+
+  // Blog route detection routing
+  const [activeBlogRoute, setActiveBlogRoute] = useState<string | null>(() => {
+    const path = window.location.pathname;
+    if (path === "/blog" || path.startsWith("/blog/")) return path;
+    if (path === "/admin/blog") return path;
+    return null;
+  });
+
+  const [activeLandingFaq, setActiveLandingFaq] = useState<number | null>(null);
 
   // Lock modal state
   const [lockModal, setLockModal] = useState<{
@@ -289,7 +304,7 @@ export default function App() {
 
   // Sync state transitions back to the browser's address bar
   useEffect(() => {
-    if (publicSlug || isClientPortal || isResetPassword || activeToolRoute) return;
+    if (publicSlug || isClientPortal || isResetPassword || activeToolRoute || activeBlogRoute) return;
 
     let path = "/";
     if (!user) {
@@ -312,7 +327,7 @@ export default function App() {
     if (window.location.pathname !== path) {
       window.history.pushState(null, "", path);
     }
-  }, [activeTab, selectedReportId, publicSlug, isClientPortal, isResetPassword, user, activeMarketingPage]);
+  }, [activeTab, selectedReportId, publicSlug, isClientPortal, isResetPassword, user, activeMarketingPage, activeBlogRoute]);
 
   // Handle browser back/forward buttons (popstate)
   useEffect(() => {
@@ -324,9 +339,21 @@ export default function App() {
         setPublicSlug(null);
         setIsClientPortal(false);
         setActiveMarketingPage(null);
+        setActiveBlogRoute(null);
         return;
       } else {
         setActiveToolRoute(null);
+      }
+
+      if (path === "/blog" || path.startsWith("/blog/") || path === "/admin/blog") {
+        setActiveBlogRoute(path);
+        setPublicSlug(null);
+        setIsClientPortal(false);
+        setActiveMarketingPage(null);
+        setActiveToolRoute(null);
+        return;
+      } else {
+        setActiveBlogRoute(null);
       }
 
       const rMatch = path.match(/^\/r\/([a-zA-Z0-9_-]+)/);
@@ -683,6 +710,252 @@ export default function App() {
     );
   }
 
+  if (activeBlogRoute) {
+    let blogComponent = <BlogHome />;
+    if (activeBlogRoute === "/admin/blog") {
+      blogComponent = <BlogAdmin />;
+    } else if (activeBlogRoute.startsWith("/blog/")) {
+      blogComponent = <BlogPost />;
+    }
+
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-700 animate-fade-in">
+        <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 sm:px-12 py-4">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div 
+              className="flex items-center gap-2 cursor-pointer select-none"
+              onClick={() => {
+                setActiveBlogRoute(null);
+                window.history.pushState(null, "", "/");
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+            >
+              <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sm shadow-indigo-200 shrink-0">
+                <FileText className="w-5 h-5" />
+              </div>
+              <span className="font-extrabold font-display text-slate-950 tracking-tight text-lg">
+                ReportIQ
+              </span>
+            </div>
+
+            <div className="hidden md:flex items-center gap-6">
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("about");
+                  window.history.pushState(null, "", "/about");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                About
+              </button>
+              <button
+                onClick={() => {
+                  setContactSuccess(false);
+                  setActiveMarketingPage("contact");
+                  window.history.pushState(null, "", "/contact");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Contact
+              </button>
+              <button
+                onClick={() => {
+                  setDocsActiveTab("guide");
+                  setOpenFaqIndex(null);
+                  setActiveMarketingPage("docs");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Docs
+              </button>
+              <button
+                onClick={() => {
+                  setIsClientPortal(true);
+                  window.history.pushState(null, "", "/portal");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <Globe className="w-3 h-3" />
+                Client Portal
+              </button>
+              <button
+                onClick={() => {
+                  setActiveToolRoute("/tools");
+                  setActiveBlogRoute(null);
+                  window.history.pushState(null, "", "/tools");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+              >
+                Free Tools
+              </button>
+              <button
+                onClick={() => {
+                  setActiveBlogRoute("/blog");
+                  setActiveToolRoute(null);
+                  window.history.pushState(null, "", "/blog");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+              >
+                Blog
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("privacy");
+                  window.history.pushState(null, "", "/privacy");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Privacy
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("terms");
+                  window.history.pushState(null, "", "/terms");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Terms
+              </button>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {user ? (
+                <button
+                  onClick={() => {
+                    setActiveBlogRoute(null);
+                    setActiveToolRoute(null);
+                    setActiveTab("dashboard");
+                    window.history.pushState(null, "", "/");
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
+                  className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs flex items-center gap-1.5 font-sans"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setAuthError(null);
+                      setShowAuthForm("login");
+                    }}
+                    className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthError(null);
+                      setShowAuthForm("signup");
+                    }}
+                    className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs"
+                  >
+                    Create Account
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1">
+          {blogComponent}
+        </main>
+
+        <footer className="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-400">
+          <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
+            <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-500">
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("about");
+                  window.history.pushState(null, "", "/about");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                About Us
+              </button>
+              <button
+                onClick={() => {
+                  setContactSuccess(false);
+                  setActiveMarketingPage("contact");
+                  window.history.pushState(null, "", "/contact");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Contact
+              </button>
+              <button
+                onClick={() => {
+                  setDocsActiveTab("guide");
+                  setOpenFaqIndex(null);
+                  setActiveMarketingPage("docs");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Documentation
+              </button>
+              <button
+                onClick={() => {
+                  setActiveBlogRoute("/blog");
+                  setActiveToolRoute(null);
+                  window.history.pushState(null, "", "/blog");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Blog
+              </button>
+              <button
+                onClick={() => {
+                  setActiveToolRoute("/tools");
+                  setActiveBlogRoute(null);
+                  window.history.pushState(null, "", "/tools");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600"
+              >
+                Free Tools
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("privacy");
+                  window.history.pushState(null, "", "/privacy");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("terms");
+                  window.history.pushState(null, "", "/terms");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Terms of Service
+              </button>
+            </div>
+          </div>
+        </footer>
+      </div>
+    );
+  }
+
   if (activeToolRoute) {
     let toolComponent = <ToolsHome />;
     switch (activeToolRoute) {
@@ -797,6 +1070,17 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
+                  setActiveBlogRoute("/blog");
+                  setActiveToolRoute(null);
+                  window.history.pushState(null, "", "/blog");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+              >
+                Blog
+              </button>
+              <button
+                onClick={() => {
                   setActiveMarketingPage("privacy");
                   window.history.pushState(null, "", "/privacy");
                   window.dispatchEvent(new PopStateEvent('popstate'));
@@ -899,7 +1183,19 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
+                  setActiveBlogRoute("/blog");
+                  setActiveToolRoute(null);
+                  window.history.pushState(null, "", "/blog");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Blog
+              </button>
+              <button
+                onClick={() => {
                   setActiveToolRoute("/tools");
+                  setActiveBlogRoute(null);
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
@@ -1199,6 +1495,17 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
+                  setActiveBlogRoute("/blog");
+                  setActiveToolRoute(null);
+                  window.history.pushState(null, "", "/blog");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+              >
+                Blog
+              </button>
+              <button
+                onClick={() => {
                   setActiveMarketingPage("privacy");
                   window.history.pushState(null, "", "/privacy");
                 }}
@@ -1248,7 +1555,7 @@ export default function App() {
               <span className="text-indigo-600">Let AI do it.</span>
             </h1>
             <p className="text-slate-550 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10">
-              ReportIQ securely connects to your registries, processes notes/milestones, and uses advanced generative language models to compile branded progress portals automatically.
+              ReportIQ is the fastest AI client reporting tool for freelancers and digital agencies. Generate professional monthly client reports, SEO reports, social media reports, and project updates in 30 seconds. Free to start — no credit card needed.
             </p>
             <div className="flex justify-center">
               <button
@@ -1303,6 +1610,78 @@ export default function App() {
                     </span>
                     <h3 className="font-bold font-display text-slate-900 mt-2 mb-2">{item.title}</h3>
                     <p className="text-slate-500 text-xs leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Why agencies choose ReportIQ Section */}
+          <section className="bg-slate-50 border-b border-slate-200 py-20 px-6 sm:px-12">
+            <div className="max-w-5xl mx-auto">
+              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
+                Why agencies choose ReportIQ
+              </h2>
+              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
+                Redefining the client reporting workflow
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-3xs flex flex-col gap-4">
+                  <div className="w-10 h-10 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 font-bold font-mono">01</div>
+                  <h3 className="font-extrabold font-display text-slate-900 text-lg">AI Client Reporting Tool</h3>
+                  <p className="text-slate-550 text-xs leading-relaxed font-sans">
+                    Writing monthly client reports is the most hated task in every freelance business and digital agency. Most professionals waste 3 to 5 hours every month copying data from tools, formatting Word documents, and rewriting the same summaries. ReportIQ eliminates this entirely. Our AI powered client reporting tool reads your rough notes and generates a complete professional report in under 30 seconds.
+                  </p>
+                </div>
+                
+                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-3xs flex flex-col gap-4">
+                  <div className="w-10 h-10 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 font-bold font-mono">02</div>
+                  <h3 className="font-extrabold font-display text-slate-900 text-lg">SEO & Social Media Analytics</h3>
+                  <p className="text-slate-550 text-xs leading-relaxed font-sans">
+                    From SEO performance reports to social media analytics summaries, project status updates to monthly retainer reports — ReportIQ handles every type of client report your agency sends. Built specifically for SEO agencies, social media managers, web design studios, PPC specialists, and content marketing teams who send regular client updates.
+                  </p>
+                </div>
+
+                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-3xs flex flex-col gap-4">
+                  <div className="w-10 h-10 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 font-bold font-mono">03</div>
+                  <h3 className="font-extrabold font-display text-slate-900 text-lg">Shareable Branded Links</h3>
+                  <p className="text-slate-550 text-xs leading-relaxed font-sans">
+                    Every report generated by ReportIQ includes a unique shareable link your client opens instantly in their browser. No downloads. No email attachments. No login required for your client. Just a clean, branded, professional report that makes your agency look world class — generated by AI in seconds.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Who uses ReportIQ Section */}
+          <section className="bg-white border-b border-slate-200 py-20 px-6 sm:px-12">
+            <div className="max-w-5xl mx-auto">
+              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
+                Who uses ReportIQ?
+              </h2>
+              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
+                Empowering modern creators & agencies
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+                {[
+                  { user: "Content writers and copywriters", report: "monthly deliverables report" },
+                  { user: "SEO professionals", report: "keyword ranking and traffic reports" },
+                  { user: "Social media managers", report: "engagement and growth reports" },
+                  { user: "PPC specialists", report: "ad performance and ROAS reports" },
+                  { user: "Web developers", report: "project progress and milestone reports" },
+                  { user: "Marketing consultants", report: "campaign performance reports" },
+                  { user: "Graphic designers", report: "project completion reports" },
+                  { user: "Virtual assistants", report: "weekly task completion reports" },
+                  { user: "Content marketing agencies", report: "content performance reports" },
+                  { user: "Growth hackers", report: "experiment and results reports" }
+                ].map((item, idx) => (
+                  <div key={idx} className="border border-slate-150 rounded-2xl p-5 hover:border-indigo-200 transition-colors bg-slate-50/50 shadow-3xs flex flex-col justify-between">
+                    <div>
+                      <h4 className="font-bold text-xs text-slate-900 mb-1.5 font-sans leading-tight">{item.user}</h4>
+                      <p className="text-[10px] text-indigo-650 font-semibold font-mono uppercase tracking-wider">{item.report}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1429,6 +1808,80 @@ export default function App() {
               ))}
             </div>
           </section>
+
+          {/* Landing Page FAQ Accordion */}
+          <section className="bg-slate-50 border-t border-slate-200 py-20 px-6 sm:px-12">
+            <div className="max-w-3xl mx-auto text-left">
+              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
+                Everything you need to know about ReportIQ
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "What is ReportIQ?",
+                    a: "ReportIQ is an AI powered client reporting tool built for freelancers and digital agencies. Instead of spending hours writing monthly client updates, you enter your rough notes and our AI generates a complete professional report in 30 seconds. Every report gets a unique shareable link you send directly to your client."
+                  },
+                  {
+                    q: "Is ReportIQ free to use?",
+                    a: "Yes. ReportIQ has a completely free plan that includes 3 client reports per month and 2 active clients with no credit card required. Paid plans start at $29 per month for freelancers and agencies who need more reports, custom branding, and advanced features."
+                  },
+                  {
+                    q: "How does AI client report generation work?",
+                    a: "You enter the work you completed for your client, add any key metrics or results, choose your preferred tone and length, and click generate. ReportIQ AI reads your notes and writes a polished professional client report with proper sections including work completed, key results, and coming up next. The whole process takes under 30 seconds."
+                  },
+                  {
+                    q: "What types of client reports can I generate with ReportIQ?",
+                    a: "ReportIQ generates any type of client report including monthly progress reports, SEO performance reports, social media analytics reports, Google Ads and PPC reports, web design project updates, content marketing reports, email marketing reports, and custom reports for any service type."
+                  },
+                  {
+                    q: "Can I send the report directly to my client?",
+                    a: "Yes. Every report gets a unique public link like reportiq.xyz/r/abc123 that you can copy and send to your client via email, WhatsApp, or any messaging app. Your client opens the link instantly in their browser with no account or login required."
+                  },
+                  {
+                    q: "Does ReportIQ support custom branding?",
+                    a: "Yes. Starter and Pro plan users can upload their agency logo and customize their brand colors. All public client reports display your agency branding so clients see your professional identity not ReportIQ."
+                  },
+                  {
+                    q: "Is my client data secure?",
+                    a: "Yes. All data is stored in an encrypted Supabase PostgreSQL database with row level security enabled. Only you can access your clients and reports. We never share or sell your data."
+                  },
+                  {
+                    q: "Can I use ReportIQ for multiple clients?",
+                    a: "Yes. Free plan supports up to 2 clients. Starter plan supports up to 10 clients. Pro plan supports unlimited clients. Each client has their own folder with all their reports organized by date."
+                  },
+                  {
+                    q: "What makes ReportIQ different from other reporting tools?",
+                    a: "Most client reporting tools require you to connect integrations and pull data automatically. ReportIQ is different — it works from your natural language notes. You describe what you did, our AI writes the report. No complex integrations, no data connectors, no technical setup. Works for any niche, any service type, any agency size."
+                  },
+                  {
+                    q: "How do I get started with ReportIQ?",
+                    a: "Go to reportiq.xyz and click Create Account. Sign up for free in 30 seconds, add your first client, and generate your first report immediately. No credit card required."
+                  }
+                ].map((item, idx) => {
+                  const isOpen = activeLandingFaq === idx;
+                  return (
+                    <div key={idx} className="border border-slate-200 rounded-2xl bg-white overflow-hidden transition-all duration-300 shadow-3xs">
+                      <button
+                        type="button"
+                        onClick={() => setActiveLandingFaq(isOpen ? null : idx)}
+                        className="w-full py-4 px-6 flex justify-between items-center font-bold text-slate-800 text-sm hover:text-indigo-600 transition-colors text-left cursor-pointer bg-transparent border-none outline-none"
+                      >
+                        <span>{item.q}</span>
+                        <span className={`text-indigo-600 text-lg transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>+</span>
+                      </button>
+                      <div className={`transition-all duration-300 ${isOpen ? "max-h-60 border-t border-slate-100 p-6" : "max-h-0"} overflow-hidden text-slate-550 text-xs sm:text-sm leading-relaxed`}>
+                        {item.a}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
         </main>
 
         <footer className="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-400">
@@ -1466,7 +1919,19 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
+                  setActiveBlogRoute("/blog");
+                  setActiveToolRoute(null);
+                  window.history.pushState(null, "", "/blog");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Blog
+              </button>
+              <button
+                onClick={() => {
                   setActiveToolRoute("/tools");
+                  setActiveBlogRoute(null);
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}

@@ -3,6 +3,7 @@ import { groqTools } from './_utils/groqTools.js';
 import { checkRateLimit } from './_utils/rateLimit.js';
 import { handleCors } from './_utils/cors.js';
 import { sanitizeInput, validateFields } from './_utils/validation.js';
+import { supabase } from './_utils/supabase.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!handleCors(req, res)) return;
@@ -41,37 +42,64 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   
   switch (tool) {
     case 'sitemap': {
+      let blogUrls = '';
+      try {
+        const { data: posts } = await supabase
+          .from('blogs')
+          .select('slug, published_at')
+          .eq('published', true);
+        if (posts && posts.length > 0) {
+          blogUrls = posts.map(p => {
+            const dateStr = p.published_at ? p.published_at.split('T')[0] : '2026-06-15';
+            return `  <url>
+    <loc>https://www.reportiq.xyz/blog/${p.slug}</loc>
+    <lastmod>${dateStr}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+          }).join('\n');
+        }
+      } catch (dbErr) {
+        console.error("Failed to query blog posts for sitemap:", dbErr);
+      }
+
       const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.reportiq.xyz/</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.reportiq.xyz/about</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.reportiq.xyz/contact</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.reportiq.xyz/privacy</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.reportiq.xyz/terms</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/blog</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.reportiq.xyz/tools</loc>
@@ -139,7 +167,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-</urlset>`;
+${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       res.setHeader('Content-Type', 'application/xml; charset=utf-8');
       res.setHeader('Cache-Control', 'public, max-age=86400');
       return res.status(200).send(sitemap);

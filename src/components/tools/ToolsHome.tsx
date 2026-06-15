@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   FileText, 
   Building2, 
@@ -22,6 +22,8 @@ interface ToolCard {
 }
 
 export default function ToolsHome() {
+  const [activeToolsFaq, setActiveToolsFaq] = useState<number | null>(null);
+
   // Update page title/meta description
   useEffect(() => {
     document.title = 'Free AI Tools for Freelancers & Agencies | ReportIQ';
@@ -149,6 +151,62 @@ export default function ToolsHome() {
             </div>
           );
         })}
+      </div>
+
+      {/* FAQ Section */}
+      <div className="max-w-3xl mx-auto text-left mb-20">
+        <h2 className="text-2xl sm:text-3.5xl font-black font-display text-slate-950 text-center mb-3">
+          Frequently Asked Questions
+        </h2>
+        <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-12">
+          Everything you need to know about our free tools
+        </p>
+
+        <div className="space-y-4">
+          {[
+            {
+              q: "Are these tools really free?",
+              a: "Yes. All 10 tools on this page are completely free to use with no signup required. Each tool allows 3 free uses per day. For unlimited access sign up for ReportIQ free at reportiq.xyz."
+            },
+            {
+              q: "Do I need to create an account to use these tools?",
+              a: "No. All tools on this page work without any account or signup. Just fill in the fields and click generate. If you want to save your reports and send them to clients with a branded link then create a free ReportIQ account."
+            },
+            {
+              q: "How accurate are the AI generated reports and emails?",
+              a: "The AI uses Groq Llama 3.3 which is one of the most advanced language models available. The quality of output depends on the quality of your input — the more detail you provide the better the report. Results are professional quality and typically need minimal editing."
+            },
+            {
+              q: "Can I use these tools for commercial client work?",
+              a: "Yes. You can use any output from these tools for your freelance or agency client work. The generated content belongs to you."
+            },
+            {
+              q: "Why is there a 3 uses per day limit?",
+              a: "The daily limit exists to prevent abuse and keep the tools free for everyone. For unlimited usage sign up for a free ReportIQ account at reportiq.xyz."
+            },
+            {
+              q: "What is the difference between these free tools and ReportIQ?",
+              a: "These free tools generate single documents without saving anything. ReportIQ is the full platform where you manage multiple clients, save all reports, send branded links to clients, track when clients view reports, schedule automated reports, and much more. Start free at reportiq.xyz."
+            }
+          ].map((item, idx) => {
+            const isOpen = activeToolsFaq === idx;
+            return (
+              <div key={idx} className="border border-slate-200 rounded-2xl bg-white overflow-hidden transition-all duration-300 shadow-3xs">
+                <button
+                  type="button"
+                  onClick={() => setActiveToolsFaq(isOpen ? null : idx)}
+                  className="w-full py-4 px-6 flex justify-between items-center font-bold text-slate-800 text-sm hover:text-indigo-600 transition-colors text-left cursor-pointer bg-transparent border-none outline-none"
+                >
+                  <span>{item.q}</span>
+                  <span className={`text-indigo-600 text-lg transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>+</span>
+                </button>
+                <div className={`transition-all duration-300 ${isOpen ? "max-h-60 border-t border-slate-100 p-6" : "max-h-0"} overflow-hidden text-slate-555 text-xs sm:text-sm leading-relaxed`}>
+                  {item.a}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Bottom Registration CTA Section */}
