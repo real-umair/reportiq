@@ -75,7 +75,6 @@ export default function App() {
   const [activeBlogRoute, setActiveBlogRoute] = useState<string | null>(() => {
     const path = window.location.pathname;
     if (path === "/blog" || path.startsWith("/blog/")) return path;
-    if (path === "/admin/blog") return path;
     return null;
   });
 
@@ -271,6 +270,7 @@ export default function App() {
     if (path.startsWith("/reports")) return "reports";
     if (path.startsWith("/clients")) return "clients";
     if (path.startsWith("/settings")) return "settings";
+    if (path === "/admin/blog") return "blog";
     return "dashboard";
   });
   const [selectedReportId, setSelectedReportId] = useState<string | null>(() => {
@@ -319,6 +319,8 @@ export default function App() {
         path = "/clients";
       } else if (activeTab === "settings") {
         path = "/settings";
+      } else if (activeTab === "blog") {
+        path = "/admin/blog";
       } else if (activeTab === "dashboard") {
         path = "/";
       }
@@ -345,7 +347,7 @@ export default function App() {
         setActiveToolRoute(null);
       }
 
-      if (path === "/blog" || path.startsWith("/blog/") || path === "/admin/blog") {
+      if (path === "/blog" || path.startsWith("/blog/")) {
         setActiveBlogRoute(path);
         setPublicSlug(null);
         setIsClientPortal(false);
@@ -354,6 +356,15 @@ export default function App() {
         return;
       } else {
         setActiveBlogRoute(null);
+      }
+
+      if (path === "/admin/blog") {
+        setActiveTab("blog");
+        setPublicSlug(null);
+        setIsClientPortal(false);
+        setActiveMarketingPage(null);
+        setActiveToolRoute(null);
+        return;
       }
 
       const rMatch = path.match(/^\/r\/([a-zA-Z0-9_-]+)/);
@@ -2661,6 +2672,25 @@ export default function App() {
               );
             })}
 
+            {user && user.email === (process.env.ADMIN_EMAIL || "farooquiumair18@gmail.com") && (
+              <button
+                onClick={() => {
+                  setActiveTab("blog");
+                  setActiveBlogRoute(null);
+                  window.history.pushState(null, "", "/admin/blog");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className={`w-full flex items-center gap-3 px-4.5 py-3 rounded-xl text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+                  activeTab === "blog"
+                    ? "bg-indigo-600 text-white font-bold"
+                    : "hover:bg-slate-800 hover:text-white"
+                }`}
+              >
+                <FileText className="w-4 h-4 shrink-0 text-indigo-400" />
+                Blog Manager
+              </button>
+            )}
+
             <div className="pt-4 mt-4 border-t border-slate-800/80 px-1">
               <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-800 text-[10px] space-y-2">
                 <div className="flex items-center justify-between text-slate-350 font-bold font-mono uppercase tracking-wider">
@@ -2739,6 +2769,10 @@ export default function App() {
             onNavigate={setActiveTab}
             onSelectReportId={setSelectedReportId}
           />
+        )}
+
+        {activeTab === "blog" && (
+          <BlogAdmin />
         )}
 
         {activeTab === "clients" && (
