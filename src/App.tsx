@@ -903,7 +903,7 @@ export default function App() {
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-650"
+                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600"
               >
                 Free Tools
               </button>
@@ -1470,7 +1470,7 @@ export default function App() {
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-650"
+                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600"
               >
                 Free Tools
               </button>

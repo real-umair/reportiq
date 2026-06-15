@@ -1,8 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { groqTools } from './_utils/groqTools';
-import { checkRateLimit } from './_utils/rateLimit';
-import { handleCors } from './_utils/cors';
-import { sanitizeInput, validateFields } from './_utils/validation';
+import { groqTools } from './_utils/groqTools.js';
+import { checkRateLimit } from './_utils/rateLimit.js';
+import { handleCors } from './_utils/cors.js';
+import { sanitizeInput, validateFields } from './_utils/validation.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!handleCors(req, res)) return;
@@ -145,7 +145,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).send(sitemap);
     }
     case 'client-report': {
-      const { clientName, industry, workDone } = req.body;
+      const { clientName, industry, workDone } = req.body || {};
       if (!validateFields({ clientName, industry, workDone }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sIndustry = sanitizeInput(industry);
@@ -154,7 +154,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'agency-report': {
-      const { agencyName, clientName, month } = req.body;
+      const { agencyName, clientName, month } = req.body || {};
       if (!validateFields({ agencyName, clientName, month }, res)) return;
       const sAgencyName = sanitizeInput(agencyName);
       const sClientName = sanitizeInput(clientName);
@@ -163,7 +163,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'seo-report': {
-      const { website, keywords, month } = req.body;
+      const { website, keywords, month } = req.body || {};
       if (!validateFields({ website, keywords, month }, res)) return;
       const sWebsite = sanitizeInput(website);
       const sKeywords = sanitizeInput(keywords);
@@ -172,7 +172,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'client-email': {
-      const { clientName, workCompleted, nextSteps } = req.body;
+      const { clientName, workCompleted, nextSteps } = req.body || {};
       if (!validateFields({ clientName, workCompleted, nextSteps }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sWorkCompleted = sanitizeInput(workCompleted);
@@ -181,7 +181,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'monthly-report': {
-      const { businessType, month, keyResults } = req.body;
+      const { businessType, month, keyResults } = req.body || {};
       if (!validateFields({ businessType, month, keyResults }, res)) return;
       const sBusinessType = sanitizeInput(businessType);
       const sMonth = sanitizeInput(month);
@@ -190,7 +190,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'kpi-report': {
-      const { businessName, kpis, period } = req.body;
+      const { businessName, kpis, period } = req.body || {};
       if (!validateFields({ businessName, kpis, period }, res)) return;
       const sBusinessName = sanitizeInput(businessName);
       const sKpis = sanitizeInput(kpis);
@@ -199,7 +199,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'social-media-report': {
-      const { clientName, platforms, metrics } = req.body;
+      const { clientName, platforms, metrics } = req.body || {};
       if (!validateFields({ clientName, platforms, metrics }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sPlatforms = sanitizeInput(platforms);
@@ -208,7 +208,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'invoice-description': {
-      const { service, clientName, hours } = req.body;
+      const { service, clientName, hours } = req.body || {};
       if (!validateFields({ service, clientName, hours }, res)) return;
       const sService = sanitizeInput(service);
       const sClientName = sanitizeInput(clientName);
@@ -217,7 +217,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'project-status': {
-      const { projectName, completedTasks, blockers, nextSteps } = req.body;
+      const { projectName, completedTasks, blockers, nextSteps } = req.body || {};
       if (!validateFields({ projectName, completedTasks, blockers, nextSteps }, res)) return;
       const sProjectName = sanitizeInput(projectName);
       const sCompletedTasks = sanitizeInput(completedTasks);
@@ -227,7 +227,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       break;
     }
     case 'onboarding-email': {
-      const { clientName, serviceType, startDate } = req.body;
+      const { clientName, serviceType, startDate } = req.body || {};
       if (!validateFields({ clientName, serviceType, startDate }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sServiceType = sanitizeInput(serviceType);

@@ -83,7 +83,14 @@ export default function ToolPage({
         body: JSON.stringify(formValues),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      let data: any = {};
+      if (contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(text || `Server returned status ${response.status}`);
+      }
 
       if (response.status === 429 || data.limited) {
         setRateLimited(true);
@@ -142,7 +149,7 @@ export default function ToolPage({
 
       {/* Hero Headline section */}
       <div className="text-center mb-12">
-        <h1 className="text-3xl sm:text-5xl font-black font-display text-slate-950 tracking-tight leading-tight mb-4 bg-gradient-to-r from-indigo-650 via-purple-600 to-indigo-700 bg-clip-text text-transparent">
+        <h1 className="text-3xl sm:text-5xl font-black font-display text-slate-950 tracking-tight leading-tight mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent">
           {title}
         </h1>
         <p className="text-slate-550 text-base max-w-xl mx-auto font-sans leading-relaxed">
@@ -218,7 +225,7 @@ export default function ToolPage({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-indigo-650 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer text-sm"
+              className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer text-sm"
             >
               {loading ? (
                 <>
@@ -239,7 +246,7 @@ export default function ToolPage({
         <div className="bg-slate-100/50 border border-slate-200/80 rounded-3xl p-6 sm:p-8 min-h-[350px] flex flex-col justify-between shadow-2xs relative">
           {loading ? (
             <div className="flex-1 flex flex-col items-center justify-center py-12 space-y-3.5">
-              <div className="w-9 h-9 rounded-full border-3 border-indigo-650 border-t-transparent animate-spin"></div>
+              <div className="w-9 h-9 rounded-full border-3 border-indigo-600 border-t-transparent animate-spin"></div>
               <p className="text-slate-450 font-mono text-[9px] uppercase tracking-widest animate-pulse">
                 Composing with Llama-3 AI...
               </p>

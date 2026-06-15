@@ -16,6 +16,7 @@ const pdfParse = require("pdf-parse");
 // @ts-ignore
 import mammoth from "mammoth";
 import * as XLSX from "xlsx";
+import toolsHandler from "./api/tools.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -778,6 +779,46 @@ app.post("/api/reports/send-email", requireAuth, async (req, res) => {
   } catch (err: any) {
     console.error("Outbound mail delivery failure:", err);
     res.status(500).json({ error: err.message || "Outbound email delivery fell back with errors." });
+  }
+});
+
+// Tools & Sitemap backend routes
+app.all("/api/tools", async (req, res) => {
+  try {
+    await toolsHandler(req as any, res as any);
+  } catch (err: any) {
+    console.error("Local tools handler error:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
+  }
+});
+
+app.all("/api/tools/:tool", async (req, res) => {
+  req.query.tool = req.params.tool;
+  try {
+    await toolsHandler(req as any, res as any);
+  } catch (err: any) {
+    console.error("Local tools handler error:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
+  }
+});
+
+app.get("/api/sitemap", async (req, res) => {
+  req.query.tool = "sitemap";
+  try {
+    await toolsHandler(req as any, res as any);
+  } catch (err: any) {
+    console.error("Local sitemap handler error:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
+  }
+});
+
+app.get("/sitemap.xml", async (req, res) => {
+  req.query.tool = "sitemap";
+  try {
+    await toolsHandler(req as any, res as any);
+  } catch (err: any) {
+    console.error("Local sitemap handler error:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
   }
 });
 

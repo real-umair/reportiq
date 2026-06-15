@@ -109,7 +109,7 @@ export default function ToolsHome() {
         </span>
         <h1 className="text-4xl sm:text-6xl font-black font-display text-slate-950 tracking-tight leading-none mb-6">
           Free AI Tools for<br />
-          <span className="text-indigo-650 bg-gradient-to-r from-indigo-650 to-purple-650 bg-clip-text text-transparent">Freelancers & Agencies</span>
+          <span className="text-indigo-600 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Freelancers & Agencies</span>
         </h1>
         <p className="text-slate-550 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
           Unlock 10 free AI-powered drafting utilities. Instantly generate reports, status summaries, onboarding emails, and client updates. No credit card or signup required.
@@ -126,11 +126,11 @@ export default function ToolsHome() {
               className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start text-left group hover:border-indigo-200"
             >
               <div className="space-y-4">
-                <div className="w-10 h-10 bg-indigo-50 text-indigo-650 border border-indigo-100 rounded-xl flex items-center justify-center shrink-0 transition-colors group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-650">
+                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl flex items-center justify-center shrink-0 transition-colors group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600">
                   <Icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold font-display text-slate-950 text-base leading-tight mb-2 group-hover:text-indigo-650 transition-colors">
+                  <h3 className="font-extrabold font-display text-slate-950 text-base leading-tight mb-2 group-hover:text-indigo-600 transition-colors">
                     {tool.name}
                   </h3>
                   <p className="text-slate-500 text-xs leading-relaxed">
@@ -141,7 +141,7 @@ export default function ToolsHome() {
               
               <button
                 onClick={() => handleNavigate(tool.route)}
-                className="w-full mt-6 py-2.5 bg-slate-50 hover:bg-indigo-600 text-slate-700 hover:text-white border border-slate-200 hover:border-indigo-650 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs"
+                className="w-full mt-6 py-2.5 bg-slate-50 hover:bg-indigo-600 text-slate-700 hover:text-white border border-slate-200 hover:border-indigo-600 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs"
               >
                 Use Free Tool
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
