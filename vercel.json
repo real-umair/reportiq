@@ -16,6 +16,14 @@
   ],
   "rewrites": [
     {
+      "source": "/api/sitemap",
+      "destination": "/api/tools.ts?tool=sitemap"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/tools.ts?tool=sitemap"
+    },
+    {
       "source": "/api/tools/:tool",
       "destination": "/api/tools.ts?tool=:tool"
     },

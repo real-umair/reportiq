@@ -6,7 +6,6 @@ import { sanitizeInput, validateFields } from './_utils/validation';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!handleCors(req, res)) return;
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   // Get the tool from query parameters
   const { tool } = req.query;
@@ -14,19 +13,137 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Tool parameter is required' });
   }
 
-  const ip = (req.headers['x-forwarded-for'] as string || 'unknown').split(',')[0].trim();
-  const allowed = checkRateLimit(ip, tool);
-  
-  if (!allowed) {
-    return res.status(429).json({ 
-      limited: true, 
-      message: "You have reached today's free limit. Sign up for ReportIQ to get unlimited access → reportiq.xyz"
-    });
+  // Handle sitemap GET requests, other tools must use POST
+  if (tool === 'sitemap') {
+    if (req.method !== 'GET') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+  } else {
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+  }
+
+  // Check rate limit only for prompt tools (exclude sitemap)
+  if (tool !== 'sitemap') {
+    const ip = (req.headers['x-forwarded-for'] as string || 'unknown').split(',')[0].trim();
+    const allowed = checkRateLimit(ip, tool);
+    
+    if (!allowed) {
+      return res.status(429).json({ 
+        limited: true, 
+        message: "You have reached today's free limit. Sign up for ReportIQ to get unlimited access → reportiq.xyz"
+      });
+    }
   }
 
   let prompt = '';
   
   switch (tool) {
+    case 'sitemap': {
+      const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.reportiq.xyz/</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/about</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/contact</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/privacy</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/terms</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/client-report-generator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/agency-report-template</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/seo-report-generator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/client-update-email</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/monthly-report-template</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/kpi-report-generator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/social-media-report</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/invoice-description-writer</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/project-status-report</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/client-onboarding-email</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>`;
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.status(200).send(sitemap);
+    }
     case 'client-report': {
       const { clientName, industry, workDone } = req.body;
       if (!validateFields({ clientName, industry, workDone }, res)) return;
