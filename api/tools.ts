@@ -1,0 +1,137 @@
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { groqTools } from './_utils/groqTools';
+import { checkRateLimit } from './_utils/rateLimit';
+import { handleCors } from './_utils/cors';
+import { sanitizeInput, validateFields } from './_utils/validation';
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (!handleCors(req, res)) return;
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  // Get the tool from query parameters
+  const { tool } = req.query;
+  if (!tool || Array.isArray(tool)) {
+    return res.status(400).json({ error: 'Tool parameter is required' });
+  }
+
+  const ip = (req.headers['x-forwarded-for'] as string || 'unknown').split(',')[0].trim();
+  const allowed = checkRateLimit(ip, tool);
+  
+  if (!allowed) {
+    return res.status(429).json({ 
+      limited: true, 
+      message: "You have reached today's free limit. Sign up for ReportIQ to get unlimited access → reportiq.xyz"
+    });
+  }
+
+  let prompt = '';
+  
+  switch (tool) {
+    case 'client-report': {
+      const { clientName, industry, workDone } = req.body;
+      if (!validateFields({ clientName, industry, workDone }, res)) return;
+      const sClientName = sanitizeInput(clientName);
+      const sIndustry = sanitizeInput(industry);
+      const sWorkDone = sanitizeInput(workDone);
+      prompt = `Write a professional client report for ${sClientName} in the ${sIndustry} industry. Work completed: ${sWorkDone}. Include sections: Work Completed, Key Results, Coming Up Next. 300 words maximum.`;
+      break;
+    }
+    case 'agency-report': {
+      const { agencyName, clientName, month } = req.body;
+      if (!validateFields({ agencyName, clientName, month }, res)) return;
+      const sAgencyName = sanitizeInput(agencyName);
+      const sClientName = sanitizeInput(clientName);
+      const sMonth = sanitizeInput(month);
+      prompt = `Write a professional agency report from ${sAgencyName} for client ${sClientName} for ${sMonth}. Include: Executive Summary, Work Completed, Results, Next Steps. 300 words maximum.`;
+      break;
+    }
+    case 'seo-report': {
+      const { website, keywords, month } = req.body;
+      if (!validateFields({ website, keywords, month }, res)) return;
+      const sWebsite = sanitizeInput(website);
+      const sKeywords = sanitizeInput(keywords);
+      const sMonth = sanitizeInput(month);
+      prompt = `Write a professional SEO report for ${sWebsite} targeting keywords: ${sKeywords} for ${sMonth}. Include: Overview, Keyword Performance, Traffic Summary, Recommendations. 300 words maximum.`;
+      break;
+    }
+    case 'client-email': {
+      const { clientName, workCompleted, nextSteps } = req.body;
+      if (!validateFields({ clientName, workCompleted, nextSteps }, res)) return;
+      const sClientName = sanitizeInput(clientName);
+      const sWorkCompleted = sanitizeInput(workCompleted);
+      const sNextSteps = sanitizeInput(nextSteps);
+      prompt = `Write a professional client update email to ${sClientName}. Work completed: ${sWorkCompleted}. Next steps: ${sNextSteps}. Friendly professional tone. 200 words maximum.`;
+      break;
+    }
+    case 'monthly-report': {
+      const { businessType, month, keyResults } = req.body;
+      if (!validateFields({ businessType, month, keyResults }, res)) return;
+      const sBusinessType = sanitizeInput(businessType);
+      const sMonth = sanitizeInput(month);
+      const sKeyResults = sanitizeInput(keyResults);
+      prompt = `Write a monthly report for a ${sBusinessType} business for ${sMonth}. Key results: ${sKeyResults}. Include: Monthly Summary, Key Achievements, Metrics, Next Month Plan. 300 words maximum.`;
+      break;
+    }
+    case 'kpi-report': {
+      const { businessName, kpis, period } = req.body;
+      if (!validateFields({ businessName, kpis, period }, res)) return;
+      const sBusinessName = sanitizeInput(businessName);
+      const sKpis = sanitizeInput(kpis);
+      const sPeriod = sanitizeInput(period);
+      prompt = `Write a professional KPI summary report for ${sBusinessName} for ${sPeriod}. KPIs: ${sKpis}. Include: KPI Overview, Performance Analysis, Highlights, Recommendations. 300 words maximum.`;
+      break;
+    }
+    case 'social-media-report': {
+      const { clientName, platforms, metrics } = req.body;
+      if (!validateFields({ clientName, platforms, metrics }, res)) return;
+      const sClientName = sanitizeInput(clientName);
+      const sPlatforms = sanitizeInput(platforms);
+      const sMetrics = sanitizeInput(metrics);
+      prompt = `Write a social media performance report for ${sClientName} on ${sPlatforms}. Metrics: ${sMetrics}. Include: Performance Overview, Platform Breakdown, Key Wins, Next Month Strategy. 300 words maximum.`;
+      break;
+    }
+    case 'invoice-description': {
+      const { service, clientName, hours } = req.body;
+      if (!validateFields({ service, clientName, hours }, res)) return;
+      const sService = sanitizeInput(service);
+      const sClientName = sanitizeInput(clientName);
+      const sHours = sanitizeInput(hours);
+      prompt = `Write professional invoice line item descriptions for ${sService} provided to ${sClientName} for ${sHours} hours. Write 3 professional line items. 150 words maximum.`;
+      break;
+    }
+    case 'project-status': {
+      const { projectName, completedTasks, blockers, nextSteps } = req.body;
+      if (!validateFields({ projectName, completedTasks, blockers, nextSteps }, res)) return;
+      const sProjectName = sanitizeInput(projectName);
+      const sCompletedTasks = sanitizeInput(completedTasks);
+      const sBlockers = sanitizeInput(blockers);
+      const sNextSteps = sanitizeInput(nextSteps);
+      prompt = `Write a professional project status report for ${sProjectName}. Completed: ${sCompletedTasks}. Blockers: ${sBlockers}. Next steps: ${sNextSteps}. 300 words maximum.`;
+      break;
+    }
+    case 'onboarding-email': {
+      const { clientName, serviceType, startDate } = req.body;
+      if (!validateFields({ clientName, serviceType, startDate }, res)) return;
+      const sClientName = sanitizeInput(clientName);
+      const sServiceType = sanitizeInput(serviceType);
+      const sStartDate = sanitizeInput(startDate);
+      prompt = `Write a professional client onboarding welcome email for ${sClientName} starting ${sServiceType} on ${sStartDate}. Include: warm welcome, what to expect, next steps. 250 words maximum.`;
+      break;
+    }
+    default:
+      return res.status(400).json({ error: 'Invalid tool name' });
+  }
+
+  try {
+    const completion = await groqTools.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 500,
+    });
+
+    return res.status(200).json({ result: completion.choices[0].message.content });
+  } catch (error: any) {
+    console.error(`Error in tool ${tool}:`, error);
+    return res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+}
