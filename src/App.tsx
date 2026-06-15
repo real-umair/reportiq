@@ -33,6 +33,19 @@ import Reports from "./components/Reports";
 import Settings from "./components/Settings";
 import ClientPortal from "./components/ClientPortal";
 
+// Free Tools component imports
+import ToolsHome from "./components/tools/ToolsHome";
+import ToolClientReport from "./components/tools/ToolClientReport";
+import ToolAgencyReport from "./components/tools/ToolAgencyReport";
+import ToolSeoReport from "./components/tools/ToolSeoReport";
+import ToolClientEmail from "./components/tools/ToolClientEmail";
+import ToolMonthlyReport from "./components/tools/ToolMonthlyReport";
+import ToolKpiReport from "./components/tools/ToolKpiReport";
+import ToolSocialMedia from "./components/tools/ToolSocialMedia";
+import ToolInvoice from "./components/tools/ToolInvoice";
+import ToolProjectStatus from "./components/tools/ToolProjectStatus";
+import ToolOnboarding from "./components/tools/ToolOnboarding";
+
 export default function App() {
   // Public shareable link detection routing
   const [publicSlug, setPublicSlug] = useState<string | null>(() => {
@@ -45,6 +58,12 @@ export default function App() {
   const [isClientPortal, setIsClientPortal] = useState(() => {
     const path = window.location.pathname;
     return path === "/portal" || path.startsWith("/portal/");
+  });
+
+  // Tools route detection routing
+  const [activeToolRoute, setActiveToolRoute] = useState<string | null>(() => {
+    const path = window.location.pathname;
+    return (path === "/tools" || path.startsWith("/tools/")) ? path : null;
   });
 
   // Lock modal state
@@ -270,7 +289,7 @@ export default function App() {
 
   // Sync state transitions back to the browser's address bar
   useEffect(() => {
-    if (publicSlug || isClientPortal || isResetPassword) return;
+    if (publicSlug || isClientPortal || isResetPassword || activeToolRoute) return;
 
     let path = "/";
     if (!user) {
@@ -299,6 +318,17 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
+      
+      if (path === "/tools" || path.startsWith("/tools/")) {
+        setActiveToolRoute(path);
+        setPublicSlug(null);
+        setIsClientPortal(false);
+        setActiveMarketingPage(null);
+        return;
+      } else {
+        setActiveToolRoute(null);
+      }
+
       const rMatch = path.match(/^\/r\/([a-zA-Z0-9_-]+)/);
       if (rMatch) {
         setPublicSlug(rMatch[1]);
@@ -653,6 +683,454 @@ export default function App() {
     );
   }
 
+  if (activeToolRoute) {
+    let toolComponent = <ToolsHome />;
+    switch (activeToolRoute) {
+      case "/tools":
+        toolComponent = <ToolsHome />;
+        break;
+      case "/tools/client-report-generator":
+        toolComponent = <ToolClientReport />;
+        break;
+      case "/tools/agency-report-template":
+        toolComponent = <ToolAgencyReport />;
+        break;
+      case "/tools/seo-report-generator":
+        toolComponent = <ToolSeoReport />;
+        break;
+      case "/tools/client-update-email":
+        toolComponent = <ToolClientEmail />;
+        break;
+      case "/tools/monthly-report-template":
+        toolComponent = <ToolMonthlyReport />;
+        break;
+      case "/tools/kpi-report-generator":
+        toolComponent = <ToolKpiReport />;
+        break;
+      case "/tools/social-media-report":
+        toolComponent = <ToolSocialMedia />;
+        break;
+      case "/tools/invoice-description-writer":
+        toolComponent = <ToolInvoice />;
+        break;
+      case "/tools/project-status-report":
+        toolComponent = <ToolProjectStatus />;
+        break;
+      case "/tools/client-onboarding-email":
+        toolComponent = <ToolOnboarding />;
+        break;
+    }
+
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-700 animate-fade-in">
+        <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 sm:px-12 py-4">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div 
+              className="flex items-center gap-2 cursor-pointer select-none"
+              onClick={() => {
+                setActiveToolRoute(null);
+                window.history.pushState(null, "", "/");
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+            >
+              <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sm shadow-indigo-200 shrink-0">
+                <FileText className="w-5 h-5" />
+              </div>
+              <span className="font-extrabold font-display text-slate-950 tracking-tight text-lg">
+                ReportIQ
+              </span>
+            </div>
+
+            <div className="hidden md:flex items-center gap-6">
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("about");
+                  window.history.pushState(null, "", "/about");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                About
+              </button>
+              <button
+                onClick={() => {
+                  setContactSuccess(false);
+                  setActiveMarketingPage("contact");
+                  window.history.pushState(null, "", "/contact");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Contact
+              </button>
+              <button
+                onClick={() => {
+                  setDocsActiveTab("guide");
+                  setOpenFaqIndex(null);
+                  setActiveMarketingPage("docs");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Docs
+              </button>
+              <button
+                onClick={() => {
+                  setIsClientPortal(true);
+                  window.history.pushState(null, "", "/portal");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <Globe className="w-3 h-3" />
+                Client Portal
+              </button>
+              <button
+                onClick={() => {
+                  setActiveToolRoute("/tools");
+                  window.history.pushState(null, "", "/tools");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+              >
+                Free Tools
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("privacy");
+                  window.history.pushState(null, "", "/privacy");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Privacy
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("terms");
+                  window.history.pushState(null, "", "/terms");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Terms
+              </button>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {user ? (
+                <button
+                  onClick={() => {
+                    setActiveToolRoute(null);
+                    setActiveTab("dashboard");
+                    window.history.pushState(null, "", "/");
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
+                  className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs flex items-center gap-1.5 font-sans"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setAuthError(null);
+                      setShowAuthForm("login");
+                    }}
+                    className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthError(null);
+                      setShowAuthForm("signup");
+                    }}
+                    className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs"
+                  >
+                    Create Account
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1">
+          {toolComponent}
+        </main>
+
+        <footer className="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-400">
+          <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
+            <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-550">
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("about");
+                  window.history.pushState(null, "", "/about");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                About Us
+              </button>
+              <button
+                onClick={() => {
+                  setContactSuccess(false);
+                  setActiveMarketingPage("contact");
+                  window.history.pushState(null, "", "/contact");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Contact
+              </button>
+              <button
+                onClick={() => {
+                  setDocsActiveTab("guide");
+                  setOpenFaqIndex(null);
+                  setActiveMarketingPage("docs");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Documentation
+              </button>
+              <button
+                onClick={() => {
+                  setActiveToolRoute("/tools");
+                  window.history.pushState(null, "", "/tools");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-650"
+              >
+                Free Tools
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("privacy");
+                  window.history.pushState(null, "", "/privacy");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={() => {
+                  setActiveMarketingPage("terms");
+                  window.history.pushState(null, "", "/terms");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer"
+              >
+                Terms of Service
+              </button>
+            </div>
+          </div>
+        </footer>
+
+        {activeMarketingPage && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 animate-fade-in backdrop-blur-xs">
+            <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-2xl p-8 shadow-2xl relative animate-scale-up text-sm font-sans max-h-[85vh] overflow-y-auto">
+              <button
+                onClick={() => {
+                  setActiveMarketingPage(null);
+                  setContactSuccess(false);
+                }}
+                className="absolute top-6 right-6 text-slate-400 hover:text-slate-655 p-1.5 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {activeMarketingPage === "about" && (
+                <div>
+                  <div className="flex items-center gap-3.5 mb-4 text-left">
+                    <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-655 shrink-0">
+                      <FileText className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold font-mono tracking-widest text-indigo-600 uppercase">Our Mission</span>
+                      <h3 className="text-xl font-bold font-display text-slate-950">About ReportIQ</h3>
+                    </div>
+                  </div>
+                  <h4 className="text-sm font-bold text-slate-800 mb-2 leading-relaxed text-left">
+                    Automated report delivery, built for fast-moving client teams & creative freelancers.
+                  </h4>
+                  <p className="text-slate-550 leading-relaxed mb-6 text-xs text-left">
+                    ReportIQ was established to eliminate the tedious admin burden of manual agency report writing. 
+                    We believe consulting and support teams should spend their time aligning strategy and producing results—not copying and pasting metrics into formatted tables or drafting summaries.
+                  </p>
+                </div>
+              )}
+
+              {activeMarketingPage === "contact" && (
+                <div>
+                  <div className="flex items-center gap-3.5 mb-4 text-left">
+                    <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-655 shrink-0">
+                      <Mail className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold font-mono tracking-widest text-indigo-600 uppercase">Support Center</span>
+                      <h3 className="text-xl font-bold font-display text-slate-950">Contact Our Team</h3>
+                    </div>
+                  </div>
+                  <p className="text-slate-550 mb-6 text-xs leading-relaxed text-left">
+                    Have questions about ReportIQ? Contact support directly at <strong className="text-slate-900 font-semibold font-mono text-[11px]">support@reportiq.xyz</strong>.
+                  </p>
+                  <div className="pt-2">
+                    <a
+                      href="https://mail.google.com/mail/?view=cm&fs=1&to=support@reportiq.xyz&su=ReportIQ%20Support%20Inquiry"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-755 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm text-xs text-center border-none no-underline hover:text-white"
+                    >
+                      <Mail className="w-4 h-4 shrink-0 text-indigo-200" />
+                      Open Gmail to Email Us
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {activeMarketingPage === "privacy" && (
+                <div className="text-xs text-left">
+                  <h3 className="text-xl font-bold font-display text-slate-950 mb-4">Privacy Policy</h3>
+                  <p className="text-slate-550 leading-relaxed">
+                    At ReportIQ, we treat your agency and client information with absolute integrity.
+                  </p>
+                </div>
+              )}
+
+              {activeMarketingPage === "terms" && (
+                <div className="text-xs text-left">
+                  <h3 className="text-xl font-bold font-display text-slate-950 mb-4">Terms of Service</h3>
+                  <p className="text-slate-550 leading-relaxed">
+                    By accessing the ReportIQ hosting portal, you and your agency accept our service rules.
+                  </p>
+                </div>
+              )}
+
+              {activeMarketingPage === "docs" && (
+                <div className="text-xs text-left">
+                  <h3 className="text-xl font-bold font-display text-slate-950 mb-4">Documentation</h3>
+                  <p className="text-slate-550 leading-relaxed">
+                    Welcome to the documentation guide for ReportIQ tools.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {showAuthForm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 animate-fade-in backdrop-blur-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 shadow-xl relative animate-scale-up">
+              <button
+                onClick={() => {
+                  setAuthError(null);
+                  setShowAuthForm(null);
+                }}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 cursor-pointer"
+              >
+                <Plus className="w-5 h-5 rotate-45 transform" />
+              </button>
+
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="w-5 h-5 text-indigo-600" />
+                <h3 className="text-lg font-bold font-display text-slate-950">
+                  {showAuthForm === "signup" ? "Create Account" : "Access Platform"}
+                </h3>
+              </div>
+
+              {authError && (
+                <div className="mb-4">
+                  <div className="p-3 bg-red-50 border border-red-100 text-red-700 text-xs font-medium rounded-xl flex gap-1.5 items-start text-left">
+                    <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{authError}</span>
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handleAuthSubmit} className="space-y-4 font-sans text-sm">
+                {showAuthForm === "signup" && (
+                  <>
+                    <div>
+                      <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+                        Author Full Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Jane Smith"
+                        value={authFullName}
+                        onChange={e => setAuthFullName(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+                        Agency / Freelancer Title *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Smith Digital"
+                        value={authAgencyName}
+                        onChange={e => setAuthAgencyName(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="jane@smith.com"
+                    value={authEmail}
+                    onChange={e => setAuthEmail(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+                    Account Password *
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="Min. 6 alphanumeric"
+                    value={authPassword}
+                    onChange={e => setAuthPassword(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5"
+                    minLength={6}
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={authSubmitting}
+                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm transition-all"
+                  >
+                    {authSubmitting ? "Connecting..." : showAuthForm === "signup" ? "Register Onboard & Start" : "Access Portal Workspace"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // Render Landing Screen if NOT logged in
   if (!user) {
     return (
@@ -708,6 +1186,16 @@ export default function App() {
               >
                 <Globe className="w-3 h-3" />
                 Client Portal
+              </button>
+              <button
+                onClick={() => {
+                  setActiveToolRoute("/tools");
+                  window.history.pushState(null, "", "/tools");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+              >
+                Free Tools
               </button>
               <button
                 onClick={() => {
@@ -975,6 +1463,16 @@ export default function App() {
                 className="hover:text-indigo-600 transition-colors cursor-pointer"
               >
                 Documentation
+              </button>
+              <button
+                onClick={() => {
+                  setActiveToolRoute("/tools");
+                  window.history.pushState(null, "", "/tools");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-650"
+              >
+                Free Tools
               </button>
               <button
                 onClick={() => {
