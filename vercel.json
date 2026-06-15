@@ -28,6 +28,22 @@
       "destination": "/api/tools.ts?tool=:tool"
     },
     {
+      "source": "/api/blog/posts",
+      "destination": "/api/blog.ts?action=posts"
+    },
+    {
+      "source": "/api/blog/post",
+      "destination": "/api/blog.ts?action=post"
+    },
+    {
+      "source": "/api/support/chat",
+      "destination": "/api/support.ts?action=chat"
+    },
+    {
+      "source": "/api/support/complaint",
+      "destination": "/api/support.ts?action=complaint"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     },

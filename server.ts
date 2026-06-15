@@ -17,8 +17,7 @@ const pdfParse = require("pdf-parse");
 import mammoth from "mammoth";
 import * as XLSX from "xlsx";
 import toolsHandler from "./api/tools.js";
-import blogPostsHandler from "./api/blog/posts.js";
-import blogPostHandler from "./api/blog/post.js";
+import blogHandler from "./api/blog.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -827,7 +826,8 @@ app.get("/sitemap.xml", async (req, res) => {
 // Blog backend routes
 app.get("/api/blog/posts", async (req, res) => {
   try {
-    await blogPostsHandler(req as any, res as any);
+    req.query.action = "posts";
+    await blogHandler(req as any, res as any);
   } catch (err: any) {
     console.error("Local blog posts handler error:", err);
     res.status(500).json({ error: err.message || "Internal server error" });
@@ -836,7 +836,8 @@ app.get("/api/blog/posts", async (req, res) => {
 
 app.get("/api/blog/post", async (req, res) => {
   try {
-    await blogPostHandler(req as any, res as any);
+    req.query.action = "post";
+    await blogHandler(req as any, res as any);
   } catch (err: any) {
     console.error("Local blog post handler error:", err);
     res.status(500).json({ error: err.message || "Internal server error" });
