@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar, User, ArrowLeft, ArrowRight, Sparkles, Tag, Eye } from 'lucide-react';
+import { parseMarkdown } from './markdown';
 
 interface BlogPostData {
   id: string;
@@ -28,54 +29,7 @@ interface BlogPostMeta {
   view_count: number;
 }
 
-function parseMarkdown(md: string): string {
-  if (!md) return '';
-  let html = md;
 
-  // Escape HTML entities minimally to prevent syntax breakage but keep tags
-  // Since the content is managed by admin, a simple escape is fine.
-  html = html
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  // Restore linebreaks for markdown matching
-  html = html.replace(/\r\n/g, '\n');
-
-  // Headers: ###, ##, #
-  html = html.replace(/^### (.*?)$/gm, '<h3 class="text-base sm:text-lg font-bold text-slate-900 mt-6 mb-2 font-display">$1</h3>');
-  html = html.replace(/^## (.*?)$/gm, '<h2 class="text-lg sm:text-xl font-bold text-slate-950 mt-8 mb-3 border-b border-slate-150 pb-1.5 font-display">$1</h2>');
-  html = html.replace(/^# (.*?)$/gm, '<h1 class="text-2xl sm:text-3xl font-black text-slate-955 mt-10 mb-4 font-display">$1</h1>');
-
-  // Bold: **text**
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-  // Italic: *text*
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-  // Links: [text](url)
-  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-indigo-600 hover:underline font-semibold" target="_blank" rel="noopener noreferrer">$2</a>');
-
-  // Unordered Lists: - item or * item
-  html = html.replace(/^\s*[-*]\s+(.*?)$/gm, '<li class="ml-5 list-disc leading-relaxed mt-1.5 text-slate-700 text-sm sm:text-base font-sans">$1</li>');
-
-  // Blockquotes: > text
-  html = html.replace(/^>\s+(.*?)$/gm, '<blockquote class="border-l-4 border-indigo-500 pl-4 py-2 my-5 bg-slate-50 rounded-r-2xl italic text-slate-650 text-xs sm:text-sm">$1</blockquote>');
-
-  // Paragraph splitting by double newline
-  const segments = html.split(/\n\n+/);
-  html = segments.map(seg => {
-    const trimmed = seg.trim();
-    if (!trimmed) return '';
-    // Skip wrapping block elements in paragraph tags
-    if (trimmed.startsWith('<h') || trimmed.startsWith('<li') || trimmed.startsWith('<blockquote') || trimmed.startsWith('<ul') || trimmed.startsWith('<ol')) {
-      return trimmed;
-    }
-    return `<p class="leading-relaxed mb-4.5 text-slate-700 text-sm sm:text-base font-sans">${trimmed.replace(/\n/g, '<br/>')}</p>`;
-  }).join('\n');
-
-  return html;
-}
 
 export default function BlogPost() {
   const [post, setPost] = useState<BlogPostData | null>(null);

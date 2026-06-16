@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { 
   Plus, Edit, Trash, Eye, Save, ArrowLeft, 
-  AlertCircle, CheckCircle, Sparkles, Tag, FileText, ToggleLeft, ToggleRight
+  AlertCircle, CheckCircle, Sparkles, Tag, FileText, ToggleLeft, ToggleRight,
+  Bold, Italic, Link, Image, Video, Table
 } from 'lucide-react';
+import { parseMarkdown } from './markdown';
 
 interface BlogPost {
   id: string;
@@ -23,33 +25,7 @@ interface BlogPost {
   view_count: number;
 }
 
-function parseMarkdown(md: string): string {
-  if (!md) return '';
-  let html = md;
-  html = html
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-  html = html.replace(/\r\n/g, '\n');
-  html = html.replace(/^### (.*?)$/gm, '<h3 class="text-base sm:text-lg font-bold text-slate-900 mt-6 mb-2 font-display">$1</h3>');
-  html = html.replace(/^## (.*?)$/gm, '<h2 class="text-lg sm:text-xl font-bold text-slate-950 mt-8 mb-3 border-b border-slate-150 pb-1.5 font-display">$1</h2>');
-  html = html.replace(/^# (.*?)$/gm, '<h1 class="text-2xl sm:text-3xl font-black text-slate-955 mt-10 mb-4 font-display">$1</h1>');
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-indigo-600 hover:underline font-semibold" target="_blank" rel="noopener noreferrer">$2</a>');
-  html = html.replace(/^\s*[-*]\s+(.*?)$/gm, '<li class="ml-5 list-disc leading-relaxed mt-1.5 text-slate-700 text-sm sm:text-base font-sans">$1</li>');
-  html = html.replace(/^>\s+(.*?)$/gm, '<blockquote class="border-l-4 border-indigo-500 pl-4 py-2 my-5 bg-slate-50 rounded-r-2xl italic text-slate-655 text-xs sm:text-sm">$1</blockquote>');
-  const segments = html.split(/\n\n+/);
-  html = segments.map(seg => {
-    const trimmed = seg.trim();
-    if (!trimmed) return '';
-    if (trimmed.startsWith('<h') || trimmed.startsWith('<li') || trimmed.startsWith('<blockquote')) {
-      return trimmed;
-    }
-    return `<p class="leading-relaxed mb-4.5 text-slate-700 text-sm sm:text-base font-sans">${trimmed.replace(/\n/g, '<br/>')}</p>`;
-  }).join('\n');
-  return html;
-}
+
 
 export default function BlogAdmin() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -71,6 +47,30 @@ export default function BlogAdmin() {
   const [metaTitle, setMetaTitle] = useState('');
   const [metaDescription, setMetaDescription] = useState('');
   const [published, setPublished] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertMarkdown = (before: string, after: string = '') => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+    const replacement = before + (selectedText || after) + (selectedText ? after : '');
+
+    const newContent = text.substring(0, start) + replacement + text.substring(end);
+    setContent(newContent);
+
+    // Reset cursor position after insert
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start + before.length,
+        start + replacement.length - (selectedText ? 0 : after.length)
+      );
+    }, 0);
+  };
 
   const handleNavigate = (path: string) => {
     window.history.pushState(null, '', path);
@@ -374,13 +374,84 @@ export default function BlogAdmin() {
 
                 <div>
                   <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">Markdown Content *</label>
+                  <div className="flex flex-wrap gap-1 bg-slate-100 p-1.5 rounded-t-xl border border-slate-200 border-b-0">
+                    <button
+                      type="button"
+                      onClick={() => insertMarkdown('**', '**')}
+                      className="p-1.5 hover:bg-white text-slate-600 hover:text-indigo-600 rounded-lg transition-colors cursor-pointer"
+                      title="Bold text"
+                    >
+                      <Bold className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertMarkdown('*', '*')}
+                      className="p-1.5 hover:bg-white text-slate-600 hover:text-indigo-600 rounded-lg transition-colors cursor-pointer"
+                      title="Italic text"
+                    >
+                      <Italic className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const text = prompt('Enter the link text:', 'Link text') || '';
+                        const url = prompt('Enter the link URL (e.g., https://example.com):', 'https://');
+                        if (url) {
+                          insertMarkdown(`[${text}](${url})`);
+                        }
+                      }}
+                      className="p-1.5 hover:bg-white text-slate-650 hover:text-indigo-600 rounded-lg transition-colors cursor-pointer"
+                      title="Insert link"
+                    >
+                      <Link className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const alt = prompt('Enter the image alt text:', 'Image description') || '';
+                        const url = prompt('Enter the image URL:', 'https://');
+                        if (url) {
+                          insertMarkdown(`![${alt}](${url})`);
+                        }
+                      }}
+                      className="p-1.5 hover:bg-white text-slate-650 hover:text-indigo-600 rounded-lg transition-colors cursor-pointer"
+                      title="Insert image"
+                    >
+                      <Image className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = prompt('Enter the video URL (Direct file link, YouTube, or Vimeo):', 'https://');
+                        if (url) {
+                          insertMarkdown(`![video](${url})`);
+                        }
+                      }}
+                      className="p-1.5 hover:bg-white text-slate-655 hover:text-indigo-600 rounded-lg transition-colors cursor-pointer"
+                      title="Insert video"
+                    >
+                      <Video className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const tableTemplate = `\n| Header 1 | Header 2 |\n|----------|----------|\n| Cell 1   | Cell 2   |\n| Cell 3   | Cell 4   |\n`;
+                        insertMarkdown(tableTemplate);
+                      }}
+                      className="p-1.5 hover:bg-white text-slate-655 hover:text-indigo-600 rounded-lg transition-colors cursor-pointer"
+                      title="Insert table"
+                    >
+                      <Table className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                   <textarea
+                    ref={contentRef}
                     required
                     rows={15}
                     placeholder="# Main Header&#10;&#10;Write details here. Use **bolding** or *italic* tags.&#10;&#10;## Sub Header&#10;- Bullet list item 1&#10;- Bullet list item 2"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-4 text-xs sm:text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all font-mono leading-relaxed"
+                    className="w-full rounded-b-xl border border-slate-200 bg-slate-50/50 outline-none p-4 text-xs sm:text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all font-mono leading-relaxed"
                   />
                 </div>
               </div>
