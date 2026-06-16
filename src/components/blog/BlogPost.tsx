@@ -31,6 +31,79 @@ interface BlogPostMeta {
 
 
 
+function injectInternalLinks(html: string): string {
+  if (!html) return '';
+  const phrases = [
+    { text: "client update email", link: "/tools/client-update-email" },
+    { text: "social media report", link: "/tools/social-media-report" },
+    { text: "client report", link: "/tools/client-report-generator" },
+    { text: "SEO report", link: "/tools/seo-report-generator" },
+    { text: "monthly report", link: "/tools/monthly-report-template" },
+    { text: "ReportIQ", link: "/" }
+  ];
+
+  const replaced = {
+    "client update email": false,
+    "social media report": false,
+    "client report": false,
+    "SEO report": false,
+    "monthly report": false,
+    "ReportIQ": false
+  };
+
+  const tokens = html.split(/(<\/?[^>]+>)/);
+  let insideAnchor = false;
+  let insideCode = false;
+  const linkReplacements: string[] = [];
+
+  for (let i = 0; i < tokens.length; i++) {
+    if (i % 2 === 1) {
+      const tag = tokens[i].toLowerCase();
+      if (tag.startsWith("<a ") || tag.startsWith("<a>")) {
+        insideAnchor = true;
+      } else if (tag === "</a>") {
+        insideAnchor = false;
+      } else if (tag.startsWith("<code") || tag.startsWith("<pre")) {
+        insideCode = true;
+      } else if (tag === "</code>" || tag === "</pre>") {
+        insideCode = false;
+      }
+    } else {
+      if (!insideAnchor && !insideCode && tokens[i]) {
+        let text = tokens[i];
+        for (const phrase of phrases) {
+          const key = phrase.text as keyof typeof replaced;
+          if (replaced[key]) continue;
+
+          const escapedPhrase = phrase.text.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+          const regex = new RegExp(`\\b${escapedPhrase}\\b`, 'i');
+          const match = text.match(regex);
+          
+          if (match && match.index !== undefined) {
+            const matchedText = match[0];
+            const before = text.substring(0, match.index);
+            const after = text.substring(match.index + matchedText.length);
+            
+            const placeholder = `__INTERNAL_LINK_PLACEHOLDER_${linkReplacements.length}__`;
+            linkReplacements.push(`<a href="${phrase.link}" class="text-indigo-650 hover:text-indigo-800 font-bold underline transition-colors">${matchedText}</a>`);
+            
+            text = before + placeholder + after;
+            replaced[key] = true;
+          }
+        }
+        tokens[i] = text;
+      }
+    }
+  }
+
+  let finalHtml = tokens.join('');
+  for (let idx = 0; idx < linkReplacements.length; idx++) {
+    finalHtml = finalHtml.replace(`__INTERNAL_LINK_PLACEHOLDER_${idx}__`, linkReplacements[idx]);
+  }
+
+  return finalHtml;
+}
+
 export default function BlogPost() {
   const [post, setPost] = useState<BlogPostData | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<BlogPostMeta[]>([]);
@@ -191,8 +264,8 @@ export default function BlogPost() {
       {/* Article Body */}
       <article className="prose prose-slate max-w-none mb-12">
         <div
-          className="text-slate-850 space-y-4 font-sans text-sm sm:text-base"
-          dangerouslySetInnerHTML={{ __html: parseMarkdown(post.content) }}
+          className="text-slate-855 space-y-4 font-sans text-sm sm:text-base"
+          dangerouslySetInnerHTML={{ __html: injectInternalLinks(parseMarkdown(post.content)) }}
         />
       </article>
 

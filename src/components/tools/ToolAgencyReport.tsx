@@ -15,6 +15,33 @@ export default function ToolAgencyReport() {
     "Download the text file format and easily import it into Google Docs or Slack updates."
   ];
 
+  const seoContent = (
+    <div className="space-y-6 text-xs sm:text-sm text-slate-600">
+      <div>
+        <h2 className="text-lg font-extrabold font-display text-slate-950 mb-3">What is an agency report template?</h2>
+        <p className="leading-relaxed mb-4">
+          An agency report template is a standardized format used by marketing, PR, and advertising agencies to document campaign performance and project updates for clients. Using an agency monthly report or agency status report template ensures that your agency client report format remains consistent, professional, and visually aligned with your brand identity.
+        </p>
+      </div>
+      <div>
+        <h2 className="text-lg font-extrabold font-display text-slate-950 mb-3">What should an agency client report include?</h2>
+        <p className="leading-relaxed mb-4">A standard agency client report format should feature:</p>
+        <ul className="list-disc pl-5 space-y-1.5 mb-4">
+          <li><strong>Executive summary</strong> of campaign achievements and key takeaways</li>
+          <li><strong>Key performance indicators (KPIs)</strong> and milestone progress tracking</li>
+          <li><strong>Detailed breakdown</strong> of work completed during the period</li>
+          <li><strong>Roadmap and recommendations</strong> for the next period</li>
+        </ul>
+      </div>
+      <div>
+        <h2 className="text-lg font-extrabold font-display text-slate-950 mb-3">Why customize your agency monthly report?</h2>
+        <p className="leading-relaxed">
+          Every client is unique. A static agency status report template can feel impersonal. Utilizing an AI-driven compiler allows agencies to tailor the language and layout to specific stakeholder preferences in seconds.
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <ToolPage
       title="Free Agency Report Template Generator"
@@ -24,6 +51,7 @@ export default function ToolAgencyReport() {
       metaTitle="Free Agency Report Template Generator | ReportIQ"
       metaDescription="Create professional agency reports in seconds with AI. Free agency report template and executive summary builder."
       instructions={instructions}
+      seoContent={seoContent}
     />
   );
 }

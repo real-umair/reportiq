@@ -301,6 +301,60 @@ export default function App() {
   const [paymentBanner, setPaymentBanner] = useState<{ type: "success" | "cancel"; plan: string } | null>(null);
   const [docsActiveTab, setDocsActiveTab] = useState<"guide" | "plans" | "faq">("guide");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [showVideoComingSoon, setShowVideoComingSoon] = useState(false);
+  const [showStickyCta, setShowStickyCta] = useState(false);
+
+  // Global event listener to open login/signup modals from page components
+  useEffect(() => {
+    const handleOpenAuth = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setAuthError(null);
+      if (customEvent.detail) {
+        if (typeof customEvent.detail === "string") {
+          setShowAuthForm(customEvent.detail as any);
+        } else {
+          if (customEvent.detail.email) {
+            setAuthEmail(customEvent.detail.email);
+          }
+          setShowAuthForm(customEvent.detail.mode || "signup");
+        }
+      } else {
+        setShowAuthForm("signup");
+      }
+    };
+    window.addEventListener("open-auth", handleOpenAuth);
+    return () => window.removeEventListener("open-auth", handleOpenAuth);
+  }, []);
+
+  // Track scroll depth and localStorage check for sticky CTA
+  useEffect(() => {
+    const dismissedAt = localStorage.getItem("sticky-cta-dismissed-at");
+    if (dismissedAt) {
+      const hoursSinceDismiss = (Date.now() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60);
+      if (hoursSinceDismiss < 24) return;
+    }
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      if (docHeight <= 0) return;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+
+      if (scrollPercent >= 30) {
+        setShowStickyCta(true);
+      } else {
+        setShowStickyCta(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleDismissSticky = () => {
+    localStorage.setItem("sticky-cta-dismissed-at", Date.now().toString());
+    setShowStickyCta(false);
+  };
 
   // Sync state transitions back to the browser's address bar
   useEffect(() => {
@@ -963,6 +1017,43 @@ export default function App() {
             </div>
           </div>
         </footer>
+
+        {showStickyCta && !user && (
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-indigo-700 border-t border-indigo-600 text-white shadow-2xl py-4.5 px-6 sm:px-12 flex flex-col sm:flex-row items-center justify-between gap-4 animate-slide-up font-sans">
+            <div className="flex items-center gap-3 text-left">
+              <div className="w-10 h-10 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 text-indigo-200 animate-pulse" />
+              </div>
+              <div>
+                <h4 className="font-extrabold font-display text-sm sm:text-base leading-tight">
+                  Stop writing reports manually.
+                </h4>
+                <p className="text-indigo-100 text-xs sm:text-sm font-medium">
+                  Sign up free in 30 seconds to generate unlimited reports and invite clients to white-labeled portals.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto">
+              <button
+                onClick={() => {
+                  setAuthError(null);
+                  setShowAuthForm("signup");
+                }}
+                className="w-full sm:w-auto px-6 py-2.5 bg-white text-indigo-700 font-bold rounded-xl hover:bg-indigo-50 shadow-md transition-all cursor-pointer text-xs sm:text-sm text-center border-none animate-pulse"
+              >
+                Get Started Free &rarr;
+              </button>
+              <button
+                onClick={handleDismissSticky}
+                className="text-indigo-200 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors border-none bg-transparent"
+                title="Dismiss"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -1582,6 +1673,87 @@ export default function App() {
             </div>
           </section>
 
+          {/* Scrolling proof marquee */}
+          <div className="bg-slate-100 border-y border-slate-200 py-3 overflow-hidden select-none w-full relative">
+            <div className="flex w-max animate-marquee gap-16 text-[11px] sm:text-xs font-semibold text-slate-600 pr-16 font-sans">
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> Used by freelancers in 15+ countries</span>
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> 500+ reports generated</span>
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> Trusted by SEO agencies, social media managers, web designers, PPC specialists</span>
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> Free to start, no credit card needed</span>
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> Reports generated in 30 seconds</span>
+
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> Used by freelancers in 15+ countries</span>
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> 500+ reports generated</span>
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> Trusted by SEO agencies, social media managers, web designers, PPC specialists</span>
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> Free to start, no credit card needed</span>
+              <span><span className="text-indigo-650 font-black mr-1">✓</span> Reports generated in 30 seconds</span>
+            </div>
+          </div>
+
+          {/* Watch how it works Section */}
+          <section className="py-20 px-6 sm:px-12 bg-white border-b border-slate-200">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl font-black font-display text-slate-950 mb-3">
+                Watch how it works — 30 seconds
+              </h2>
+              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider mb-12">
+                See ReportIQ in action
+              </p>
+
+              {showVideoComingSoon ? (
+                <div className="max-w-3xl mx-auto aspect-video rounded-3xl bg-slate-900 border border-slate-800 p-8 flex flex-col items-center justify-center text-center shadow-xl space-y-5 animate-fade-in">
+                  <div className="w-12 h-12 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center border border-indigo-500/20">
+                    <Sparkles className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div className="space-y-2 max-w-md">
+                    <h3 className="text-lg font-bold text-white">Video coming soon!</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Try it live at reportiq.xyz for free. Sign up in seconds and start generating professional reports today.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setAuthError(null);
+                      setShowAuthForm("signup");
+                    }}
+                    className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer border-none"
+                  >
+                    Try It Live Free &rarr;
+                  </button>
+                  <button
+                    onClick={() => setShowVideoComingSoon(false)}
+                    className="text-xs text-slate-400 hover:text-slate-300 underline font-semibold cursor-pointer bg-transparent border-none"
+                  >
+                    Go Back
+                  </button>
+                </div>
+              ) : (
+                <div 
+                  onClick={() => setShowVideoComingSoon(true)}
+                  className="group relative max-w-3xl mx-auto aspect-video rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 shadow-2xl overflow-hidden cursor-pointer flex flex-col items-center justify-center p-8 transition-transform hover:scale-[1.01]"
+                >
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                  <div className="relative w-20 h-20 bg-white hover:bg-slate-50 rounded-full flex items-center justify-center shadow-xl shadow-indigo-950/50 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-0 h-0 border-y-8 border-y-transparent border-l-12 border-l-indigo-600 ml-1.5" />
+                  </div>
+
+                  <div className="absolute bottom-8 left-8 right-8 text-left space-y-1 z-10">
+                    <h4 className="text-lg sm:text-xl font-bold font-display text-white group-hover:text-indigo-300 transition-colors">
+                      See ReportIQ generate a full client report in 30 seconds
+                    </h4>
+                    <p className="text-slate-400 text-xs sm:text-sm font-sans font-medium">
+                      No integrations. No complexity. Just type your notes and let AI do the writing.
+                    </p>
+                  </div>
+
+                  <div className="absolute inset-0 bg-slate-950/15 group-hover:bg-slate-950/5 transition-colors pointer-events-none" />
+                </div>
+              )}
+            </div>
+          </section>
+
           {/* Value Prop Columns grid */}
           <section className="bg-white border-y border-slate-200 py-20 px-6 sm:px-12">
             <div className="max-w-5xl mx-auto">
@@ -1692,6 +1864,192 @@ export default function App() {
                     <div>
                       <h4 className="font-bold text-xs text-slate-900 mb-1.5 font-sans leading-tight">{item.user}</h4>
                       <p className="text-[10px] text-indigo-650 font-semibold font-mono uppercase tracking-wider">{item.report}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Value Demonstration Section */}
+          <section className="bg-white border-b border-slate-200 py-20 px-6 sm:px-12">
+            <div className="max-w-5xl mx-auto">
+              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
+                See what ReportIQ generates in 30 seconds
+              </h2>
+              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
+                Real AI generated report example — this is what your clients receive
+              </p>
+
+              {/* Mock Report Preview Card */}
+              <div className="max-w-3xl mx-auto border border-slate-200 rounded-3xl shadow-lg overflow-hidden bg-slate-50/50 mb-10 text-left font-sans">
+                {/* Purple brand bar */}
+                <div className="h-2.5 w-full bg-indigo-650 shrink-0"></div>
+                
+                <div className="p-6 sm:p-10">
+                  <div className="flex flex-col gap-4 mb-6 pb-6 border-b border-slate-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-xs">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-955 font-display tracking-tight text-base leading-tight">Smith Digital Agency</p>
+                        <p className="text-[10px] text-slate-500 font-mono">CLIENT PORTAL PREVIEW</p>
+                      </div>
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-extrabold font-display text-slate-955 tracking-tight leading-normal mt-2">
+                      Monthly Marketing Performance Report
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-1 text-xs sm:text-sm text-slate-500">
+                      <span className="flex items-center gap-1.5">
+                        <Building2 className="w-4 h-4 text-slate-400" />
+                        Client partner: Acme Store
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                        Period: May 2026
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Executive Summary */}
+                  <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-6 shadow-3xs relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-600" />
+                    <div className="absolute top-4 right-4 bg-indigo-50 text-indigo-750 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded">
+                      AI Executive Summary
+                    </div>
+                    <h4 className="font-display font-bold text-slate-900 mb-2 text-sm sm:text-base">Executive Summary</h4>
+                    <p className="text-slate-700 leading-relaxed text-xs sm:text-sm italic">
+                      "This month we achieved significant growth across all key performance areas. Organic traffic increased by 47% following our technical SEO improvements and content publishing strategy. The Google Ads campaign delivered a 3.2x return on ad spend, our strongest performance this quarter."
+                    </p>
+                  </div>
+
+                  {/* Work sections */}
+                  <div className="space-y-5">
+                    {[
+                      {
+                        title: "Work Completed This Period",
+                        content: "Published 8 SEO optimized blog posts targeting high volume keywords. Fixed 23 technical SEO errors identified in our site audit. Built 14 high quality backlinks from domain authority 40+ websites. Redesigned the product pages to improve conversion rate."
+                      },
+                      {
+                        title: "Key Results and Metrics",
+                        content: "Organic traffic: 14,200 visitors (+47% vs last month). Google Ads ROAS: 3.2x. Conversion rate: 2.8% (up from 1.9%). 6 keywords now ranking on page 1 of Google. Email open rate: 34%."
+                      },
+                      {
+                        title: "Coming Up Next Month",
+                        content: "Launch the loyalty rewards program. Begin Instagram and TikTok paid advertising. A/B test two new landing page designs. Expand Google Ads to 3 additional cities."
+                      }
+                    ].map((section, idx) => (
+                      <div key={idx} className="bg-white rounded-2xl border-y border-r border-l-[6px] border-slate-200 p-6 shadow-3xs" style={{ borderLeftColor: "#4f46e5" }}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-7 h-7 bg-indigo-50 rounded-lg flex items-center justify-center shrink-0">
+                            <Check className="w-4 h-4 text-indigo-650" />
+                          </div>
+                          <h4 className="text-sm sm:text-base font-bold font-display text-slate-955">
+                            {section.title}
+                          </h4>
+                        </div>
+                        <p className="text-slate-700 leading-relaxed text-xs sm:text-sm pl-10 whitespace-pre-wrap">
+                          {section.content}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center space-y-4">
+                <p className="text-slate-550 text-xs sm:text-sm font-medium">
+                  This report was generated in 28 seconds from rough bullet points.
+                </p>
+                <button
+                  onClick={() => {
+                    setAuthError(null);
+                    setShowAuthForm("signup");
+                  }}
+                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 hover:shadow-md text-white font-bold leading-none text-xs sm:text-sm rounded-xl transition-all inline-flex items-center gap-2 cursor-pointer shadow-sm border-none animate-pulse"
+                >
+                  Try It Free
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Testimonials Section */}
+          <section className="bg-slate-50 border-b border-slate-200 py-20 px-6 sm:px-12">
+            <div className="max-w-5xl mx-auto">
+              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
+                Loved by freelancers and agencies worldwide
+              </h2>
+              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
+                Join thousands of professionals who stopped writing reports manually
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                {[
+                  {
+                    name: "Sarah Mitchell",
+                    title: "SEO Freelancer, London UK",
+                    initials: "SM",
+                    text: "I used to spend every Sunday writing client reports. ReportIQ completely changed that. My reports now take 30 seconds and my clients actually say they look more professional than before. Absolute game changer."
+                  },
+                  {
+                    name: "James Rodriguez",
+                    title: "Digital Marketing Agency Owner, New York",
+                    initials: "JR",
+                    text: "We manage 12 clients and reporting was killing our team. ReportIQ saves us at least 40 hours a month. The AI writing quality is genuinely impressive — clients have no idea it is AI generated.",
+                    indigoAvatar: true
+                  },
+                  {
+                    name: "Priya Sharma",
+                    title: "Social Media Manager, Toronto Canada",
+                    initials: "PS",
+                    text: "The shareable link feature is brilliant. My clients love opening their report on their phone instead of downloading a PDF. ReportIQ makes me look like a premium agency even as a solo freelancer."
+                  },
+                  {
+                    name: "Marcus Chen",
+                    title: "PPC Specialist, Sydney Australia",
+                    initials: "MC",
+                    text: "I was skeptical about AI writing but the output is genuinely professional. I barely edit the reports at all. My clients are happier and I get my weekends back. Worth every penny.",
+                    indigoAvatar: true
+                  },
+                  {
+                    name: "Emma Thompson",
+                    title: "Content Marketing Consultant, Manchester UK",
+                    initials: "ET",
+                    text: "The free plan alone is better than anything I was doing manually. Upgraded to Starter after my first week. The ROI is ridiculous — I charge clients $500 a month for reporting that now takes me 2 minutes."
+                  },
+                  {
+                    name: "David Park",
+                    title: "Web Design Agency, Seoul South Korea",
+                    initials: "DP",
+                    text: "English is not my first language so writing professional reports was always difficult and time consuming. ReportIQ writes better English than I ever could. My international clients are very impressed.",
+                    indigoAvatar: true
+                  }
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-white border border-slate-200 rounded-3xl p-6.5 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow duration-300">
+                    <div className="space-y-4">
+                      <div className="flex gap-1 text-amber-400">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <span key={i} className="text-sm">★</span>
+                        ))}
+                      </div>
+                      <p className="text-slate-650 text-xs sm:text-sm leading-relaxed font-medium italic">
+                        "{item.text}"
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100">
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold font-mono ${
+                        item.indigoAvatar ? "bg-indigo-650" : "bg-purple-600"
+                      }`}>
+                        {item.initials}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 text-xs leading-none mb-1">{item.name}</h4>
+                        <p className="text-[10px] text-slate-500 font-medium">{item.title}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -2614,6 +2972,43 @@ export default function App() {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {showStickyCta && !user && (
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-indigo-700 border-t border-indigo-600 text-white shadow-2xl py-4.5 px-6 sm:px-12 flex flex-col sm:flex-row items-center justify-between gap-4 animate-slide-up font-sans">
+            <div className="flex items-center gap-3 text-left">
+              <div className="w-10 h-10 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 text-indigo-200 animate-pulse" />
+              </div>
+              <div>
+                <h4 className="font-extrabold font-display text-sm sm:text-base leading-tight">
+                  Stop writing reports manually.
+                </h4>
+                <p className="text-indigo-100 text-xs sm:text-sm font-medium">
+                  Sign up free in 30 seconds to generate unlimited reports and invite clients to white-labeled portals.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto">
+              <button
+                onClick={() => {
+                  setAuthError(null);
+                  setShowAuthForm("signup");
+                }}
+                className="w-full sm:w-auto px-6 py-2.5 bg-white text-indigo-700 font-bold rounded-xl hover:bg-indigo-50 shadow-md transition-all cursor-pointer text-xs sm:text-sm text-center border-none animate-pulse"
+              >
+                Get Started Free &rarr;
+              </button>
+              <button
+                onClick={handleDismissSticky}
+                className="text-indigo-200 hover:text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors border-none bg-transparent"
+                title="Dismiss"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
           </div>
         )}

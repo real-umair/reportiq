@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft, BookOpen } from 'lucide-react';
+import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft, BookOpen, Lock, X } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 export interface ToolField {
   name: string;
@@ -16,7 +17,61 @@ interface ToolPageProps {
   metaTitle: string;
   metaDescription: string;
   instructions: string[];
+  seoContent?: React.ReactNode;
 }
+
+const RELATED_TOOLS = [
+  {
+    name: 'Client Report Generator',
+    description: 'Generate a professional client report instantly with AI. Summarize work completed, results, and upcoming plans.',
+    route: '/tools/client-report-generator',
+  },
+  {
+    name: 'Agency Report Template',
+    description: 'Create professional agency reports in seconds. Write executive summaries, work results, and next steps.',
+    route: '/tools/agency-report-template',
+  },
+  {
+    name: 'SEO Report Generator',
+    description: 'Generate professional SEO performance reports targeting search keywords, traffic metrics, and optimization plans.',
+    route: '/tools/seo-report-generator',
+  },
+  {
+    name: 'Client Update Email Writer',
+    description: 'Draft professional, encouraging client update emails detailing weekly tasks, accomplishments, and next milestones.',
+    route: '/tools/client-update-email',
+  },
+  {
+    name: 'Monthly Report Template',
+    description: 'Produce high-quality monthly progress reports for your business, highlighting key achievements and next month plans.',
+    route: '/tools/monthly-report-template',
+  },
+  {
+    name: 'KPI Report Generator',
+    description: 'Compile detailed KPI summary reports containing metrics, performance analysis, highlights, and growth recommendations.',
+    route: '/tools/kpi-report-generator',
+  },
+  {
+    name: 'Social Media Report Generator',
+    description: 'Analyze social channel performance. Generate breakdown summaries, engagement highlights, and future strategies.',
+    route: '/tools/social-media-report',
+  },
+  {
+    name: 'Invoice Description Writer',
+    description: 'Write professional descriptions for invoice line items, covering design, consulting, and development hours.',
+    route: '/tools/invoice-description-writer',
+  },
+  {
+    name: 'Project Status Report Writer',
+    description: 'Track project health. Generate status summaries, highlight bottlenecks or blockers, and specify next actions.',
+    route: '/tools/project-status-report',
+  },
+  {
+    name: 'Client Onboarding Email Writer',
+    description: 'Draft warm client onboarding emails welcoming new customers and aligning them on what to expect.',
+    route: '/tools/client-onboarding-email',
+  },
+];
 
 export default function ToolPage({
   title,
@@ -26,7 +81,59 @@ export default function ToolPage({
   metaTitle,
   metaDescription,
   instructions,
+  seoContent,
 }: ToolPageProps) {
+  const [user, setUser] = useState<any>(null);
+  const [showExitPopup, setShowExitPopup] = useState(false);
+  const [exitEmail, setExitEmail] = useState('');
+
+  // Track auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user || null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Exit intent popup detection
+  useEffect(() => {
+    if (user) return;
+    const dismissed = sessionStorage.getItem('exit-intent-dismissed');
+    if (dismissed === 'true') return;
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY < 15) {
+        setShowExitPopup(true);
+      }
+    };
+
+    document.addEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [user]);
+
+  const handleExitSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    sessionStorage.setItem('exit-intent-dismissed', 'true');
+    setShowExitPopup(false);
+    window.dispatchEvent(new CustomEvent('open-auth', {
+      detail: { mode: 'signup', email: exitEmail }
+    }));
+  };
+
+  const handleDismissExit = () => {
+    sessionStorage.setItem('exit-intent-dismissed', 'true');
+    setShowExitPopup(false);
+  };
+
   // Update document metadata dynamically
   useEffect(() => {
     document.title = metaTitle;
@@ -259,18 +366,71 @@ export default function ToolPage({
                 <span className="text-[9px] font-bold font-mono tracking-widest text-indigo-600 uppercase block mb-3.5">
                   Generated Output
                 </span>
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs max-h-[300px] overflow-y-auto text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text">
-                  {result}
+                
+                <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-3xs">
+                  {user ? (
+                    <div className="max-h-[300px] overflow-y-auto text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text">
+                      {result}
+                    </div>
+                  ) : (
+                    <div className="relative min-h-[200px]">
+                      {/* Preview Text */}
+                      <div className="text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text">
+                        {result.slice(0, 150)}
+                      </div>
+                      
+                      {/* Blurred Remainder */}
+                      {result.length > 150 && (
+                        <div 
+                          className="text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-none opacity-60 pointer-events-none mt-2"
+                          style={{ filter: 'blur(4px)' }}
+                        >
+                          {result.slice(150)}
+                        </div>
+                      )}
+                      
+                      {/* Overlay Box */}
+                      <div className="absolute inset-x-0 bottom-0 top-[60px] bg-gradient-to-t from-white via-white/95 to-transparent flex flex-col items-center justify-end p-2 pt-10 text-center z-10">
+                        <div className="bg-white border border-slate-150 rounded-2xl p-4 sm:p-5 shadow-md max-w-sm w-full space-y-3">
+                          <div className="w-9 h-9 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center mx-auto text-indigo-650">
+                            <Lock className="w-4.5 h-4.5" />
+                          </div>
+                          <div className="space-y-1">
+                            <h4 className="text-xs sm:text-sm font-bold text-slate-900">Your full report is ready</h4>
+                            <p className="text-[10px] sm:text-[11px] text-slate-500 leading-normal">
+                              Sign up free in 30 seconds to unlock the complete report — no credit card needed
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              window.dispatchEvent(new CustomEvent('open-auth', { detail: 'signup' }));
+                            }}
+                            className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-[11px] transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1"
+                          >
+                            Get Full Report Free &rarr;
+                          </button>
+                          <p className="text-[9px] text-slate-400">
+                            Join 500+ freelancers and agencies already using ReportIQ
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 z-20">
                 <button
-                  onClick={handleCopyToClipboard}
-                  className={`flex-1 py-2 px-3 border rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs ${
-                    copied
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  disabled={!user}
+                  onClick={user ? handleCopyToClipboard : undefined}
+                  title={user ? undefined : "Sign up free to copy and download"}
+                  className={`flex-1 py-2 px-3 border rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-3xs ${
+                    !user
+                      ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
+                      : copied
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200 cursor-pointer'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 cursor-pointer'
                   }`}
                 >
                   {copied ? (
@@ -286,8 +446,14 @@ export default function ToolPage({
                   )}
                 </button>
                 <button
-                  onClick={handleDownloadTxt}
-                  className="flex-1 py-2 px-3 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold text-xs hover:bg-slate-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs"
+                  disabled={!user}
+                  onClick={user ? handleDownloadTxt : undefined}
+                  title={user ? undefined : "Sign up free to copy and download"}
+                  className={`flex-1 py-2 px-3 border rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-3xs ${
+                    !user
+                      ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 cursor-pointer'
+                  }`}
                 >
                   <Download className="w-3.5 h-3.5 text-slate-400" />
                   Download TXT
@@ -304,7 +470,7 @@ export default function ToolPage({
                 Fill out the required form fields on the left and click generate to create your report summary.
               </p>
             </div>
-        )}
+          )}
         </div>
       </div>
 
@@ -326,8 +492,48 @@ export default function ToolPage({
         </div>
       )}
 
+      {/* Educational SEO Section */}
+      {seoContent && (
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-3xs mb-8 text-left">
+          {seoContent}
+        </div>
+      )}
+
+      {/* Related Free Tools Section */}
+      <div className="border-t border-slate-200 pt-12 mb-8 text-left">
+        <h3 className="text-xl font-bold font-display text-slate-950 mb-1">Related Free Tools</h3>
+        <p className="text-slate-400 text-xs font-mono uppercase tracking-wider mb-6">People also search for</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {RELATED_TOOLS.filter(t => t.route !== window.location.pathname).slice(0, 3).map((tool, idx) => (
+            <div 
+              key={idx} 
+              className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs hover:border-indigo-200 transition-all flex flex-col justify-between group text-left"
+            >
+              <div>
+                <h4 className="font-bold text-sm text-slate-955 mb-1.5 group-hover:text-indigo-600 transition-colors">
+                  {tool.name}
+                </h4>
+                <p className="text-xs text-slate-500 leading-normal line-clamp-3">
+                  {tool.description}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  window.history.pushState(null, '', tool.route);
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="w-full mt-4 py-2 bg-slate-50 hover:bg-indigo-650 hover:text-white border border-slate-200 hover:border-indigo-650 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1 cursor-pointer"
+              >
+                Try Free &rarr;
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Global Bottom Marketing CTA banner */}
-      <div className="bg-slate-900 border border-slate-800 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-left shadow-lg">
+      <div className="bg-slate-900 border border-slate-800 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-left shadow-lg mb-8">
         <div className="space-y-1">
           <span className="inline-flex px-2 py-0.5 leading-none bg-indigo-500/20 text-indigo-300 rounded-md border border-indigo-500/20 text-[9px] font-mono font-bold uppercase tracking-wider">
             Premium Features
@@ -344,12 +550,58 @@ export default function ToolPage({
             window.history.pushState(null, '', '/');
             window.dispatchEvent(new PopStateEvent('popstate'));
           }}
-          className="w-full sm:w-auto py-3 px-6 bg-indigo-600 hover:bg-indigo-750 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs shrink-0 shadow-md border-none"
+          className="w-full sm:w-auto py-3 px-6 bg-indigo-600 hover:bg-indigo-755 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs shrink-0 shadow-md border-none"
         >
           Try ReportIQ Free
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Exit Intent Popup */}
+      {showExitPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6.5 shadow-2xl relative animate-scale-up text-left font-sans">
+            <button
+              onClick={handleDismissExit}
+              className="absolute top-4.5 right-4.5 text-slate-400 hover:text-slate-655 p-1.5 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors border-none bg-transparent"
+              title="Close"
+            >
+              <X className="w-4.5 h-4.5" />
+            </button>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <span className="inline-flex px-2 py-0.5 leading-none bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100 text-[10px] font-mono font-bold uppercase tracking-wider">
+                  Special Offer
+                </span>
+                <h3 className="text-xl font-bold font-display text-slate-950 leading-tight">
+                  Wait — your report is almost ready
+                </h3>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Sign up free and get unlimited access to all 10 AI tools plus full client reporting. No credit card needed.
+                </p>
+              </div>
+
+              <form onSubmit={handleExitSubmit} className="space-y-3 pt-2">
+                <input
+                  type="email"
+                  required
+                  placeholder="Enter your email address"
+                  value={exitEmail}
+                  onChange={(e) => setExitEmail(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-3 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-400 font-sans"
+                />
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-750 text-white font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-xs border-none"
+                >
+                  Get Free Access &rarr;
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
