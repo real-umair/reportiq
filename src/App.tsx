@@ -22,7 +22,8 @@ import {
   Globe,
   Plus,
   Compass,
-  X
+  X,
+  Calendar
 } from "lucide-react";
 
 // Modular components import
@@ -301,7 +302,6 @@ export default function App() {
   const [paymentBanner, setPaymentBanner] = useState<{ type: "success" | "cancel"; plan: string } | null>(null);
   const [docsActiveTab, setDocsActiveTab] = useState<"guide" | "plans" | "faq">("guide");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-  const [showVideoComingSoon, setShowVideoComingSoon] = useState(false);
   const [showStickyCta, setShowStickyCta] = useState(false);
 
   // Global event listener to open login/signup modals from page components
@@ -1689,70 +1689,6 @@ export default function App() {
               <span><span className="text-indigo-650 font-black mr-1">✓</span> Reports generated in 30 seconds</span>
             </div>
           </div>
-
-          {/* Watch how it works Section */}
-          <section className="py-20 px-6 sm:px-12 bg-white border-b border-slate-200">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-black font-display text-slate-950 mb-3">
-                Watch how it works — 30 seconds
-              </h2>
-              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider mb-12">
-                See ReportIQ in action
-              </p>
-
-              {showVideoComingSoon ? (
-                <div className="max-w-3xl mx-auto aspect-video rounded-3xl bg-slate-900 border border-slate-800 p-8 flex flex-col items-center justify-center text-center shadow-xl space-y-5 animate-fade-in">
-                  <div className="w-12 h-12 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center border border-indigo-500/20">
-                    <Sparkles className="w-6 h-6 animate-pulse" />
-                  </div>
-                  <div className="space-y-2 max-w-md">
-                    <h3 className="text-lg font-bold text-white">Video coming soon!</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Try it live at reportiq.xyz for free. Sign up in seconds and start generating professional reports today.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setAuthError(null);
-                      setShowAuthForm("signup");
-                    }}
-                    className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer border-none"
-                  >
-                    Try It Live Free &rarr;
-                  </button>
-                  <button
-                    onClick={() => setShowVideoComingSoon(false)}
-                    className="text-xs text-slate-400 hover:text-slate-300 underline font-semibold cursor-pointer bg-transparent border-none"
-                  >
-                    Go Back
-                  </button>
-                </div>
-              ) : (
-                <div 
-                  onClick={() => setShowVideoComingSoon(true)}
-                  className="group relative max-w-3xl mx-auto aspect-video rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 shadow-2xl overflow-hidden cursor-pointer flex flex-col items-center justify-center p-8 transition-transform hover:scale-[1.01]"
-                >
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-                  <div className="relative w-20 h-20 bg-white hover:bg-slate-50 rounded-full flex items-center justify-center shadow-xl shadow-indigo-950/50 group-hover:scale-110 transition-transform duration-300">
-                    <div className="w-0 h-0 border-y-8 border-y-transparent border-l-12 border-l-indigo-600 ml-1.5" />
-                  </div>
-
-                  <div className="absolute bottom-8 left-8 right-8 text-left space-y-1 z-10">
-                    <h4 className="text-lg sm:text-xl font-bold font-display text-white group-hover:text-indigo-300 transition-colors">
-                      See ReportIQ generate a full client report in 30 seconds
-                    </h4>
-                    <p className="text-slate-400 text-xs sm:text-sm font-sans font-medium">
-                      No integrations. No complexity. Just type your notes and let AI do the writing.
-                    </p>
-                  </div>
-
-                  <div className="absolute inset-0 bg-slate-950/15 group-hover:bg-slate-950/5 transition-colors pointer-events-none" />
-                </div>
-              )}
-            </div>
-          </section>
 
           {/* Value Prop Columns grid */}
           <section className="bg-white border-y border-slate-200 py-20 px-6 sm:px-12">
