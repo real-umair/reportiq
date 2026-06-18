@@ -12,6 +12,7 @@ interface SettingsProps {
 
 export default function Settings({ userId, profile, onRefresh, showLock }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<"profile" | "billing">("profile");
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "lifetime">("monthly");
 
   // Profile states
   const [fullName, setFullName] = useState(profile?.fullName || "");
@@ -170,7 +171,8 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
         },
         body: JSON.stringify({ 
           productId, 
-          email: profile?.email || ""
+          email: profile?.email || "",
+          paymentType: billingCycle
         }),
       });
 
@@ -522,6 +524,35 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
             </div>
           )}
 
+          {/* Billing Cycle Toggle */}
+          <div className="flex items-center justify-center gap-3 pt-4 mb-6">
+            <button
+              type="button"
+              onClick={() => setBillingCycle("monthly")}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                billingCycle === "monthly"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200/50"
+              }`}
+            >
+              Monthly Billing
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingCycle("lifetime")}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer relative ${
+                billingCycle === "lifetime"
+                  ? "bg-indigo-655 text-white shadow-sm"
+                  : "bg-slate-100 text-indigo-600 border border-slate-200 hover:bg-slate-200/50"
+              }`}
+            >
+              Lifetime Access (Save 90%)
+              <span className="absolute -top-3 -right-3 bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full uppercase tracking-wider font-extrabold animate-bounce">
+                Hot
+              </span>
+            </button>
+          </div>
+
           {/* Pricing Grid options */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-2 items-center">
             {[
@@ -544,10 +575,10 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
               },
               {
                 id: "starter" as const,
-                title: "Starter Plan",
-                price: "$29",
-                period: "per month",
-                limitLabel: "Perfect for freelancers",
+                title: billingCycle === "lifetime" ? "Starter Lifetime" : "Starter Plan",
+                price: billingCycle === "lifetime" ? "$49" : "$29",
+                period: billingCycle === "lifetime" ? "one-time payment" : "per month",
+                limitLabel: billingCycle === "lifetime" ? "Lifetime access for freelancers" : "Perfect for freelancers",
                 features: [
                   "20 reports per month",
                   "10 active clients",
@@ -560,10 +591,10 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
               },
               {
                 id: "pro" as const,
-                title: "Pro Plan",
-                price: "$79",
-                period: "per month",
-                limitLabel: "For scaling agencies",
+                title: billingCycle === "lifetime" ? "Pro Lifetime" : "Pro Plan",
+                price: billingCycle === "lifetime" ? "$99" : "$79",
+                period: billingCycle === "lifetime" ? "one-time payment" : "per month",
+                limitLabel: billingCycle === "lifetime" ? "Lifetime access for agencies" : "For scaling agencies",
                 features: [
                   "Unlimited reports",
                   "Unlimited clients",
@@ -576,7 +607,7 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                   "Branded agency URLs"
                 ],
                 featured: true, // Pro plan card stands out
-                badgeText: "Best Value"
+                badgeText: billingCycle === "lifetime" ? "Highly Recommended" : "Best Value"
               },
             ].map(planCard => {
               const active = plan === planCard.id;

@@ -130,7 +130,8 @@ export default function App() {
         },
         body: JSON.stringify({ 
           productId: targetPlan, 
-          email: profile?.email || ""
+          email: profile?.email || "",
+          paymentType: billingCycle
         }),
       });
       if (!response.ok) throw new Error("Failed to contact checkout billing endpoint.");
@@ -303,6 +304,7 @@ export default function App() {
   const [docsActiveTab, setDocsActiveTab] = useState<"guide" | "plans" | "faq">("guide");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [showStickyCta, setShowStickyCta] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "lifetime">("monthly");
 
   // Global event listener to open login/signup modals from page components
   useEffect(() => {
@@ -1651,24 +1653,37 @@ export default function App() {
 
         {/* Hero Banner Section */}
         <main className="flex-1">
-          <section className="relative px-6 py-24 sm:py-32 text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-6xl font-black font-display text-slate-950 tracking-tight leading-none mb-8">
-              Stop writing client reports.<br />
-              <span className="text-indigo-600">Let AI do it.</span>
+          <section className="relative px-6 py-10 sm:py-32 text-center max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 text-indigo-750 font-bold rounded-full text-[10px] sm:text-xs font-mono uppercase tracking-wider mb-6 animate-pulse select-none">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-650 animate-spin" style={{ animationDuration: '3s' }} />
+              🔥 Limited Promo: Get Lifetime Pro for $99 (Only 32 licenses left!)
+            </div>
+            <h1 className="text-3xl sm:text-6xl font-black font-display text-slate-955 tracking-tight leading-none mb-8">
+              AI generates your client reports<br />
+              <span className="text-indigo-600">in 30 seconds. Free.</span>
             </h1>
-            <p className="text-slate-550 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10">
+            <p className="text-slate-550 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10 font-sans">
               ReportIQ is the fastest AI client reporting tool for freelancers and digital agencies. Generate professional monthly client reports, SEO reports, social media reports, and project updates in 30 seconds. Free to start — no credit card needed.
             </p>
-            <div className="flex justify-center">
+            <div className="flex flex-col sm:flex-row justify-center gap-3.5 max-w-xs sm:max-w-md mx-auto">
               <button
                 onClick={() => {
                   setAuthError(null);
                   setShowAuthForm("signup");
                 }}
-                className="px-6.5 py-3.5 bg-indigo-600 hover:bg-indigo-700 hover:shadow-md text-white font-bold leading-none text-sm rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                className="w-full sm:w-auto px-6.5 py-3.5 bg-indigo-600 hover:bg-indigo-700 hover:shadow-md text-white font-bold leading-none text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
               >
                 Start Composing Free
                 <ArrowRight className="w-4 h-4 shrink-0" />
+              </button>
+              <button
+                onClick={() => {
+                  const el = document.getElementById("pricing-section");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="w-full sm:w-auto px-6.5 py-3.5 bg-white border border-slate-200 hover:bg-slate-550 text-slate-700 font-bold leading-none text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                See Lifetime Offer
               </button>
             </div>
           </section>
@@ -1994,13 +2009,42 @@ export default function App() {
           </section>
 
           {/* Simulated pricing bento layout block */}
-          <section className="py-20 px-6 sm:px-12 max-w-5xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3.5xl font-black font-display text-slate-950 mb-3">
-              Humbe and transparent allowances
+          <section id="pricing-section" className="py-20 px-6 sm:px-12 max-w-5xl mx-auto text-center">
+            <h2 className="text-2xl sm:text-3.5xl font-black font-display text-slate-955 mb-3">
+              Humble and transparent plans
             </h2>
             <p className="text-slate-550 text-xs font-mono uppercase tracking-wider mb-12">
               Scale client registry quotas dynamically
             </p>
+
+            {/* Billing Cycle Toggle */}
+            <div className="flex items-center justify-center gap-3 mb-12">
+              <button
+                type="button"
+                onClick={() => setBillingCycle("monthly")}
+                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  billingCycle === "monthly"
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                Monthly Billing
+              </button>
+              <button
+                type="button"
+                onClick={() => setBillingCycle("lifetime")}
+                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer relative ${
+                  billingCycle === "lifetime"
+                    ? "bg-indigo-650 text-white shadow-sm"
+                    : "bg-white text-indigo-600 border border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                Lifetime Access (Save 90%)
+                <span className="absolute -top-3 -right-3 bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full uppercase tracking-wider font-extrabold animate-bounce">
+                  Hot
+                </span>
+              </button>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left items-center max-w-5xl mx-auto">
               {[
@@ -2023,10 +2067,10 @@ export default function App() {
                   planKey: "free" as const,
                 },
                 {
-                  title: "Starter Plan",
-                  price: "$29",
-                  periodLabel: "/ month",
-                  limit: "Perfect for freelancers",
+                  title: billingCycle === "lifetime" ? "Starter Lifetime" : "Starter Plan",
+                  price: billingCycle === "lifetime" ? "$49" : "$29",
+                  periodLabel: billingCycle === "lifetime" ? "one-time payment" : "/ month",
+                  limit: billingCycle === "lifetime" ? "Lifetime access for freelancers" : "Perfect for freelancers",
                   feats: [
                     "20 reports per month",
                     "10 active clients",
@@ -2037,14 +2081,15 @@ export default function App() {
                     "AI powered section writer",
                     "Priority email support"
                   ],
-                  buttonText: "Select Starter Plan",
+                  buttonText: billingCycle === "lifetime" ? "Get Lifetime Starter" : "Select Starter Plan",
                   planKey: "starter" as const,
+                  badgeText: billingCycle === "lifetime" ? "Popular" : undefined,
                 },
                 {
-                  title: "Pro Plan",
-                  price: "$79",
-                  periodLabel: "/ month",
-                  limit: "For scaling agencies",
+                  title: billingCycle === "lifetime" ? "Pro Lifetime" : "Pro Plan",
+                  price: billingCycle === "lifetime" ? "$99" : "$79",
+                  periodLabel: billingCycle === "lifetime" ? "one-time payment" : "/ month",
+                  limit: billingCycle === "lifetime" ? "Lifetime access for agencies" : "For scaling agencies",
                   feats: [
                     "Unlimited reports",
                     "Unlimited clients",
@@ -2056,10 +2101,10 @@ export default function App() {
                     "Priority 24h support",
                     "Branded agency URLs"
                   ],
-                  buttonText: "Upgrade to Pro",
+                  buttonText: billingCycle === "lifetime" ? "Get Lifetime Pro" : "Upgrade to Pro",
                   planKey: "pro" as const,
                   featured: true, // Pro plan card stands out
-                  badgeText: "Best Value"
+                  badgeText: billingCycle === "lifetime" ? "Highly Recommended" : "Best Value"
                 },
               ].map((card, i) => (
                 <div

@@ -59,7 +59,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
     async function loadReport() {
       try {
         setLoading(true);
-        
+
         const { report: reportData, profile: profileData, client: clientData } = await supabaseDb.getReportBySlug(slug);
 
         if (!reportData) {
@@ -83,7 +83,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
         try {
           const updatedViews = (reportData.viewCount || 0) + 1;
           const updatedRawData = { ...reportData.rawData };
-          
+
           if (profileData?.plan === 'pro') {
             const currentLogs = Array.isArray(updatedRawData.viewsLog) ? [...updatedRawData.viewsLog] : [];
             currentLogs.push(new Date().toISOString());
@@ -169,7 +169,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
         </div>
         <p class="text-slate-700 leading-relaxed text-base whitespace-pre-wrap" style="color: #334155; line-height: 1.625; font-size: 1rem; white-space: pre-wrap; padding-left: 2.75rem; margin: 0;">${section.content}</p>
       </div>
-    `).join('\n');    const attachments = report.attachments || [];
+    `).join('\n'); const attachments = report.attachments || [];
     let attachmentsHtml = "";
     if (attachments.length > 0) {
       const imagesList = attachments.filter(a => a.type === 'image');
@@ -436,14 +436,14 @@ export default function PublicReport({ slug }: PublicReportProps) {
         <div className="max-w-4xl mx-auto flex items-center justify-between font-sans">
           <div className="flex items-center space-x-3">
             {profile?.brandLogoUrl ? (
-              <img 
-                src={profile.brandLogoUrl} 
-                alt={agencyName} 
-                className="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-200 p-1" 
+              <img
+                src={profile.brandLogoUrl}
+                alt={agencyName}
+                className="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-200 p-1"
               />
             ) : (
-              <div 
-                style={{ backgroundColor: brandColor }} 
+              <div
+                style={{ backgroundColor: brandColor }}
                 className="w-10 h-10 rounded-xl flex items-center justify-center shadow-xs text-white"
               >
                 <FileText className="w-5 h-5" />
@@ -489,10 +489,10 @@ export default function PublicReport({ slug }: PublicReportProps) {
 
       <main id="printable-report-area" className="flex-1 max-w-4xl w-full mx-auto px-6 py-12">
         {/* Cover Section with agency name, client name and subtle gradient using brand color */}
-        <div 
+        <div
           className="relative rounded-3xl overflow-hidden p-8 sm:p-12 mb-8 shadow-md text-white border border-slate-200/20 transition-all duration-500 ease-out"
-          style={{ 
-            background: `linear-gradient(135deg, ${brandColor}, ${brandColor}dd)` 
+          style={{
+            background: `linear-gradient(135deg, ${brandColor}, ${brandColor}dd)`
           }}
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
@@ -503,10 +503,10 @@ export default function PublicReport({ slug }: PublicReportProps) {
             <div className="flex flex-col gap-3">
               {profile?.brandLogoUrl ? (
                 <div className="flex items-center gap-3">
-                  <img 
-                    src={profile.brandLogoUrl} 
-                    alt={agencyName} 
-                    className="max-h-12 w-auto object-contain rounded-lg bg-white/15 p-1.5 shadow-2xs" 
+                  <img
+                    src={profile.brandLogoUrl}
+                    alt={agencyName}
+                    className="max-h-12 w-auto object-contain rounded-lg bg-white/15 p-1.5 shadow-2xs"
                   />
                   <span className="text-lg font-bold tracking-tight text-white/95">{agencyName}</span>
                 </div>
@@ -542,11 +542,11 @@ export default function PublicReport({ slug }: PublicReportProps) {
 
         {/* AI Executive Summary section */}
         {report.aiSummary && (
-          <div 
+          <div
             className="bg-white rounded-2xl border border-slate-200 p-8 mb-8 shadow-xs relative overflow-hidden font-sans transition-all duration-500 ease-out"
           >
             <div className="absolute top-0 left-0 w-1.5 h-full" style={{ backgroundColor: brandColor }} />
-            <div 
+            <div
               className="absolute top-4 right-4 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded"
               style={{ backgroundColor: `${brandColor}20`, color: brandColor }}
             >
@@ -561,7 +561,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
 
         {/* Custom Message if exists */}
         {report.customMessage && (
-          <div 
+          <div
             className="bg-white rounded-2xl border border-slate-200 p-8 mb-8 shadow-xs relative overflow-hidden font-sans transition-all duration-500 ease-out"
           >
             <div className="absolute top-0 left-0 w-1.5 h-full bg-slate-300" />
@@ -579,13 +579,13 @@ export default function PublicReport({ slug }: PublicReportProps) {
           {report.sections && report.sections.length > 0 ? (
             report.sections.map((section, idx) => {
               return (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="bg-white rounded-2xl border-y border-r border-l-[6px] border-slate-250 p-8 shadow-xs hover:border-slate-300 transition-all duration-300"
                   style={{ borderLeftColor: brandColor }}
                 >
                   <div className="flex items-center gap-3 mb-4 font-sans">
-                    <div 
+                    <div
                       className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                       style={{ backgroundColor: `${brandColor}15` }}
                     >
@@ -610,14 +610,14 @@ export default function PublicReport({ slug }: PublicReportProps) {
 
         {/* Attachments & Resources section */}
         {report.attachments && report.attachments.length > 0 && (
-          <div 
+          <div
             className="mt-12 pt-8 border-t border-slate-200 font-sans transition-all duration-500 ease-out"
           >
             <h3 className="text-lg font-bold font-display text-slate-950 mb-6 flex items-center gap-2">
               <Paperclip className="w-5 h-5 text-indigo-600" />
               Attachments & Resources
             </h3>
-            
+
             <div className="space-y-6">
               {/* Images Grid */}
               {report.attachments.some(att => att.type === 'image') && (
@@ -626,11 +626,11 @@ export default function PublicReport({ slug }: PublicReportProps) {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {report.attachments.filter(att => att.type === 'image').map(att => (
                       <div key={att.id} className="bg-white border border-slate-200 rounded-2xl p-3 shadow-3xs flex flex-col justify-between hover:border-slate-300 transition-colors">
-                        <img 
-                          src={att.url} 
-                          alt={att.name} 
+                        <img
+                          src={att.url}
+                          alt={att.name}
                           referrerPolicy="no-referrer"
-                          className="rounded-lg max-h-40 w-full object-cover border border-slate-250 bg-slate-50 shadow-3xs" 
+                          className="rounded-lg max-h-40 w-full object-cover border border-slate-250 bg-slate-50 shadow-3xs"
                         />
                         <div className="mt-2 text-xs font-medium text-slate-600 truncate">{att.name}</div>
                       </div>
@@ -643,7 +643,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
               {report.attachments.some(att => att.type === 'doc') && (
                 <div className="space-y-3 print:break-inside-avoid">
                   <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Documents</h4>
-                  
+
                   {/* Screen view: Download cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 print:hidden">
                     {report.attachments.filter(att => att.type === 'doc').map(att => (
@@ -659,9 +659,9 @@ export default function PublicReport({ slug }: PublicReportProps) {
                             )}
                           </div>
                         </div>
-                        <a 
-                          href={att.url} 
-                          target="_blank" 
+                        <a
+                          href={att.url}
+                          target="_blank"
                           rel="noopener noreferrer"
                           download={att.name}
                           className="inline-flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-750 text-white font-semibold py-1.5 px-3 rounded-lg shadow-3xs hover:shadow-xs transition shrink-0 ml-2"
@@ -688,14 +688,14 @@ export default function PublicReport({ slug }: PublicReportProps) {
               {report.attachments.some(att => att.type === 'link') && (
                 <div className="space-y-3 print:break-inside-avoid">
                   <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Links</h4>
-                  
+
                   {/* Screen view: Styled clickable buttons with the label */}
                   <div className="flex flex-wrap gap-3 print:hidden">
                     {report.attachments.filter(att => att.type === 'link').map(att => (
-                      <a 
+                      <a
                         key={att.id}
-                        href={att.url} 
-                        target="_blank" 
+                        href={att.url}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex flex-col items-start gap-1 py-2.5 px-4 rounded-xl border border-slate-250 bg-white hover:bg-slate-50 text-slate-700 hover:text-indigo-600 transition shadow-3xs hover:shadow-2xs"
                       >
@@ -724,7 +724,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
               {report.attachments.some(att => att.type === 'preview') && (
                 <div className="space-y-3 print:break-inside-avoid">
                   <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Website Previews</h4>
-                  
+
                   {/* Screen view: Cards with URL and Visit button */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 print:hidden">
                     {report.attachments.filter(att => att.type === 'preview').map(att => (
@@ -739,9 +739,9 @@ export default function PublicReport({ slug }: PublicReportProps) {
                           </div>
                         </div>
                         <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end">
-                          <a 
-                            href={att.url} 
-                            target="_blank" 
+                          <a
+                            href={att.url}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 text-xs bg-indigo-650 hover:bg-indigo-700 text-white font-semibold py-1.5 px-3 rounded-lg shadow-3xs hover:shadow-xs transition"
                           >
@@ -771,7 +771,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
           <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-xs max-w-xl mx-auto transition-all duration-300">
             {feedbackSubmitted ? (
               <div className="text-center py-6 flex flex-col items-center justify-center">
-                <div 
+                <div
                   className="w-12 h-12 rounded-full flex items-center justify-center mb-3"
                   style={{ backgroundColor: `${brandColor}15` }}
                 >
@@ -786,44 +786,41 @@ export default function PublicReport({ slug }: PublicReportProps) {
                   <h3 className="text-base font-bold font-display text-slate-900 text-center mb-4">
                     How was this report?
                   </h3>
-                  
+
                   <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={() => setReaction('great')}
-                      className={`flex flex-col items-center justify-center p-4 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                        reaction === 'great' 
-                          ? 'bg-slate-50 border-indigo-600 shadow-sm scale-102' 
+                      className={`flex flex-col items-center justify-center p-4 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${reaction === 'great'
+                          ? 'bg-slate-50 border-indigo-600 shadow-sm scale-102'
                           : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
-                      }`}
+                        }`}
                       style={reaction === 'great' ? { borderColor: brandColor, color: brandColor } : {}}
                     >
                       <span className="text-2xl mb-1.5" role="img" aria-label="Great">👍</span>
                       <span className="text-xs">Great</span>
                     </button>
-                    
+
                     <button
                       type="button"
                       onClick={() => setReaction('ok')}
-                      className={`flex flex-col items-center justify-center p-4 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                        reaction === 'ok' 
-                          ? 'bg-slate-50 border-indigo-600 shadow-sm scale-102' 
+                      className={`flex flex-col items-center justify-center p-4 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${reaction === 'ok'
+                          ? 'bg-slate-50 border-indigo-600 shadow-sm scale-102'
                           : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
-                      }`}
+                        }`}
                       style={reaction === 'ok' ? { borderColor: brandColor, color: brandColor } : {}}
                     >
                       <span className="text-2xl mb-1.5" role="img" aria-label="OK">😐</span>
                       <span className="text-xs">OK</span>
                     </button>
-                    
+
                     <button
                       type="button"
                       onClick={() => setReaction('needs_work')}
-                      className={`flex flex-col items-center justify-center p-4 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                        reaction === 'needs_work' 
-                          ? 'bg-slate-50 border-indigo-600 shadow-sm scale-102' 
+                      className={`flex flex-col items-center justify-center p-4 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${reaction === 'needs_work'
+                          ? 'bg-slate-50 border-indigo-600 shadow-sm scale-102'
                           : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
-                      }`}
+                        }`}
                       style={reaction === 'needs_work' ? { borderColor: brandColor, color: brandColor } : {}}
                     >
                       <span className="text-2xl mb-1.5" role="img" aria-label="Needs Work">👎</span>
@@ -856,11 +853,10 @@ export default function PublicReport({ slug }: PublicReportProps) {
                 <button
                   type="submit"
                   disabled={!reaction || submittingFeedback}
-                  className={`w-full py-2.5 px-4 rounded-xl text-white font-semibold text-sm shadow-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
-                    !reaction 
-                      ? 'bg-slate-300 cursor-not-allowed opacity-75' 
+                  className={`w-full py-2.5 px-4 rounded-xl text-white font-semibold text-sm shadow-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${!reaction
+                      ? 'bg-slate-300 cursor-not-allowed opacity-75'
                       : 'hover:brightness-95 active:scale-98'
-                  }`}
+                    }`}
                   style={reaction ? { backgroundColor: brandColor } : {}}
                 >
                   {submittingFeedback ? (
