@@ -12,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { productId, email, customToken, customStarterId, customProId } = req.body;
+    const { productId, email, customToken, customStarterId, customProId, paymentType } = req.body;
     if (!productId) {
       return res.status(400).json({ error: "Missing productId specification" });
     }
@@ -36,19 +36,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ checkoutUrl: successUrl });
     }
 
-    // Dynamically resolve final Polar Product ID
+    // Dynamically resolve final Polar Product ID based on standard mapped ID or Lifetime ID
     let finalProductId = productId;
+    const isLifetime = paymentType === "lifetime";
+
     if (productId === "starter") {
-      finalProductId = customStarterId || process.env.POLAR_STARTER_PRODUCT_ID || "2181cbf5-01d7-4d92-addd-716d658acfff";
+      finalProductId = customStarterId || (isLifetime ? process.env.POLAR_STARTER_LIFETIME_PRODUCT_ID : process.env.POLAR_STARTER_PRODUCT_ID) || process.env.POLAR_STARTER_PRODUCT_ID || "2181cbf5-01d7-4d92-addd-716d658acfff";
     } else if (productId === "pro") {
-      finalProductId = customProId || process.env.POLAR_PRO_PRODUCT_ID || "10b53983-e9e0-4d2a-b665-71798bf8618e";
+      finalProductId = customProId || (isLifetime ? process.env.POLAR_PRO_LIFETIME_PRODUCT_ID : process.env.POLAR_PRO_PRODUCT_ID) || process.env.POLAR_PRO_PRODUCT_ID || "10b53983-e9e0-4d2a-b665-71798bf8618e";
     } else {
       const defaultStarter = "2181cbf5-01d7-4d92-addd-716d658acfff";
       const defaultPro = "10b53983-e9e0-4d2a-b665-71798bf8618e";
       if (productId === defaultStarter) {
-        finalProductId = customStarterId || process.env.POLAR_STARTER_PRODUCT_ID || defaultStarter;
+        finalProductId = customStarterId || (isLifetime ? process.env.POLAR_STARTER_LIFETIME_PRODUCT_ID : process.env.POLAR_STARTER_PRODUCT_ID) || process.env.POLAR_STARTER_PRODUCT_ID || defaultStarter;
       } else if (productId === defaultPro) {
-        finalProductId = customProId || process.env.POLAR_PRO_PRODUCT_ID || defaultPro;
+        finalProductId = customProId || (isLifetime ? process.env.POLAR_PRO_LIFETIME_PRODUCT_ID : process.env.POLAR_PRO_PRODUCT_ID) || process.env.POLAR_PRO_PRODUCT_ID || defaultPro;
       }
     }
 
