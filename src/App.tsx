@@ -789,10 +789,14 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-700 animate-fade-in">
         <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 sm:px-12 py-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <div 
-              className="flex items-center gap-2 cursor-pointer select-none"
-              onClick={() => {
+            <a 
+              href="/"
+              className="flex items-center gap-2 cursor-pointer select-none no-underline"
+              onClick={(e) => {
+                e.preventDefault();
                 setActiveBlogRoute(null);
+                setActiveToolRoute(null);
+                setActiveMarketingPage(null);
                 window.history.pushState(null, "", "/");
                 window.dispatchEvent(new PopStateEvent('popstate'));
               }}
@@ -803,94 +807,111 @@ export default function App() {
               <span className="font-extrabold font-display text-slate-950 tracking-tight text-lg">
                 ReportIQ
               </span>
-            </div>
+            </a>
 
             <div className="hidden md:flex items-center gap-6">
-              <button
-                onClick={() => {
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("about");
                   window.history.pushState(null, "", "/about");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 About
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/contact"
+                onClick={(e) => {
+                  e.preventDefault();
                   setContactSuccess(false);
                   setActiveMarketingPage("contact");
                   window.history.pushState(null, "", "/contact");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Contact
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/docs"
+                onClick={(e) => {
+                  e.preventDefault();
                   setDocsActiveTab("guide");
                   setOpenFaqIndex(null);
                   setActiveMarketingPage("docs");
+                  window.history.pushState(null, "", "/docs");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Docs
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/portal"
+                onClick={(e) => {
+                  e.preventDefault();
                   setIsClientPortal(true);
                   window.history.pushState(null, "", "/portal");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1 no-underline"
               >
                 <Globe className="w-3 h-3" />
                 Client Portal
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/tools"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveToolRoute("/tools");
                   setActiveBlogRoute(null);
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer no-underline"
               >
                 Free Tools
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/blog"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveBlogRoute("/blog");
                   setActiveToolRoute(null);
                   window.history.pushState(null, "", "/blog");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer no-underline"
               >
                 Blog
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/privacy"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("privacy");
                   window.history.pushState(null, "", "/privacy");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Privacy
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/terms"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("terms");
                   window.history.pushState(null, "", "/terms");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Terms
-              </button>
+              </a>
             </div>
 
             <div className="flex items-center gap-4">
@@ -903,7 +924,7 @@ export default function App() {
                     window.history.pushState(null, "", "/");
                     window.dispatchEvent(new PopStateEvent('popstate'));
                   }}
-                  className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs flex items-center gap-1.5 font-sans"
+                  className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs flex items-center gap-1.5 font-sans border-none"
                 >
                   Go to Dashboard
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -915,7 +936,7 @@ export default function App() {
                       setAuthError(null);
                       setShowAuthForm("login");
                     }}
-                    className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                    className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer bg-transparent border-none"
                   >
                     Sign In
                   </button>
@@ -924,7 +945,7 @@ export default function App() {
                       setAuthError(null);
                       setShowAuthForm("signup");
                     }}
-                    className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs"
+                    className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs border-none"
                   >
                     Create Account
                   </button>
@@ -941,81 +962,96 @@ export default function App() {
         <footer className="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-400">
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
-            <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-500">
-              <button
-                onClick={() => {
+            <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-555">
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("about");
                   window.history.pushState(null, "", "/about");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 About Us
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/contact"
+                onClick={(e) => {
+                  e.preventDefault();
                   setContactSuccess(false);
                   setActiveMarketingPage("contact");
                   window.history.pushState(null, "", "/contact");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Contact
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/docs"
+                onClick={(e) => {
+                  e.preventDefault();
                   setDocsActiveTab("guide");
                   setOpenFaqIndex(null);
                   setActiveMarketingPage("docs");
+                  window.history.pushState(null, "", "/docs");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Documentation
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/blog"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveBlogRoute("/blog");
                   setActiveToolRoute(null);
                   window.history.pushState(null, "", "/blog");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Blog
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/tools"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveToolRoute("/tools");
                   setActiveBlogRoute(null);
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600"
+                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600 no-underline"
               >
                 Free Tools
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/privacy"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("privacy");
                   window.history.pushState(null, "", "/privacy");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Privacy Policy
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/terms"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("terms");
                   window.history.pushState(null, "", "/terms");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Terms of Service
-              </button>
+              </a>
             </div>
           </div>
         </footer>
@@ -1102,10 +1138,14 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-700 animate-fade-in">
         <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 sm:px-12 py-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <div 
-              className="flex items-center gap-2 cursor-pointer select-none"
-              onClick={() => {
+            <a 
+              href="/"
+              className="flex items-center gap-2 cursor-pointer select-none no-underline"
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveBlogRoute(null);
                 setActiveToolRoute(null);
+                setActiveMarketingPage(null);
                 window.history.pushState(null, "", "/");
                 window.dispatchEvent(new PopStateEvent('popstate'));
               }}
@@ -1116,93 +1156,111 @@ export default function App() {
               <span className="font-extrabold font-display text-slate-950 tracking-tight text-lg">
                 ReportIQ
               </span>
-            </div>
+            </a>
 
             <div className="hidden md:flex items-center gap-6">
-              <button
-                onClick={() => {
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("about");
                   window.history.pushState(null, "", "/about");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 About
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/contact"
+                onClick={(e) => {
+                  e.preventDefault();
                   setContactSuccess(false);
                   setActiveMarketingPage("contact");
                   window.history.pushState(null, "", "/contact");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Contact
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/docs"
+                onClick={(e) => {
+                  e.preventDefault();
                   setDocsActiveTab("guide");
                   setOpenFaqIndex(null);
                   setActiveMarketingPage("docs");
+                  window.history.pushState(null, "", "/docs");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Docs
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/portal"
+                onClick={(e) => {
+                  e.preventDefault();
                   setIsClientPortal(true);
                   window.history.pushState(null, "", "/portal");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1 no-underline"
               >
                 <Globe className="w-3 h-3" />
                 Client Portal
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/tools"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveToolRoute("/tools");
+                  setActiveBlogRoute(null);
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer no-underline"
               >
                 Free Tools
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/blog"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveBlogRoute("/blog");
                   setActiveToolRoute(null);
                   window.history.pushState(null, "", "/blog");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer no-underline"
               >
                 Blog
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/privacy"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("privacy");
                   window.history.pushState(null, "", "/privacy");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Privacy
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/terms"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("terms");
                   window.history.pushState(null, "", "/terms");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Terms
-              </button>
+              </a>
             </div>
 
             <div className="flex items-center gap-4">
@@ -1214,7 +1272,7 @@ export default function App() {
                     window.history.pushState(null, "", "/");
                     window.dispatchEvent(new PopStateEvent('popstate'));
                   }}
-                  className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs flex items-center gap-1.5 font-sans"
+                  className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs flex items-center gap-1.5 font-sans border-none"
                 >
                   Go to Dashboard
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -1226,7 +1284,7 @@ export default function App() {
                       setAuthError(null);
                       setShowAuthForm("login");
                     }}
-                    className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                    className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer bg-transparent border-none"
                   >
                     Sign In
                   </button>
@@ -1235,7 +1293,7 @@ export default function App() {
                       setAuthError(null);
                       setShowAuthForm("signup");
                     }}
-                    className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs"
+                    className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs border-none"
                   >
                     Create Account
                   </button>
@@ -1252,81 +1310,96 @@ export default function App() {
         <footer className="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-400">
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
-            <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-550">
-              <button
-                onClick={() => {
+            <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-555">
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("about");
                   window.history.pushState(null, "", "/about");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 About Us
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/contact"
+                onClick={(e) => {
+                  e.preventDefault();
                   setContactSuccess(false);
                   setActiveMarketingPage("contact");
                   window.history.pushState(null, "", "/contact");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Contact
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/docs"
+                onClick={(e) => {
+                  e.preventDefault();
                   setDocsActiveTab("guide");
                   setOpenFaqIndex(null);
                   setActiveMarketingPage("docs");
+                  window.history.pushState(null, "", "/docs");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Documentation
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/blog"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveBlogRoute("/blog");
                   setActiveToolRoute(null);
                   window.history.pushState(null, "", "/blog");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Blog
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/tools"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveToolRoute("/tools");
                   setActiveBlogRoute(null);
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600"
+                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600 no-underline"
               >
                 Free Tools
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/privacy"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("privacy");
                   window.history.pushState(null, "", "/privacy");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Privacy Policy
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/terms"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("terms");
                   window.history.pushState(null, "", "/terms");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Terms of Service
-              </button>
+              </a>
             </div>
           </div>
         </footer>
@@ -1538,94 +1611,129 @@ export default function App() {
         {/* Navigation line bar layout */}
         <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-6 sm:px-12 py-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <a 
+              href="/"
+              className="flex items-center gap-2 cursor-pointer select-none no-underline"
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveBlogRoute(null);
+                setActiveToolRoute(null);
+                setActiveMarketingPage(null);
+                window.history.pushState(null, "", "/");
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+            >
               <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sm shadow-indigo-200 shrink-0">
                 <FileText className="w-5 h-5" />
               </div>
               <span className="font-extrabold font-display text-slate-950 tracking-tight text-lg">
                 ReportIQ
               </span>
-            </div>
+            </a>
 
             <div className="hidden md:flex items-center gap-6">
-              <button
-                onClick={() => {
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("about");
                   window.history.pushState(null, "", "/about");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 About
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/contact"
+                onClick={(e) => {
+                  e.preventDefault();
                   setContactSuccess(false);
                   setActiveMarketingPage("contact");
                   window.history.pushState(null, "", "/contact");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Contact
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/docs"
+                onClick={(e) => {
+                  e.preventDefault();
                   setDocsActiveTab("guide");
                   setOpenFaqIndex(null);
                   setActiveMarketingPage("docs");
+                  window.history.pushState(null, "", "/docs");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Docs
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/portal"
+                onClick={(e) => {
+                  e.preventDefault();
                   setIsClientPortal(true);
                   window.history.pushState(null, "", "/portal");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer flex items-center gap-1 no-underline"
               >
                 <Globe className="w-3 h-3" />
                 Client Portal
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/tools"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveToolRoute("/tools");
+                  setActiveBlogRoute(null);
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer no-underline"
               >
                 Free Tools
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/blog"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveBlogRoute("/blog");
                   setActiveToolRoute(null);
                   window.history.pushState(null, "", "/blog");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-755 transition-colors cursor-pointer no-underline"
               >
                 Blog
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/privacy"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("privacy");
                   window.history.pushState(null, "", "/privacy");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Privacy
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/terms"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("terms");
                   window.history.pushState(null, "", "/terms");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Terms
-              </button>
+              </a>
             </div>
 
             <div className="flex items-center gap-4">
@@ -1634,7 +1742,7 @@ export default function App() {
                   setAuthError(null);
                   setShowAuthForm("login");
                 }}
-                className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer bg-transparent border-none"
               >
                 Sign In
               </button>
@@ -1643,7 +1751,7 @@ export default function App() {
                   setAuthError(null);
                   setShowAuthForm("signup");
                 }}
-                className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs"
+                className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all cursor-pointer shadow-xs border-none"
               >
                 Create Account
               </button>
@@ -2237,76 +2345,96 @@ export default function App() {
         <footer className="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-400">
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
-            <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-500">
-              <button
-                onClick={() => {
+            <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-555">
+              <a
+                href="/about"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("about");
                   window.history.pushState(null, "", "/about");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 About Us
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/contact"
+                onClick={(e) => {
+                  e.preventDefault();
                   setContactSuccess(false);
                   setActiveMarketingPage("contact");
                   window.history.pushState(null, "", "/contact");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Contact
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/docs"
+                onClick={(e) => {
+                  e.preventDefault();
                   setDocsActiveTab("guide");
                   setOpenFaqIndex(null);
                   setActiveMarketingPage("docs");
+                  window.history.pushState(null, "", "/docs");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Documentation
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/blog"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveBlogRoute("/blog");
                   setActiveToolRoute(null);
                   window.history.pushState(null, "", "/blog");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Blog
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/tools"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveToolRoute("/tools");
                   setActiveBlogRoute(null);
                   window.history.pushState(null, "", "/tools");
                   window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600"
+                className="hover:text-indigo-600 transition-colors cursor-pointer font-bold text-indigo-600 no-underline"
               >
                 Free Tools
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/privacy"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("privacy");
                   window.history.pushState(null, "", "/privacy");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Privacy Policy
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="/terms"
+                onClick={(e) => {
+                  e.preventDefault();
                   setActiveMarketingPage("terms");
                   window.history.pushState(null, "", "/terms");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
                 }}
-                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
               >
                 Terms of Service
-              </button>
+              </a>
             </div>
           </div>
         </footer>

@@ -87,35 +87,6 @@ export default function BlogHome() {
         </h2>
       </div>
 
-      {/* Tags Filter line */}
-      {allTags.length > 0 && (
-        <div className="flex flex-wrap gap-2 justify-center mb-10 pb-4 border-b border-slate-150">
-          <button
-            onClick={() => setSelectedTag(null)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              selectedTag === null
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            All Posts
-          </button>
-          {allTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setSelectedTag(tag)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                selectedTag === tag
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              #{tag}
-            </button>
-          ))}
-        </div>
-      )}
-
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 space-y-3">
           <div className="w-10 h-10 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
@@ -180,11 +151,7 @@ export default function BlogHome() {
                       {post.tags.map((tag) => (
                         <span
                           key={tag}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedTag(tag);
-                          }}
-                          className="text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-md px-1.5 py-0.5 hover:bg-indigo-600 hover:text-white transition-colors cursor-pointer"
+                          className="text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-md px-1.5 py-0.5"
                         >
                           #{tag}
                         </span>
@@ -199,7 +166,7 @@ export default function BlogHome() {
                     {post.title}
                   </h3>
 
-                  <p className="text-slate-500 text-xs leading-relaxed line-clamp-3 mb-4 font-sans">
+                  <p className="text-slate-550 text-xs leading-relaxed line-clamp-3 mb-4 font-sans">
                     {post.excerpt || 'No summary available.'}
                   </p>
                 </div>
