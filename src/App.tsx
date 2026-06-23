@@ -387,6 +387,20 @@ export default function App() {
     }
   }, [activeTab, selectedReportId, publicSlug, isClientPortal, isResetPassword, user, activeMarketingPage, activeBlogRoute]);
 
+  // Dynamic canonical link update on route transitions
+  useEffect(() => {
+    const link: HTMLLinkElement | null = document.querySelector("link[rel='canonical']");
+    const canonicalUrl = window.location.origin + window.location.pathname;
+    if (link) {
+      link.setAttribute("href", canonicalUrl);
+    } else {
+      const newLink = document.createElement("link");
+      newLink.setAttribute("rel", "canonical");
+      newLink.setAttribute("href", canonicalUrl);
+      document.head.appendChild(newLink);
+    }
+  }, [publicSlug, isClientPortal, activeToolRoute, activeBlogRoute, activeMarketingPage, activeTab, selectedReportId]);
+
   // Handle browser back/forward buttons (popstate)
   useEffect(() => {
     const handlePopState = () => {

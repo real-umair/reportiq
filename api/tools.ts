@@ -6,20 +6,29 @@ import { sanitizeInput, validateFields } from './_utils/validation.js';
 import { supabase } from './_utils/supabase.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (!handleCors(req, res)) return;
-
-  // Get the tool from query parameters
+  // Get the tool from query parameters first
   const { tool } = req.query;
   if (!tool || Array.isArray(tool)) {
+    if (!handleCors(req, res)) return;
     return res.status(400).json({ error: 'Tool parameter is required' });
   }
 
-  // Handle sitemap GET requests, other tools must use POST
+  // Handle sitemap GET/OPTIONS requests, other tools must use POST
   if (tool === 'sitemap') {
-    if (req.method !== 'GET') {
+    if (req.method !== 'GET' && req.method !== 'OPTIONS') {
       return res.status(405).json({ error: 'Method not allowed' });
     }
+    // Set public CORS headers for sitemap so any crawler can fetch it
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
   } else {
+    // Validate CORS for standard tools
+    if (!handleCors(req, res)) return;
+
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
     }
