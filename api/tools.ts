@@ -15,12 +15,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Handle sitemap GET/OPTIONS requests, other tools must use POST
   if (tool === 'sitemap') {
-    if (req.method !== 'GET' && req.method !== 'OPTIONS') {
+    if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
       return res.status(405).json({ error: 'Method not allowed' });
     }
     // Set public CORS headers for sitemap so any crawler can fetch it
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     if (req.method === 'OPTIONS') {
       return res.status(200).end();
