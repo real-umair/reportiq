@@ -7,6 +7,8 @@ Disallow: /reports
 Disallow: /clients
 Disallow: /settings
 Disallow: /admin
+Allow: /api/blog
 Disallow: /api/
+
 
 Sitemap: https://www.reportiq.xyz/sitemap.xml
