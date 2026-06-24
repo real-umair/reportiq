@@ -178,7 +178,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   </url>
 ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-      res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=600, stale-while-revalidate=86400');
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
       return res.status(200).send(sitemap);
     }
     case 'client-report': {
