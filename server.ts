@@ -18,6 +18,7 @@ import mammoth from "mammoth";
 import * as XLSX from "xlsx";
 import toolsHandler from "./api/tools.js";
 import blogHandler from "./api/blog.js";
+import seoHandler from "./api/seo.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -1259,6 +1260,33 @@ async function configureApp() {
   await initializeDatabaseSchema();
 
   app.use(express.static(join(__dirname, 'dist')));
+
+  // SEO dynamic injection route handler
+  app.get(['/tools', '/tools/*', '/blog', '/blog/*'], async (req, res) => {
+    const requestPath = req.path;
+    let type = 'tools-home';
+    let slug = '';
+    
+    if (requestPath.startsWith('/tools/')) {
+      type = 'tool';
+      slug = requestPath.substring(7);
+    } else if (requestPath === '/tools') {
+      type = 'tools-home';
+    } else if (requestPath.startsWith('/blog/')) {
+      type = 'blog';
+      slug = requestPath.substring(6);
+    } else if (requestPath === '/blog') {
+      type = 'blog-home';
+    }
+    
+    req.query = { ...req.query, type, slug };
+    try {
+      await seoHandler(req as any, res as any);
+    } catch (err) {
+      console.error("Local SEO handler error:", err);
+      res.sendFile(join(__dirname, 'dist', 'index.html'));
+    }
+  });
 
   // Add this AFTER all other routes
   app.get('*', (req, res) => {
