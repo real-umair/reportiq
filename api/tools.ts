@@ -181,6 +181,9 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
       return res.status(200).send(sitemap);
     }
+    case 'health': {
+      return res.status(200).json({ status: 'ok' });
+    }
     case 'client-report': {
       const { clientName, industry, workDone } = req.body || {};
       if (!validateFields({ clientName, industry, workDone }, res)) return;

@@ -65,6 +65,10 @@
       "destination": "/api/seo.ts?type=blog-home"
     },
     {
+      "source": "/api/health",
+      "destination": "/api/tools.ts?tool=health"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     },
