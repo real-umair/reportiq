@@ -1605,14 +1605,26 @@ export default function App() {
 
               {activeMarketingPage === "features" && (
                 <div className="space-y-10 text-xs sm:text-sm text-slate-600">
-                  <div className="flex items-center gap-3.5 pb-6 border-b border-slate-100 text-left">
-                    <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-655 shrink-0">
-                      <Sparkles className="w-6 h-6 text-indigo-600 animate-pulse" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 text-left">
+                    <div className="flex items-center gap-3.5">
+                      <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-655 shrink-0">
+                        <Sparkles className="w-6 h-6 text-indigo-600 animate-pulse" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold font-mono tracking-widest text-indigo-600 uppercase">Platform Overview</span>
+                        <h3 className="text-xl font-bold font-display text-slate-950">Why Agencies Choose ReportIQ</h3>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-xs font-bold font-mono tracking-widest text-indigo-600 uppercase">Platform Overview</span>
-                      <h3 className="text-xl font-bold font-display text-slate-950">Why Agencies Choose ReportIQ</h3>
-                    </div>
+                    <button
+                      onClick={() => {
+                        setActiveMarketingPage(null);
+                        setAuthError(null);
+                        setShowAuthForm("signup");
+                      }}
+                      className="px-4.5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs border-none cursor-pointer w-fit"
+                    >
+                      Sign Up Free
+                    </button>
                   </div>
 
                   {/* Why choose details */}
@@ -1732,6 +1744,23 @@ export default function App() {
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* CTA at the bottom of modal */}
+                  <div className="border-t border-slate-100 pt-8 text-center space-y-4">
+                    <h4 className="font-extrabold font-display text-slate-900 text-base">Ready to automate your client reporting?</h4>
+                    <p className="text-slate-500 text-xs max-w-sm mx-auto">Get started in 30 seconds. No credit card required. Cancel or upgrade anytime.</p>
+                    <button
+                      onClick={() => {
+                        setActiveMarketingPage(null);
+                        setAuthError(null);
+                        setShowAuthForm("signup");
+                      }}
+                      className="px-6.5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-md border-none cursor-pointer inline-flex items-center gap-2"
+                    >
+                      Create Free Account
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               )}
@@ -2077,16 +2106,25 @@ export default function App() {
             </div>
 
             {/* Trusted Brand Partner Logos */}
-            <div className="max-w-2xl mx-auto border-t border-slate-200/60 pt-6 pb-12 text-center mb-8">
-              <p className="text-[9px] font-bold font-mono tracking-widest text-slate-405 uppercase mb-3.5">
+            <div className="max-w-2xl mx-auto border-t border-slate-200/80 pt-8 pb-12 text-center mb-8">
+              <p className="text-[10px] font-extrabold font-mono tracking-widest text-slate-500 uppercase mb-5">
                 COMPATIBLE WITH AND TRUSTED BY TEAMS FROM
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 opacity-55 grayscale hover:opacity-85 transition-opacity duration-300 select-none">
-                <span className="font-extrabold tracking-wider text-xs text-slate-500">Vercel</span>
-                <span className="font-extrabold tracking-wider text-xs text-slate-500">HubSpot</span>
-                <span className="font-extrabold tracking-wider text-xs text-slate-500">Stripe</span>
-                <span className="font-extrabold tracking-wider text-xs text-slate-500">Shopify</span>
-                <span className="font-extrabold tracking-wider text-xs text-slate-500">Webflow</span>
+              <div className="flex flex-wrap items-center justify-center gap-4 select-none">
+                {[
+                  { name: "Vercel", color: "bg-slate-900 text-white border-slate-950" },
+                  { name: "HubSpot", color: "bg-orange-50 text-orange-600 border-orange-100" },
+                  { name: "Stripe", color: "bg-indigo-50 text-indigo-600 border-indigo-100" },
+                  { name: "Shopify", color: "bg-emerald-50 text-emerald-700 border-emerald-100" },
+                  { name: "Webflow", color: "bg-blue-50 text-blue-600 border-blue-100" }
+                ].map((logo, idx) => (
+                  <span 
+                    key={idx} 
+                    className={`px-4.5 py-2.5 rounded-xl text-xs font-black tracking-wider uppercase border shadow-3xs hover:scale-105 transition-transform duration-200 cursor-default ${logo.color}`}
+                  >
+                    {logo.name}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -2124,46 +2162,6 @@ export default function App() {
                     No matching tools found. Try searching for "report", "SOW", "competitor", or "email".
                   </div>
                 )}
-              </div>
-            )}
-
-            {!searchQuery && (
-              <div className="max-w-4xl mx-auto mb-16 text-left">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-black font-display text-slate-900">Featured Free AI Utilities</h3>
-                  <button 
-                    onClick={() => {
-                      setActiveToolRoute("/tools");
-                      window.history.pushState(null, "", "/tools");
-                      window.dispatchEvent(new PopStateEvent('popstate'));
-                    }}
-                    className="text-xs font-bold text-indigo-650 hover:text-indigo-755 border-none bg-transparent cursor-pointer flex items-center gap-0.5"
-                  >
-                    View All 16 Tools &rarr;
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {ALL_TOOLS.slice(0, 6).map((t, idx) => (
-                    <div 
-                      key={idx}
-                      onClick={() => {
-                        setActiveToolRoute(t.route);
-                        window.history.pushState(null, "", t.route);
-                        window.dispatchEvent(new PopStateEvent('popstate'));
-                      }}
-                      className="bg-white border border-slate-200 hover:border-indigo-200 p-5 rounded-2xl cursor-pointer transition-all shadow-3xs flex flex-col justify-between group"
-                    >
-                      <div>
-                        <span className="text-[9px] font-bold font-mono tracking-widest text-indigo-600 uppercase block mb-2">{t.category}</span>
-                        <h4 className="font-extrabold text-sm text-slate-900 leading-snug group-hover:text-indigo-655 transition-colors">{t.name}</h4>
-                        <p className="text-slate-500 text-xs mt-1.5 leading-relaxed line-clamp-3">{t.desc}</p>
-                      </div>
-                      <span className="text-[10px] font-bold text-indigo-655 mt-4 block group-hover:translate-x-0.5 transition-transform">
-                        Try Free &rarr;
-                      </span>
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
           </section>
