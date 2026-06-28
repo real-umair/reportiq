@@ -52,6 +52,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   switch (tool) {
     case 'sitemap': {
       let blogUrls = '';
+      const escapeXml = (unsafe: string) => unsafe.replace(/[<>&'"]/g, (c) => {
+        switch (c) {
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '&': return '&amp;';
+          case '\'': return '&apos;';
+          case '"': return '&quot;';
+          default: return c;
+        }
+      });
       try {
         const { data: posts } = await supabase
           .from('blogs')
@@ -61,7 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           blogUrls = posts.map(p => {
             const dateStr = p.published_at ? p.published_at.split('T')[0] : '2026-06-15';
             return `  <url>
-    <loc>https://www.reportiq.xyz/blog/${p.slug}</loc>
+    <loc>https://www.reportiq.xyz/blog/${escapeXml(p.slug)}</loc>
     <lastmod>${dateStr}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

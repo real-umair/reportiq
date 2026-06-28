@@ -247,6 +247,69 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     outputHtml = outputHtml.replace('</head>', `${jsonLdSchema}\n</head>`);
   }
 
+  // Inject pre-rendered body content into the DOM for headless bots/crawlers
+  let bodyContent = '';
+  if (type === 'tool' && slug && typeof slug === 'string') {
+    const toolMeta = toolMap[slug];
+    if (toolMeta) {
+      bodyContent = `
+        <div style="padding: 40px; font-family: sans-serif; max-width: 800px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
+          <h1 style="font-size: 2.2rem; font-weight: 800; color: #4f46e5; margin-bottom: 20px;">${escapeHtml(toolMeta.title)}</h1>
+          <p style="font-size: 1.1rem; color: #475569; margin-bottom: 30px;">${escapeHtml(toolMeta.description)}</p>
+          <div style="background-color: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 15px;">AI Tool Instructions & Guide</h2>
+            <p>To use the ${escapeHtml(toolMeta.name)} AI tool:</p>
+            <ul>
+              <li>Onboard your client or project metrics inside the inputs.</li>
+              <li>Select your target reporting period (month/week) and keywords.</li>
+              <li>Generate professional, polished business report copies instantly using generative machine learning.</li>
+            </ul>
+          </div>
+          <p style="font-size: 0.95rem; color: #475569; margin-bottom: 20px;">
+            ReportIQ simplifies monthly progress deliverables and KPI reviews. Generate white-label reporting documents for design, copywriting, SEO, social media, and PPC campaigns in seconds.
+          </p>
+          <p style="font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            This page is pre-rendered for search indexers. Use a JavaScript-enabled web browser to access the interactive ReportIQ workspace.
+          </p>
+        </div>
+      `;
+    }
+  } else if (type === 'tools-home') {
+    bodyContent = `
+      <div style="padding: 40px; font-family: sans-serif; max-width: 800px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: #4f46e5; margin-bottom: 20px;">Free AI Reporting Tools for Freelancers & Agencies</h1>
+        <p style="font-size: 1.1rem; color: #475569; margin-bottom: 30px;">Explore our 16 free AI-powered reporting tools for digital marketing agencies, SEO professionals, and freelancers.</p>
+        <div style="background-color: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
+          <h2 style="font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 15px;">Available AI Tools</h2>
+          <ul>
+            <li>Client Report Generator</li>
+            <li>SEO Report Generator</li>
+            <li>Agency Report Template</li>
+            <li>Weekly Progress Report Generator</li>
+            <li>PPC Ads Performance Report Writer</li>
+            <li>Scope of Work (SOW) Generator</li>
+            <li>Project Post-Mortem Debrief Writer</li>
+            <li>Client Onboarding Checklist Writer</li>
+            <li>Client Update Email Writer</li>
+            <li>Monthly Report Template</li>
+            <li>KPI Report Generator</li>
+            <li>Social Media Report Generator</li>
+            <li>Invoice Description Writer</li>
+            <li>Project Status Report Writer</li>
+            <li>Client Onboarding Email Writer</li>
+          </ul>
+        </div>
+        <p style="font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+          This page is pre-rendered for search indexers. Use a JavaScript-enabled web browser to access the interactive ReportIQ workspace.
+        </p>
+      </div>
+    `;
+  }
+
+  if (bodyContent) {
+    outputHtml = outputHtml.replace('<div id="root"></div>', `<div id="root">${bodyContent}</div>`);
+  }
+
   // Return the SEO-enriched HTML document
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=600');
