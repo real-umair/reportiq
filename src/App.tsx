@@ -2061,40 +2061,30 @@ export default function App() {
               <span className="text-indigo-600 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent font-sans">Freelancers & Agencies</span>
             </h1>
             <p className="text-slate-550 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10 font-sans">
-              Stop writing reports manually. Search or select one of our 16 free utilities below to draft scopes of work, competitive intelligence, and monthly client summaries in seconds.
+              Stop writing reports manually. Draft client scopes of work, competitive intelligence, and monthly reports in seconds with our free AI utilities.
             </p>
 
-            {/* Interactive Search Dashboard Card */}
-            <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-md text-left mb-8">
-              <input
-                type="text"
-                placeholder="Search 16 tools (e.g. scope of work, competitor, SEO, weekly...)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-3.5 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-400 font-sans"
-              />
-              
-              <div className="flex flex-wrap items-center gap-3 mt-4.5">
-                <button
-                  onClick={() => {
-                    setAuthError(null);
-                    setShowAuthForm("signup");
-                  }}
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm border-none cursor-pointer"
-                >
-                  Get Started for Free
-                </button>
-                <button
-                  onClick={() => {
-                    setActiveToolRoute("/tools");
-                    window.history.pushState(null, "", "/tools");
-                    window.dispatchEvent(new PopStateEvent('popstate'));
-                  }}
-                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all border-none cursor-pointer"
-                >
-                  Explore All 16 Tools &rarr;
-                </button>
-              </div>
+            {/* Direct Premium CTA Buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-16 select-none">
+              <button
+                onClick={() => {
+                  setAuthError(null);
+                  setShowAuthForm("signup");
+                }}
+                className="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-lg border-none cursor-pointer"
+              >
+                Get Started for Free
+              </button>
+              <button
+                onClick={() => {
+                  setActiveToolRoute("/tools");
+                  window.history.pushState(null, "", "/tools");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-xl transition-all border-none cursor-pointer"
+              >
+                Explore All 16 Tools &rarr;
+              </button>
             </div>
 
             {/* Trusted Brand Partner Logos Infinite Marquee */}
