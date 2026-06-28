@@ -276,6 +276,11 @@ export default function Reports({
     }
 
     if (plan === "free" && reportsGeneratedThisMonth >= 3) {
+      try {
+        localStorage.setItem("reportiq_device_limit_reached", "true");
+      } catch (e) {
+        console.warn("LocalStorage access failed:", e);
+      }
       setError("You have reached your 3 report limit this month on the Free plan. Upgrade to Starter for 20 reports per month.");
       return;
     } else if (plan === "starter" && reportsGeneratedThisMonth >= 20) {

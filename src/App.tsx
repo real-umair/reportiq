@@ -596,6 +596,14 @@ export default function App() {
       const dbProfile = await supabaseDb.getProfile(uid);
       if (dbProfile) {
         setProfile(dbProfile);
+        // Clear device limit flag if they are on a paid plan
+        if (dbProfile.plan && dbProfile.plan !== "free") {
+          try {
+            localStorage.removeItem("reportiq_device_limit_reached");
+          } catch (e) {
+            console.warn("LocalStorage access failed:", e);
+          }
+        }
       } else {
         console.warn("Profile document not available under profiles table.");
       }
@@ -711,6 +719,42 @@ export default function App() {
       if (showAuthForm === "signup") {
         if (!authAgencyName.trim()) {
           setAuthError("All fields are required for sign up.");
+          setAuthSubmitting(false);
+          return;
+        }
+
+        // Prevent registration if the device already hit the free trial limit
+        try {
+          if (localStorage.getItem("reportiq_device_limit_reached") === "true") {
+            setAuthError("You have already used your free allowance on this device. Please log in to your existing account or upgrade.");
+            setAuthSubmitting(false);
+            return;
+          }
+        } catch (e) {
+          console.warn("LocalStorage access failed:", e);
+        }
+
+        // Prevent registration with disposable / fake emails
+        const blockedDomains = [
+          "test.com", "example.com", "mailinator.com", "yopmail.com", "10minutemail.com", 
+          "temp-mail.org", "tempmail.com", "getnada.com", "dispostable.com", 
+          "guerrillamail.com", "burnermail.io", "sharklasers.com", "guerrillamailblock.com", 
+          "guerrillamail.de", "guerrillamail.net", "guerrillamail.org", "guerrillamail.biz", 
+          "grr.la", "pokemail.net", "trashmail.com", "maildrop.cc", "fakeinbox.com", 
+          "generator.email", "tempmail.net", "burnermail.org", "tempmail.co",
+          "throwawaymail.com", "tempmailaddress.com", "mailnesia.com"
+        ];
+        const emailParts = emailInput.split("@");
+        const domain = emailParts[1]?.toLowerCase();
+        
+        if (
+          blockedDomains.includes(domain) || 
+          emailInput.startsWith("test@") || 
+          emailInput.startsWith("test+") ||
+          domain === "test.com" ||
+          domain === "example.com"
+        ) {
+          setAuthError("Please use a valid, permanent email address. Disposable and test email domains are not allowed.");
           setAuthSubmitting(false);
           return;
         }
