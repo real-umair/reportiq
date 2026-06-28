@@ -1608,7 +1608,7 @@ export default function App() {
 
               {activeMarketingPage === "features" && (
                 <div className="space-y-10 text-xs sm:text-sm text-slate-600">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 text-left pr-8 sm:pr-10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 text-left pr-12 sm:pr-16">
                     <div className="flex items-center gap-3.5">
                       <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-655 shrink-0">
                         <Sparkles className="w-6 h-6 text-indigo-600 animate-pulse" />
@@ -3308,7 +3308,7 @@ export default function App() {
 
               {activeMarketingPage === "features" && (
                 <div className="space-y-10 text-xs sm:text-sm text-slate-600">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 text-left pr-8 sm:pr-10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 text-left pr-12 sm:pr-16">
                     <div className="flex items-center gap-3.5">
                       <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-655 shrink-0">
                         <Sparkles className="w-6 h-6 text-indigo-600 animate-pulse" />
