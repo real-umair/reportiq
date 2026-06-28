@@ -241,7 +241,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       const sAgencyName = sanitizeInput(agencyName);
       const sClientName = sanitizeInput(clientName);
       const sMonth = sanitizeInput(month);
-      prompt = `Write a professional agency report from ${sAgencyName} for client ${sClientName} for ${sMonth}. Include: Executive Summary, Work Completed, Results, Next Steps. 300 words maximum.`;
+      prompt = `Write a professional agency report from ${sAgencyName} for client ${sClientName} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Include: Executive Summary, Work Completed, Results, Next Steps. 300 words maximum.`;
       break;
     }
     case 'seo-report': {
@@ -250,7 +250,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       const sWebsite = sanitizeInput(website);
       const sKeywords = sanitizeInput(keywords);
       const sMonth = sanitizeInput(month);
-      prompt = `Write a professional SEO report for ${sWebsite} targeting keywords: ${sKeywords} for ${sMonth}. Include: Overview, Keyword Performance, Traffic Summary, Recommendations. 300 words maximum.`;
+      prompt = `Write a professional SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Include: Overview, Keyword Performance, Traffic Summary, Recommendations. 300 words maximum.`;
       break;
     }
     case 'client-email': {
@@ -268,7 +268,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       const sBusinessType = sanitizeInput(businessType);
       const sMonth = sanitizeInput(month);
       const sKeyResults = sanitizeInput(keyResults);
-      prompt = `Write a monthly report for a ${sBusinessType} business for ${sMonth}. Key results: ${sKeyResults}. Include: Monthly Summary, Key Achievements, Metrics, Next Month Plan. 300 words maximum.`;
+      prompt = `Write a monthly report for a ${sBusinessType} business for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Key results: ${sKeyResults}. Include: Monthly Summary, Key Achievements, Metrics, Next Month Plan. 300 words maximum.`;
       break;
     }
     case 'kpi-report': {
@@ -277,7 +277,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       const sBusinessName = sanitizeInput(businessName);
       const sKpis = sanitizeInput(kpis);
       const sPeriod = sanitizeInput(period);
-      prompt = `Write a professional KPI summary report for ${sBusinessName} for ${sPeriod}. KPIs: ${sKpis}. Include: KPI Overview, Performance Analysis, Highlights, Recommendations. 300 words maximum.`;
+      prompt = `Write a professional KPI summary report for ${sBusinessName} for the exact period of ${sPeriod} (you must output the exact year and month/period from the input and do not default to other years). KPIs: ${sKpis}. Include: KPI Overview, Performance Analysis, Highlights, Recommendations. 300 words maximum.`;
       break;
     }
     case 'social-media-report': {
