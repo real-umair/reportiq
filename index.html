@@ -66,26 +66,53 @@
           "@id": "https://www.reportiq.xyz/#website",
           "url": "https://www.reportiq.xyz/",
           "name": "ReportIQ",
-          "description": "AI Powered Client Reporting Tool for Freelancers and Agencies"
+          "description": "AI Powered Client Reporting Tool for Freelancers and Agencies",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.reportiq.xyz/tools?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
         },
         {
-          "@type": "SiteNavigationElement",
+          "@type": "ItemList",
           "@id": "https://www.reportiq.xyz/#navigation",
-          "name": [
-            "Home",
-            "About Us",
-            "Contact Support",
-            "Free AI Tools",
-            "Client Reporting Blog",
-            "Platform Documentation"
-          ],
-          "url": [
-            "https://www.reportiq.xyz/",
-            "https://www.reportiq.xyz/about",
-            "https://www.reportiq.xyz/contact",
-            "https://www.reportiq.xyz/tools",
-            "https://www.reportiq.xyz/blog",
-            "https://www.reportiq.xyz/docs"
+          "itemListElement": [
+            {
+              "@type": "SiteNavigationElement",
+              "position": 1,
+              "name": "Features",
+              "url": "https://www.reportiq.xyz/features"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 2,
+              "name": "Free AI Tools",
+              "url": "https://www.reportiq.xyz/tools"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 3,
+              "name": "About Us",
+              "url": "https://www.reportiq.xyz/about"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 4,
+              "name": "Documentation",
+              "url": "https://www.reportiq.xyz/docs"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 5,
+              "name": "Client Reporting Blog",
+              "url": "https://www.reportiq.xyz/blog"
+            },
+            {
+              "@type": "SiteNavigationElement",
+              "position": 6,
+              "name": "Contact Support",
+              "url": "https://www.reportiq.xyz/contact"
+            }
           ]
         }
       ]
