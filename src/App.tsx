@@ -2066,48 +2066,34 @@ export default function App() {
 
             {/* Interactive Search Dashboard Card */}
             <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-md text-left mb-8">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="text"
-                  placeholder="Search 16 tools (e.g. scope of work, competitor, SEO, weekly...)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-3.5 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-400 font-sans"
-                />
+              <input
+                type="text"
+                placeholder="Search 16 tools (e.g. scope of work, competitor, SEO, weekly...)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-3.5 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-400 font-sans"
+              />
+              
+              <div className="flex flex-wrap items-center gap-3 mt-4.5">
                 <button
                   onClick={() => {
                     setAuthError(null);
                     setShowAuthForm("signup");
                   }}
-                  className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 hover:shadow-md text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm shrink-0 border-none cursor-pointer text-center whitespace-nowrap"
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm border-none cursor-pointer"
                 >
-                  Get Started Free &rarr;
+                  Get Started for Free
                 </button>
-              </div>
-
-              {/* Quick Select Buttons */}
-              <div className="flex flex-wrap items-center gap-2 mt-4">
-                <span className="text-[10px] font-bold font-mono uppercase tracking-wider text-slate-400 mr-1">Popular:</span>
-                {[
-                  { label: "Client Report", route: "/tools/client-report-generator" },
-                  { label: "Scope of Work (SOW)", route: "/tools/scope-of-work-generator" },
-                  { label: "Competitor Analysis", route: "/tools/competitor-analysis-generator" },
-                  { label: "Weekly Progress", route: "/tools/weekly-report-generator" },
-                  { label: "PPC Ads", route: "/tools/ppc-performance-report" }
-                ].map((tag, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setActiveToolRoute(tag.route);
-                      window.history.pushState(null, "", tag.route);
-                      window.dispatchEvent(new PopStateEvent('popstate'));
-                    }}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-705 text-slate-600 font-bold text-xs rounded-lg transition-all border-none cursor-pointer"
-                  >
-                    {tag.label}
-                  </button>
-                ))}
+                <button
+                  onClick={() => {
+                    setActiveToolRoute("/tools");
+                    window.history.pushState(null, "", "/tools");
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all border-none cursor-pointer"
+                >
+                  Explore All 16 Tools &rarr;
+                </button>
               </div>
             </div>
 
