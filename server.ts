@@ -49,18 +49,33 @@ const requireAuth = async (req: express.Request, res: express.Response, next: ex
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization;
     if (!authHeader || typeof authHeader !== "string" || !authHeader.startsWith("Bearer ")) {
+      console.warn("[requireAuth] Access denied. No session token provided in headers.");
       res.status(401).json({ error: "Access denied. No session token provided." });
       return;
     }
     const token = authHeader.substring(7);
+    
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error("[requireAuth] SUPABASE_URL or SUPABASE_ANON_KEY is not defined in local server environment");
+      res.status(401).json({ error: "Access denied. Server misconfiguration." });
+      return;
+    }
+
     const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (error || !user) {
+    if (error) {
+      console.error("[requireAuth] Supabase auth.getUser error:", error.message || error);
+      res.status(401).json({ error: "Access denied. Invalid session or token." });
+      return;
+    }
+    if (!user) {
+      console.warn("[requireAuth] Access denied. No user matched token.");
       res.status(401).json({ error: "Access denied. Invalid session or token." });
       return;
     }
     (req as any).user = user;
     next();
   } catch (err: any) {
+    console.error("[requireAuth] Authentication exception caught:", err.message || err);
     res.status(401).json({ error: err.message || "Authentication failed." });
   }
 };
