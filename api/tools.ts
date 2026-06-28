@@ -87,6 +87,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.reportiq.xyz/features</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.reportiq.xyz/contact</loc>
     <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
@@ -172,6 +178,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   </url>
   <url>
     <loc>https://www.reportiq.xyz/tools/client-onboarding-email</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/competitor-analysis-generator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/weekly-report-generator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/ppc-performance-report</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/scope-of-work-generator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/project-post-mortem-generator</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.reportiq.xyz/tools/onboarding-questionnaire-generator</loc>
     <lastmod>2026-06-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -273,6 +315,60 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       const sServiceType = sanitizeInput(serviceType);
       const sStartDate = sanitizeInput(startDate);
       prompt = `Write a professional client onboarding welcome email for ${sClientName} starting ${sServiceType} on ${sStartDate}. Include: warm welcome, what to expect, next steps. 250 words maximum.`;
+      break;
+    }
+    case 'competitor-analysis': {
+      const { clientName, competitor, focusArea } = req.body || {};
+      if (!validateFields({ clientName, competitor, focusArea }, res)) return;
+      const sClientName = sanitizeInput(clientName);
+      const sCompetitor = sanitizeInput(competitor);
+      const sFocusArea = sanitizeInput(focusArea);
+      prompt = `Write a professional competitor analysis summary for ${sClientName} comparing against competitor ${sCompetitor} focusing on ${sFocusArea}. Detail their strengths, positioning advantages, and strategic recommendations for our client. 300 words maximum.`;
+      break;
+    }
+    case 'weekly-report': {
+      const { clientName, tasksDone, nextSteps } = req.body || {};
+      if (!validateFields({ clientName, tasksDone, nextSteps }, res)) return;
+      const sClientName = sanitizeInput(clientName);
+      const sTasksDone = sanitizeInput(tasksDone);
+      const sNextSteps = sanitizeInput(nextSteps);
+      prompt = `Write a professional weekly progress report for client ${sClientName}. Completed this week: ${sTasksDone}. Next week priorities: ${sNextSteps}. Include sections: Accomplishments, Next Steps. 300 words maximum.`;
+      break;
+    }
+    case 'ppc-report': {
+      const { clientName, adSpend, results } = req.body || {};
+      if (!validateFields({ clientName, adSpend, results }, res)) return;
+      const sClientName = sanitizeInput(clientName);
+      const sAdSpend = sanitizeInput(adSpend);
+      const sResults = sanitizeInput(results);
+      prompt = `Write a professional paid advertising performance report for client ${sClientName}. Spend details: ${sAdSpend}. Campaign outcomes: ${sResults}. Include sections: Campaign Summary, Performance Analysis, Recommendations. 300 words maximum.`;
+      break;
+    }
+    case 'scope-of-work': {
+      const { projectName, deliverables, timeline } = req.body || {};
+      if (!validateFields({ projectName, deliverables, timeline }, res)) return;
+      const sProjectName = sanitizeInput(projectName);
+      const sDeliverables = sanitizeInput(deliverables);
+      const sTimeline = sanitizeInput(timeline);
+      prompt = `Write a professional Scope of Work (SOW) outline for the project ${sProjectName}. Deliverables: ${sDeliverables}. Timeline & fee: ${sTimeline}. Include sections: Project Overview, Core Deliverables, Out-of-Scope Items, Timeline & Budget. 350 words maximum.`;
+      break;
+    }
+    case 'post-mortem': {
+      const { projectName, wentWell, challenges } = req.body || {};
+      if (!validateFields({ projectName, wentWell, challenges }, res)) return;
+      const sProjectName = sanitizeInput(projectName);
+      const sWentWell = sanitizeInput(wentWell);
+      const sChallenges = sanitizeInput(challenges);
+      prompt = `Write a professional project post-mortem and retrospective report for ${sProjectName}. Successes: ${sWentWell}. Bottlenecks/learnings: ${sChallenges}. Include sections: Retrospective Summary, Key Wins, Challenges & Root Causes, Future Sprints Recommendations. 300 words maximum.`;
+      break;
+    }
+    case 'onboarding-questionnaire': {
+      const { serviceType, industry, goals } = req.body || {};
+      if (!validateFields({ serviceType, industry, goals }, res)) return;
+      const sServiceType = sanitizeInput(serviceType);
+      const sIndustry = sanitizeInput(industry);
+      const sGoals = sanitizeInput(goals);
+      prompt = `Write a professional client onboarding questionnaire template for a ${sServiceType} campaign in the ${sIndustry} industry targeting ${sGoals}. Create 10 strategic questions to gather critical requirements and brand alignment. 300 words maximum.`;
       break;
     }
     default:

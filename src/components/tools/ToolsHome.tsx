@@ -11,7 +11,8 @@ import {
   ClipboardList, 
   UserCheck, 
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Compass
 } from 'lucide-react';
 
 interface ToolCard {
@@ -29,7 +30,7 @@ export default function ToolsHome() {
     document.title = 'Free AI Tools for Freelancers & Agencies | ReportIQ';
     const metaDescEl = document.querySelector('meta[name="description"]');
     if (metaDescEl) {
-      metaDescEl.setAttribute('content', 'Explore 10 free AI-powered reporting tools for digital marketing agencies, SEO professionals, and freelancers. No signup required.');
+      metaDescEl.setAttribute('content', 'Explore 16 free AI-powered reporting tools for digital marketing agencies, SEO professionals, and freelancers. No signup required.');
     }
   }, []);
 
@@ -94,6 +95,42 @@ export default function ToolsHome() {
       route: '/tools/client-onboarding-email',
       icon: UserCheck,
     },
+    {
+      name: 'Competitor Analysis Generator',
+      description: 'Create professional competitor analysis summaries instantly with AI. Outline brand positioning and market advantages.',
+      route: '/tools/competitor-analysis-generator',
+      icon: Compass,
+    },
+    {
+      name: 'Weekly Progress Report Generator',
+      description: 'Create professional weekly project updates for your clients. Summarize completed tasks and next-week objectives.',
+      route: '/tools/weekly-report-generator',
+      icon: ClipboardList,
+    },
+    {
+      name: 'PPC Ads Performance Report Writer',
+      description: 'Compile paid marketing performance summaries. Showcase conversion growth, click metrics, CPA, and ROAS.',
+      route: '/tools/ppc-performance-report',
+      icon: TrendingUp,
+    },
+    {
+      name: 'Scope of Work (SOW) Generator',
+      description: 'Draft comprehensive project scopes of work in seconds. Clearly specify deliverables, budgets, and timelines.',
+      route: '/tools/scope-of-work-generator',
+      icon: FileText,
+    },
+    {
+      name: 'Project Post-Mortem Debrief Writer',
+      description: 'Run retrospectives and debrief summaries with AI. Highlight key successes, operational challenges, and lessons.',
+      route: '/tools/project-post-mortem-generator',
+      icon: Calendar,
+    },
+    {
+      name: 'Client Onboarding Checklist Writer',
+      description: 'Generate customized onboarding questionnaires to kick off client projects. Gather assets and preferences.',
+      route: '/tools/onboarding-questionnaire-generator',
+      icon: UserCheck,
+    },
   ];
 
   const handleNavigate = (route: string) => {
@@ -114,7 +151,7 @@ export default function ToolsHome() {
           <span className="text-indigo-600 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Freelancers & Agencies</span>
         </h1>
         <p className="text-slate-550 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          Unlock 10 free AI-powered drafting utilities. Instantly generate reports, status summaries, onboarding emails, and client updates. No credit card or signup required.
+          Unlock 16 free AI-powered drafting utilities. Instantly generate reports, status summaries, onboarding emails, and client updates. No credit card or signup required.
         </p>
       </div>
 
@@ -166,7 +203,7 @@ export default function ToolsHome() {
           {[
             {
               q: "Are these tools really free?",
-              a: "Yes. All 10 tools on this page are completely free to use with no signup required. Each tool allows 3 free uses per day. For unlimited access sign up for ReportIQ free at reportiq.xyz."
+              a: "Yes. All 16 tools on this page are completely free to use with no signup required. Each tool allows 3 free uses per day. For unlimited access sign up for ReportIQ free at reportiq.xyz."
             },
             {
               q: "Do I need to create an account to use these tools?",

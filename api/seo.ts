@@ -60,6 +60,36 @@ const toolMap: Record<string, { title: string; description: string; name: string
     name: 'Client Onboarding Email Writer',
     title: 'Free Client Onboarding Email Writer — AI Powered | ReportIQ',
     description: 'Draft warm client onboarding emails welcoming new customers and aligning them on what to expect.'
+  },
+  'competitor-analysis-generator': {
+    name: 'Competitor Analysis Generator',
+    title: 'Free Competitor Analysis Generator — AI Powered | ReportIQ',
+    description: 'Generate competitor analysis summaries to compare market positioning, identify gaps, and discover opportunities.'
+  },
+  'weekly-report-generator': {
+    name: 'Weekly Progress Report Generator',
+    title: 'Free Weekly Progress Report Generator — AI Powered | ReportIQ',
+    description: 'Create weekly project progress updates detailing accomplishments, key metrics, and upcoming tasks.'
+  },
+  'ppc-performance-report': {
+    name: 'PPC Ads Performance Report Writer',
+    title: 'Free PPC Ads Performance Report Writer — AI Powered | ReportIQ',
+    description: 'Compile ad spend, clicks, conversions, and ROAS metrics into professional advertising reports.'
+  },
+  'scope-of-work-generator': {
+    name: 'Scope of Work (SOW) Generator',
+    title: 'Free Scope of Work (SOW) Generator — AI Powered | ReportIQ',
+    description: 'Draft comprehensive project SOW outlines specifying deliverables, project milestones, and contract terms.'
+  },
+  'project-post-mortem-generator': {
+    name: 'Project Post-Mortem Debrief Writer',
+    title: 'Free Project Post-Mortem Debrief Writer — AI Powered | ReportIQ',
+    description: 'Run project retrospectives to highlight successes, address bottlenecks, and document key learnings.'
+  },
+  'onboarding-questionnaire-generator': {
+    name: 'Client Onboarding Checklist Writer',
+    title: 'Free Client Onboarding Checklist Writer — AI Powered | ReportIQ',
+    description: 'Generate onboarding questionnaires to align project kickoff requirements and collect client details.'
   }
 };
 
@@ -154,7 +184,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     } else if (type === 'tools-home') {
       title = 'Free AI Tools for Freelancers & Agencies | ReportIQ';
-      description = 'Explore 10 free AI-powered reporting tools for digital marketing agencies, SEO professionals, and freelancers. No signup required.';
+      description = 'Explore 16 free AI-powered reporting tools for digital marketing agencies, SEO professionals, and freelancers. No signup required.';
     } else if (type === 'tool' && slug && typeof slug === 'string') {
       const toolMeta = toolMap[slug];
       if (toolMeta) {
@@ -182,7 +212,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         `;
       } else {
         title = 'Free AI Tools for Freelancers & Agencies | ReportIQ';
-        description = 'Explore 10 free AI-powered reporting tools for digital marketing agencies, SEO professionals, and freelancers.';
+        description = 'Explore 16 free AI-powered reporting tools for digital marketing agencies, SEO professionals, and freelancers.';
       }
     }
   } catch (err) {

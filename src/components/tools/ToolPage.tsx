@@ -71,6 +71,36 @@ const RELATED_TOOLS = [
     description: 'Draft warm client onboarding emails welcoming new customers and aligning them on what to expect.',
     route: '/tools/client-onboarding-email',
   },
+  {
+    name: 'Competitor Analysis Generator',
+    description: 'Create professional competitor analysis summaries instantly with AI. Outline brand positioning and market advantages.',
+    route: '/tools/competitor-analysis-generator',
+  },
+  {
+    name: 'Weekly Progress Report Generator',
+    description: 'Create professional weekly project updates for your clients. Summarize completed tasks and next-week objectives.',
+    route: '/tools/weekly-report-generator',
+  },
+  {
+    name: 'PPC Ads Performance Report Writer',
+    description: 'Compile paid marketing performance summaries. Showcase conversion growth, click metrics, CPA, and ROAS.',
+    route: '/tools/ppc-performance-report',
+  },
+  {
+    name: 'Scope of Work (SOW) Generator',
+    description: 'Draft comprehensive project scopes of work in seconds. Clearly specify deliverables, budgets, and timelines.',
+    route: '/tools/scope-of-work-generator',
+  },
+  {
+    name: 'Project Post-Mortem Debrief Writer',
+    description: 'Run retrospectives and debrief summaries with AI. Highlight key successes, operational challenges, and lessons.',
+    route: '/tools/project-post-mortem-generator',
+  },
+  {
+    name: 'Client Onboarding Checklist Writer',
+    description: 'Generate customized onboarding questionnaires to kick off client projects. Gather assets and preferences.',
+    route: '/tools/onboarding-questionnaire-generator',
+  },
 ];
 
 export default function ToolPage({

@@ -46,11 +46,36 @@ import ToolSocialMedia from "./components/tools/ToolSocialMedia";
 import ToolInvoice from "./components/tools/ToolInvoice";
 import ToolProjectStatus from "./components/tools/ToolProjectStatus";
 import ToolOnboarding from "./components/tools/ToolOnboarding";
+import ToolCompetitorAnalysis from "./components/tools/ToolCompetitorAnalysis";
+import ToolWeeklyReport from "./components/tools/ToolWeeklyReport";
+import ToolPpcReport from "./components/tools/ToolPpcReport";
+import ToolScopeOfWork from "./components/tools/ToolScopeOfWork";
+import ToolPostMortem from "./components/tools/ToolPostMortem";
+import ToolOnboardingQuestionnaire from "./components/tools/ToolOnboardingQuestionnaire";
 
 // Blog component imports
 import BlogHome from "./components/blog/BlogHome";
 import BlogPost from "./components/blog/BlogPost";
 import BlogAdmin from "./components/blog/BlogAdmin";
+
+const ALL_TOOLS = [
+  { name: 'Client Report Generator', desc: 'Generate a professional client report instantly with AI.', route: '/tools/client-report-generator', category: 'reports' },
+  { name: 'Agency Report Template', desc: 'Create professional agency reports in seconds with executive summaries.', route: '/tools/agency-report-template', category: 'reports' },
+  { name: 'SEO Report Generator', desc: 'Generate professional SEO performance reports targeting search keywords.', route: '/tools/seo-report-generator', category: 'seo' },
+  { name: 'Client Update Email Writer', desc: 'Draft professional, encouraging client update emails detailing accomplishments.', route: '/tools/client-update-email', category: 'emails' },
+  { name: 'Monthly Report Template', desc: 'Produce high-quality monthly progress reports for your business.', route: '/tools/monthly-report-template', category: 'reports' },
+  { name: 'KPI Report Generator', desc: 'Compile detailed KPI summary reports containing key metric analyses.', route: '/tools/kpi-report-generator', category: 'reports' },
+  { name: 'Social Media Report Generator', desc: 'Analyze social channel performance and generate breakdown summaries.', route: '/tools/social-media-report', category: 'social' },
+  { name: 'Invoice Description Writer', desc: 'Write professional descriptions for invoice line items.', route: '/tools/invoice-description-writer', category: 'finance' },
+  { name: 'Project Status Report Writer', desc: 'Track project health, bottlenecks, and planned milestones.', route: '/tools/project-status-report', category: 'reports' },
+  { name: 'Client Onboarding Email Writer', desc: 'Draft warm client onboarding emails welcoming new customers.', route: '/tools/client-onboarding-email', category: 'emails' },
+  { name: 'Competitor Analysis Generator', desc: 'Create competitor analysis summaries to compare market positioning.', route: '/tools/competitor-analysis-generator', category: 'seo' },
+  { name: 'Weekly Progress Report Generator', desc: 'Create weekly project progress updates detailing accomplishments.', route: '/tools/weekly-report-generator', category: 'reports' },
+  { name: 'PPC Ads Performance Report Writer', desc: 'Compile conversion, ROAS, CPA, and click metrics for advertising reports.', route: '/tools/ppc-performance-report', category: 'ads' },
+  { name: 'Scope of Work (SOW) Generator', desc: 'Draft comprehensive project SOW outlines specifying deliverables.', route: '/tools/scope-of-work-generator', category: 'contracts' },
+  { name: 'Project Post-Mortem Debrief Writer', desc: 'Run retrospectives and highlight successes, bottlenecks, and learnings.', route: '/tools/project-post-mortem-generator', category: 'management' },
+  { name: 'Client Onboarding Checklist Writer', desc: 'Generate onboarding questionnaires to align project kickoff requirements.', route: '/tools/onboarding-questionnaire-generator', category: 'onboarding' }
+];
 
 export default function App() {
   // Public shareable link detection routing
@@ -80,6 +105,7 @@ export default function App() {
   });
 
   const [activeLandingFaq, setActiveLandingFaq] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Lock modal state
   const [lockModal, setLockModal] = useState<{
@@ -365,6 +391,7 @@ export default function App() {
     let path = "/";
     if (!user) {
       if (activeMarketingPage === "about") path = "/about";
+      else if (activeMarketingPage === "features") path = "/features";
       else if (activeMarketingPage === "contact") path = "/contact";
       else if (activeMarketingPage === "privacy") path = "/privacy";
       else if (activeMarketingPage === "terms") path = "/terms";
@@ -454,6 +481,8 @@ export default function App() {
 
       if (path === "/about") {
         setActiveMarketingPage("about");
+      } else if (path === "/features") {
+        setActiveMarketingPage("features");
       } else if (path === "/contact") {
         setActiveMarketingPage("contact");
       } else if (path === "/privacy") {
@@ -825,6 +854,18 @@ export default function App() {
 
             <div className="hidden md:flex items-center gap-6">
               <a
+                href="/features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveMarketingPage("features");
+                  window.history.pushState(null, "", "/features");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
+              >
+                Features
+              </a>
+              <a
                 href="/about"
                 onClick={(e) => {
                   e.preventDefault();
@@ -977,6 +1018,18 @@ export default function App() {
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
             <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-555">
+              <a
+                href="/features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveMarketingPage("features");
+                  window.history.pushState(null, "", "/features");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
+              >
+                Features
+              </a>
               <a
                 href="/about"
                 onClick={(e) => {
@@ -1146,6 +1199,24 @@ export default function App() {
       case "/tools/client-onboarding-email":
         toolComponent = <ToolOnboarding />;
         break;
+      case "/tools/competitor-analysis-generator":
+        toolComponent = <ToolCompetitorAnalysis />;
+        break;
+      case "/tools/weekly-report-generator":
+        toolComponent = <ToolWeeklyReport />;
+        break;
+      case "/tools/ppc-performance-report":
+        toolComponent = <ToolPpcReport />;
+        break;
+      case "/tools/scope-of-work-generator":
+        toolComponent = <ToolScopeOfWork />;
+        break;
+      case "/tools/project-post-mortem-generator":
+        toolComponent = <ToolPostMortem />;
+        break;
+      case "/tools/onboarding-questionnaire-generator":
+        toolComponent = <ToolOnboardingQuestionnaire />;
+        break;
     }
 
     return (
@@ -1173,6 +1244,18 @@ export default function App() {
             </a>
 
             <div className="hidden md:flex items-center gap-6">
+              <a
+                href="/features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveMarketingPage("features");
+                  window.history.pushState(null, "", "/features");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
+              >
+                Features
+              </a>
               <a
                 href="/about"
                 onClick={(e) => {
@@ -1325,6 +1408,18 @@ export default function App() {
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
             <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-555">
+              <a
+                href="/features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveMarketingPage("features");
+                  window.history.pushState(null, "", "/features");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
+              >
+                Features
+              </a>
               <a
                 href="/about"
                 onClick={(e) => {
@@ -1501,10 +1596,143 @@ export default function App() {
 
               {activeMarketingPage === "docs" && (
                 <div className="text-xs text-left">
-                  <h3 className="text-xl font-bold font-display text-slate-950 mb-4">Documentation</h3>
+                  <h3 className="text-xl font-bold font-display text-slate-955 mb-4">Documentation</h3>
                   <p className="text-slate-550 leading-relaxed">
                     Welcome to the documentation guide for ReportIQ tools.
                   </p>
+                </div>
+              )}
+
+              {activeMarketingPage === "features" && (
+                <div className="space-y-10 text-xs sm:text-sm text-slate-600">
+                  <div className="flex items-center gap-3.5 pb-6 border-b border-slate-100 text-left">
+                    <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-655 shrink-0">
+                      <Sparkles className="w-6 h-6 text-indigo-600 animate-pulse" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold font-mono tracking-widest text-indigo-600 uppercase">Platform Overview</span>
+                      <h3 className="text-xl font-bold font-display text-slate-950">Why Agencies Choose ReportIQ</h3>
+                    </div>
+                  </div>
+
+                  {/* Why choose details */}
+                  <div className="space-y-4 text-left">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="p-5 border border-slate-200 bg-slate-50/50 rounded-2xl">
+                        <h4 className="font-extrabold text-slate-955 text-sm mb-1.5">AI Client Reporting Tool</h4>
+                        <p className="text-slate-550 text-xs leading-relaxed">
+                          Writing monthly client reports is a time-consuming manual task. Freelancers and digital agencies spend hours copying metrics and writing summaries. ReportIQ eliminates this. Our AI powered client reporting tool reads rough notes and generates a complete professional report in 30 seconds.
+                        </p>
+                      </div>
+                      
+                      <div className="p-5 border border-slate-200 bg-slate-50/50 rounded-2xl">
+                        <h4 className="font-extrabold text-slate-955 text-sm mb-1.5">SEO, PPC & Social Media Analytics</h4>
+                        <p className="text-slate-550 text-xs leading-relaxed">
+                          From SEO performance reports to social media analytics summaries, project status updates to monthly retainer reports — ReportIQ handles every document type your agency sends. Built specifically for SEO agencies, social media managers, web designers, PPC specialists, and content teams.
+                        </p>
+                      </div>
+
+                      <div className="p-5 border border-slate-200 bg-slate-50/50 rounded-2xl">
+                        <h4 className="font-extrabold text-slate-955 text-sm mb-1.5">Shareable Branded Links</h4>
+                        <p className="text-slate-550 text-xs leading-relaxed">
+                          Every report generated by ReportIQ includes a unique shareable link your client opens instantly in their browser. No downloads or email attachments. Branded client reports make your agency look world class.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Who uses ReportIQ */}
+                  <div className="text-left border-t border-slate-100 pt-8">
+                    <h4 className="font-extrabold font-display text-slate-955 text-base mb-3">Who Uses ReportIQ?</h4>
+                    <p className="text-slate-500 text-xs leading-normal mb-4">Modern creators & agencies across various niches:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Content writers and copywriters",
+                        "SEO professionals",
+                        "Social media managers",
+                        "PPC and advertising specialists",
+                        "Web designers and developers",
+                        "Marketing consultants",
+                        "Growth hackers",
+                        "Virtual assistants"
+                      ].map((u, i) => (
+                        <span key={i} className="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded-lg text-xs font-semibold">
+                          {u}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Testimonials */}
+                  <div className="text-left border-t border-slate-100 pt-8">
+                    <h4 className="font-extrabold font-display text-slate-955 text-base mb-4">Loved by Freelancers & Agencies Worldwide</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {[
+                        {
+                          name: "Sarah Mitchell",
+                          title: "SEO Freelancer, London UK",
+                          text: "I used to spend every Sunday writing client reports. ReportIQ completely changed that. My reports now take 30 seconds and look more professional than before."
+                        },
+                        {
+                          name: "James Rodriguez",
+                          title: "Digital Agency Owner, New York",
+                          text: "We manage 12 clients and reporting was killing our team. ReportIQ saves us at least 40 hours a month. The AI writing quality is genuinely impressive."
+                        },
+                        {
+                          name: "Priya Sharma",
+                          title: "Social Media Manager, Toronto",
+                          text: "The shareable link feature is brilliant. My clients love opening their report on their phone instead of downloading a PDF. Makes me look premium."
+                        },
+                        {
+                          name: "Marcus Chen",
+                          title: "PPC Specialist, Sydney",
+                          text: "I was skeptical about AI writing but the output is genuinely professional. I barely edit the reports at all. My clients are happier and I get my weekends back."
+                        }
+                      ].map((item, idx) => (
+                        <div key={idx} className="bg-white border border-slate-150 p-4 rounded-xl flex flex-col justify-between shadow-3xs">
+                          <p className="text-slate-650 text-xs leading-relaxed italic mb-3">"{item.text}"</p>
+                          <div>
+                            <h5 className="font-bold text-slate-900 text-xs leading-none mb-0.5">{item.name}</h5>
+                            <p className="text-[10px] text-slate-400 font-medium">{item.title}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* FAQ Accordion */}
+                  <div className="text-left border-t border-slate-100 pt-8">
+                    <h4 className="font-extrabold font-display text-slate-955 text-base mb-4">Frequently Asked Questions</h4>
+                    <div className="space-y-3.5">
+                      {[
+                        {
+                          q: "What is ReportIQ?",
+                          a: "ReportIQ is an AI powered client reporting tool built for freelancers and digital agencies. Instead of spending hours writing monthly client updates, you enter your rough notes and our AI generates a complete professional report in 30 seconds. Every report gets a unique shareable link you send directly to your client."
+                        },
+                        {
+                          q: "Is ReportIQ free to use?",
+                          a: "Yes. ReportIQ has a completely free plan that includes 3 client reports per month and 2 active clients with no credit card required. Paid plans start at $29 per month for freelancers and agencies who need more reports, custom branding, and advanced features."
+                        },
+                        {
+                          q: "How does AI client report generation work?",
+                          a: "You enter the work you completed for your client, add any key metrics or results, choose your preferred tone and length, and click generate. ReportIQ AI reads your notes and writes a polished professional client report with proper sections including work completed, key results, and coming up next. The whole process takes under 30 seconds."
+                        },
+                        {
+                          q: "Can I send the report directly to my client?",
+                          a: "Yes. Every report gets a unique public link like reportiq.xyz/r/abc123 that you can copy and send to your client via email, WhatsApp, or any messaging app. Your client opens the link instantly in their browser with no account or login required."
+                        },
+                        {
+                          q: "Is my client data secure?",
+                          a: "Yes. All data is stored in an encrypted Supabase PostgreSQL database with row level security enabled. Only you can access your clients and reports. We never share or sell your data."
+                        }
+                      ].map((item, idx) => (
+                        <div key={idx} className="border border-slate-200 bg-white p-4 rounded-xl">
+                          <h5 className="font-bold text-slate-800 text-xs mb-1">{item.q}</h5>
+                          <p className="text-slate-500 text-xs leading-relaxed">{item.a}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -1647,6 +1875,18 @@ export default function App() {
 
             <div className="hidden md:flex items-center gap-6">
               <a
+                href="/features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveMarketingPage("features");
+                  window.history.pushState(null, "", "/features");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer no-underline"
+              >
+                Features
+              </a>
+              <a
                 href="/about"
                 onClick={(e) => {
                   e.preventDefault();
@@ -1773,59 +2013,160 @@ export default function App() {
           </div>
         </header>
 
-        {/* Hero Banner Section */}
+        {/* Hero Banner Section with Search Dashboard */}
         <main className="flex-1">
-          <section className="relative px-6 py-10 sm:py-32 text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 text-indigo-750 font-bold rounded-full text-[10px] sm:text-xs font-mono uppercase tracking-wider mb-6 animate-pulse select-none">
+          <section className="relative px-6 py-12 sm:py-24 text-center max-w-5xl mx-auto">
+            {/* Stars rating trust badge */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 mb-5 text-amber-500 font-sans text-xs">
+              <div className="flex text-amber-400 text-sm tracking-tighter">★★★★★</div>
+              <span className="text-slate-500 font-semibold">Rated 4.9/5 by 500+ Agency Owners & Freelancers</span>
+              <span className="px-1.5 py-0.5 bg-emerald-50 border border-emerald-100 text-emerald-700 font-bold font-mono rounded text-[8px] uppercase tracking-wider select-none">Verified Reviews</span>
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 text-indigo-755 font-bold rounded-full text-[10px] sm:text-xs font-mono uppercase tracking-wider mb-6 animate-pulse select-none">
               <Sparkles className="w-3.5 h-3.5 text-indigo-650 animate-spin" style={{ animationDuration: '3s' }} />
               🔥 Limited Promo: Get Lifetime Pro for $99 (Only 32 licenses left!)
             </div>
-            <h1 className="text-3xl sm:text-6xl font-black font-display text-slate-955 tracking-tight leading-none mb-8">
-              AI generates your client reports<br />
-              <span className="text-indigo-600">in 30 seconds. Free.</span>
+            <h1 className="text-3xl sm:text-6xl font-black font-display text-slate-955 tracking-tight leading-tight mb-6">
+              AI Client Reporting for<br />
+              <span className="text-indigo-600 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent font-sans">Freelancers & Agencies</span>
             </h1>
             <p className="text-slate-550 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-10 font-sans">
-              ReportIQ is the fastest AI client reporting tool for freelancers and digital agencies. Generate professional monthly client reports, SEO reports, social media reports, and project updates in 30 seconds. Free to start — no credit card needed.
+              Stop writing reports manually. Search or select one of our 16 free utilities below to draft scopes of work, competitive intelligence, and monthly client summaries in seconds.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3.5 max-w-xs sm:max-w-md mx-auto">
-              <button
-                onClick={() => {
-                  setAuthError(null);
-                  setShowAuthForm("signup");
-                }}
-                className="w-full sm:w-auto px-6.5 py-3.5 bg-indigo-600 hover:bg-indigo-700 hover:shadow-md text-white font-bold leading-none text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-              >
-                Start Composing Free
-                <ArrowRight className="w-4 h-4 shrink-0" />
-              </button>
-              <button
-                onClick={() => {
-                  const el = document.getElementById("pricing-section");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="w-full sm:w-auto px-6.5 py-3.5 bg-white border border-slate-200 hover:bg-slate-550 text-slate-700 font-bold leading-none text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                See Lifetime Offer
-              </button>
+
+            {/* Interactive Search Dashboard Card */}
+            <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-md text-left mb-8">
+              <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-2">
+                What do you want to generate today?
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Search 16 tools (e.g. scope of work, competitor, SEO, weekly...)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-3.5 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-400 font-sans"
+                />
+              </div>
+
+              {/* Quick Select Buttons */}
+              <div className="flex flex-wrap items-center gap-2 mt-4">
+                <span className="text-[10px] font-bold font-mono uppercase tracking-wider text-slate-400 mr-1">Popular:</span>
+                {[
+                  { label: "Client Report", route: "/tools/client-report-generator" },
+                  { label: "Scope of Work (SOW)", route: "/tools/scope-of-work-generator" },
+                  { label: "Competitor Analysis", route: "/tools/competitor-analysis-generator" },
+                  { label: "Weekly Progress", route: "/tools/weekly-report-generator" },
+                  { label: "PPC Ads", route: "/tools/ppc-performance-report" }
+                ].map((tag, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setActiveToolRoute(tag.route);
+                      window.history.pushState(null, "", tag.route);
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                    }}
+                    className="px-3 py-1.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-705 text-slate-600 font-bold text-xs rounded-lg transition-all border-none cursor-pointer"
+                  >
+                    {tag.label}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Trusted Brand Partner Logos */}
+            <div className="max-w-2xl mx-auto border-t border-slate-200/60 pt-6 pb-12 text-center mb-8">
+              <p className="text-[9px] font-bold font-mono tracking-widest text-slate-405 uppercase mb-3.5">
+                COMPATIBLE WITH AND TRUSTED BY TEAMS FROM
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 opacity-55 grayscale hover:opacity-85 transition-opacity duration-300 select-none">
+                <span className="font-extrabold tracking-wider text-xs text-slate-500">Vercel</span>
+                <span className="font-extrabold tracking-wider text-xs text-slate-500">HubSpot</span>
+                <span className="font-extrabold tracking-wider text-xs text-slate-500">Stripe</span>
+                <span className="font-extrabold tracking-wider text-xs text-slate-500">Shopify</span>
+                <span className="font-extrabold tracking-wider text-xs text-slate-500">Webflow</span>
+              </div>
+            </div>
+
+            {/* Live Filtered Results grid */}
+            {searchQuery && (
+              <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4 text-left p-2 bg-slate-100/50 border border-slate-200/60 rounded-3xl mb-12">
+                {ALL_TOOLS.filter(t => 
+                  t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                  t.desc.toLowerCase().includes(searchQuery.toLowerCase())
+                ).length > 0 ? (
+                  ALL_TOOLS.filter(t => 
+                    t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    t.desc.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).map((t, idx) => (
+                    <div 
+                      key={idx}
+                      onClick={() => {
+                        setActiveToolRoute(t.route);
+                        window.history.pushState(null, "", t.route);
+                        window.dispatchEvent(new PopStateEvent('popstate'));
+                      }}
+                      className="bg-white border border-slate-200 hover:border-indigo-400 p-4 rounded-2xl cursor-pointer transition-all shadow-3xs flex flex-col justify-between group"
+                    >
+                      <div>
+                        <h4 className="font-extrabold text-sm text-slate-900 group-hover:text-indigo-650 transition-colors">{t.name}</h4>
+                        <p className="text-xs text-slate-505 mt-1 leading-relaxed">{t.desc}</p>
+                      </div>
+                      <span className="text-[10px] font-bold text-indigo-650 mt-3 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                        Launch Free Tool &rarr;
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full py-8 text-center text-slate-400 text-xs font-medium">
+                    No matching tools found. Try searching for "report", "SOW", "competitor", or "email".
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!searchQuery && (
+              <div className="max-w-4xl mx-auto mb-16 text-left">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-black font-display text-slate-900">Featured Free AI Utilities</h3>
+                  <button 
+                    onClick={() => {
+                      setActiveToolRoute("/tools");
+                      window.history.pushState(null, "", "/tools");
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                    }}
+                    className="text-xs font-bold text-indigo-650 hover:text-indigo-755 border-none bg-transparent cursor-pointer flex items-center gap-0.5"
+                  >
+                    View All 16 Tools &rarr;
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  {ALL_TOOLS.slice(0, 6).map((t, idx) => (
+                    <div 
+                      key={idx}
+                      onClick={() => {
+                        setActiveToolRoute(t.route);
+                        window.history.pushState(null, "", t.route);
+                        window.dispatchEvent(new PopStateEvent('popstate'));
+                      }}
+                      className="bg-white border border-slate-200 hover:border-indigo-200 p-5 rounded-2xl cursor-pointer transition-all shadow-3xs flex flex-col justify-between group"
+                    >
+                      <div>
+                        <span className="text-[9px] font-bold font-mono tracking-widest text-indigo-600 uppercase block mb-2">{t.category}</span>
+                        <h4 className="font-extrabold text-sm text-slate-900 leading-snug group-hover:text-indigo-655 transition-colors">{t.name}</h4>
+                        <p className="text-slate-500 text-xs mt-1.5 leading-relaxed line-clamp-3">{t.desc}</p>
+                      </div>
+                      <span className="text-[10px] font-bold text-indigo-655 mt-4 block group-hover:translate-x-0.5 transition-transform">
+                        Try Free &rarr;
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
-
-          {/* Scrolling proof marquee */}
-          <div className="bg-slate-100 border-y border-slate-200 py-3 overflow-hidden select-none w-full relative">
-            <div className="flex w-max animate-marquee gap-16 text-[11px] sm:text-xs font-semibold text-slate-600 pr-16 font-sans">
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> Used by freelancers in 15+ countries</span>
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> 500+ reports generated</span>
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> Trusted by SEO agencies, social media managers, web designers, PPC specialists</span>
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> Free to start, no credit card needed</span>
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> Reports generated in 30 seconds</span>
-
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> Used by freelancers in 15+ countries</span>
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> 500+ reports generated</span>
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> Trusted by SEO agencies, social media managers, web designers, PPC specialists</span>
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> Free to start, no credit card needed</span>
-              <span><span className="text-indigo-650 font-black mr-1">✓</span> Reports generated in 30 seconds</span>
-            </div>
-          </div>
 
           {/* Value Prop Columns grid */}
           <section className="bg-white border-y border-slate-200 py-20 px-6 sm:px-12">
@@ -1872,74 +2213,64 @@ export default function App() {
             </div>
           </section>
 
-          {/* Why agencies choose ReportIQ Section */}
-          <section className="bg-slate-50 border-b border-slate-200 py-20 px-6 sm:px-12">
-            <div className="max-w-5xl mx-auto">
-              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
-                Why agencies choose ReportIQ
-              </h2>
-              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
-                Redefining the client reporting workflow
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-3xs flex flex-col gap-4">
-                  <div className="w-10 h-10 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 font-bold font-mono">01</div>
-                  <h3 className="font-extrabold font-display text-slate-900 text-lg">AI Client Reporting Tool</h3>
-                  <p className="text-slate-550 text-xs leading-relaxed font-sans">
-                    Writing monthly client reports is the most hated task in every freelance business and digital agency. Most professionals waste 3 to 5 hours every month copying data from tools, formatting Word documents, and rewriting the same summaries. ReportIQ eliminates this entirely. Our AI powered client reporting tool reads your rough notes and generates a complete professional report in under 30 seconds.
+          {/* Security & Data Privacy Guarantee Section */}
+          <section className="bg-slate-100/50 border-b border-slate-200 py-16 px-6 sm:px-12">
+            <div className="max-w-4xl mx-auto text-left">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 border border-indigo-150 text-indigo-700 font-bold rounded-xl text-[10px] font-mono uppercase tracking-wider mb-4">
+                    <ShieldCheck className="w-3.5 h-3.5 text-indigo-650 animate-pulse" />
+                    Enterprise-Grade Protection
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-950 tracking-tight mb-4">
+                    Your client data is private, secure, and protected.
+                  </h2>
+                  <p className="text-slate-550 text-xs sm:text-sm leading-relaxed mb-6 font-sans">
+                    Agencies trust ReportIQ because we place security and integrity at the heart of our platform. We enforce strict data policies to ensure your agency output and client metrics are shielded.
                   </p>
-                </div>
-                
-                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-3xs flex flex-col gap-4">
-                  <div className="w-10 h-10 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 font-bold font-mono">02</div>
-                  <h3 className="font-extrabold font-display text-slate-900 text-lg">SEO & Social Media Analytics</h3>
-                  <p className="text-slate-550 text-xs leading-relaxed font-sans">
-                    From SEO performance reports to social media analytics summaries, project status updates to monthly retainer reports — ReportIQ handles every type of client report your agency sends. Built specifically for SEO agencies, social media managers, web design studios, PPC specialists, and content marketing teams who send regular client updates.
-                  </p>
-                </div>
-
-                <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-3xs flex flex-col gap-4">
-                  <div className="w-10 h-10 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 font-bold font-mono">03</div>
-                  <h3 className="font-extrabold font-display text-slate-900 text-lg">Shareable Branded Links</h3>
-                  <p className="text-slate-550 text-xs leading-relaxed font-sans">
-                    Every report generated by ReportIQ includes a unique shareable link your client opens instantly in their browser. No downloads. No email attachments. No login required for your client. Just a clean, branded, professional report that makes your agency look world class — generated by AI in seconds.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Who uses ReportIQ Section */}
-          <section className="bg-white border-b border-slate-200 py-20 px-6 sm:px-12">
-            <div className="max-w-5xl mx-auto">
-              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
-                Who uses ReportIQ?
-              </h2>
-              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
-                Empowering modern creators & agencies
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-                {[
-                  { user: "Content writers and copywriters", report: "monthly deliverables report" },
-                  { user: "SEO professionals", report: "keyword ranking and traffic reports" },
-                  { user: "Social media managers", report: "engagement and growth reports" },
-                  { user: "PPC specialists", report: "ad performance and ROAS reports" },
-                  { user: "Web developers", report: "project progress and milestone reports" },
-                  { user: "Marketing consultants", report: "campaign performance reports" },
-                  { user: "Graphic designers", report: "project completion reports" },
-                  { user: "Virtual assistants", report: "weekly task completion reports" },
-                  { user: "Content marketing agencies", report: "content performance reports" },
-                  { user: "Growth hackers", report: "experiment and results reports" }
-                ].map((item, idx) => (
-                  <div key={idx} className="border border-slate-150 rounded-2xl p-5 hover:border-indigo-200 transition-colors bg-slate-50/50 shadow-3xs flex flex-col justify-between">
-                    <div>
-                      <h4 className="font-bold text-xs text-slate-900 mb-1.5 font-sans leading-tight">{item.user}</h4>
-                      <p className="text-[10px] text-indigo-650 font-semibold font-mono uppercase tracking-wider">{item.report}</p>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-center shadow-3xs">
+                      <span className="block text-slate-900 font-extrabold text-sm leading-none mb-1">AES-256</span>
+                      <span className="text-[9px] font-bold font-mono text-slate-400 uppercase tracking-wider">Database Keys</span>
+                    </div>
+                    <div className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-center shadow-3xs">
+                      <span className="block text-slate-900 font-extrabold text-sm leading-none mb-1">SSL/TLS</span>
+                      <span className="text-[9px] font-bold font-mono text-slate-400 uppercase tracking-wider">Secure Transit</span>
+                    </div>
+                    <div className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-center shadow-3xs">
+                      <span className="block text-slate-900 font-extrabold text-sm leading-none mb-1">GDPR Compliant</span>
+                      <span className="text-[9px] font-bold font-mono text-slate-400 uppercase tracking-wider">Data Protection</span>
                     </div>
                   </div>
-                ))}
+                </div>
+
+                <div className="space-y-4">
+                  {[
+                    {
+                      title: "Zero LLM Training Data Use",
+                      desc: "We strictly enforce a zero-retention policy with our LLM partners. Your custom client logs, agency descriptions, and metrics are never used to train public AI models."
+                    },
+                    {
+                      title: "Isolated Supabase Databases",
+                      desc: "All client records and report details are stored using secure Row Level Security (RLS) configurations, ensuring complete tenant isolation and data protection."
+                    },
+                    {
+                      title: "Your Brand, Your IP",
+                      desc: "All generated reports are 100% your proprietary assets. When you export or share them, they carry your agency branding and authority with no system traces."
+                    }
+                  ].map((feat, idx) => (
+                    <div key={idx} className="bg-white border border-slate-205 p-5 rounded-2xl shadow-3xs flex gap-4 text-left">
+                      <div className="w-8 h-8 bg-emerald-50 border border-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 shrink-0 mt-0.5">
+                        <Check className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h4 className="font-extrabold text-sm text-slate-900 leading-snug mb-1">{feat.title}</h4>
+                        <p className="text-slate-500 text-xs leading-relaxed">{feat.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </section>
@@ -2045,87 +2376,6 @@ export default function App() {
                   Try It Free
                   <ArrowRight className="w-4 h-4" />
                 </button>
-              </div>
-            </div>
-          </section>
-
-          {/* Testimonials Section */}
-          <section className="bg-slate-50 border-b border-slate-200 py-20 px-6 sm:px-12">
-            <div className="max-w-5xl mx-auto">
-              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
-                Loved by freelancers and agencies worldwide
-              </h2>
-              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
-                Join thousands of professionals who stopped writing reports manually
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-                {[
-                  {
-                    name: "Sarah Mitchell",
-                    title: "SEO Freelancer, London UK",
-                    initials: "SM",
-                    text: "I used to spend every Sunday writing client reports. ReportIQ completely changed that. My reports now take 30 seconds and my clients actually say they look more professional than before. Absolute game changer."
-                  },
-                  {
-                    name: "James Rodriguez",
-                    title: "Digital Marketing Agency Owner, New York",
-                    initials: "JR",
-                    text: "We manage 12 clients and reporting was killing our team. ReportIQ saves us at least 40 hours a month. The AI writing quality is genuinely impressive — clients have no idea it is AI generated.",
-                    indigoAvatar: true
-                  },
-                  {
-                    name: "Priya Sharma",
-                    title: "Social Media Manager, Toronto Canada",
-                    initials: "PS",
-                    text: "The shareable link feature is brilliant. My clients love opening their report on their phone instead of downloading a PDF. ReportIQ makes me look like a premium agency even as a solo freelancer."
-                  },
-                  {
-                    name: "Marcus Chen",
-                    title: "PPC Specialist, Sydney Australia",
-                    initials: "MC",
-                    text: "I was skeptical about AI writing but the output is genuinely professional. I barely edit the reports at all. My clients are happier and I get my weekends back. Worth every penny.",
-                    indigoAvatar: true
-                  },
-                  {
-                    name: "Emma Thompson",
-                    title: "Content Marketing Consultant, Manchester UK",
-                    initials: "ET",
-                    text: "The free plan alone is better than anything I was doing manually. Upgraded to Starter after my first week. The ROI is ridiculous — I charge clients $500 a month for reporting that now takes me 2 minutes."
-                  },
-                  {
-                    name: "David Park",
-                    title: "Web Design Agency, Seoul South Korea",
-                    initials: "DP",
-                    text: "English is not my first language so writing professional reports was always difficult and time consuming. ReportIQ writes better English than I ever could. My international clients are very impressed.",
-                    indigoAvatar: true
-                  }
-                ].map((item, idx) => (
-                  <div key={idx} className="bg-white border border-slate-200 rounded-3xl p-6.5 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow duration-300">
-                    <div className="space-y-4">
-                      <div className="flex gap-1 text-amber-400">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <span key={i} className="text-sm">★</span>
-                        ))}
-                      </div>
-                      <p className="text-slate-650 text-xs sm:text-sm leading-relaxed font-medium italic">
-                        "{item.text}"
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100">
-                      <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold font-mono ${
-                        item.indigoAvatar ? "bg-indigo-650" : "bg-purple-600"
-                      }`}>
-                        {item.initials}
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-xs leading-none mb-1">{item.name}</h4>
-                        <p className="text-[10px] text-slate-500 font-medium">{item.title}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </section>
@@ -2280,86 +2530,24 @@ export default function App() {
               ))}
             </div>
           </section>
-
-          {/* Landing Page FAQ Accordion */}
-          <section className="bg-slate-50 border-t border-slate-200 py-20 px-6 sm:px-12">
-            <div className="max-w-3xl mx-auto text-left">
-              <h2 className="text-3xl font-black font-display text-slate-950 text-center mb-3">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-slate-550 text-xs font-mono uppercase tracking-wider text-center mb-16">
-                Everything you need to know about ReportIQ
-              </p>
-
-              <div className="space-y-4">
-                {[
-                  {
-                    q: "What is ReportIQ?",
-                    a: "ReportIQ is an AI powered client reporting tool built for freelancers and digital agencies. Instead of spending hours writing monthly client updates, you enter your rough notes and our AI generates a complete professional report in 30 seconds. Every report gets a unique shareable link you send directly to your client."
-                  },
-                  {
-                    q: "Is ReportIQ free to use?",
-                    a: "Yes. ReportIQ has a completely free plan that includes 3 client reports per month and 2 active clients with no credit card required. Paid plans start at $29 per month for freelancers and agencies who need more reports, custom branding, and advanced features."
-                  },
-                  {
-                    q: "How does AI client report generation work?",
-                    a: "You enter the work you completed for your client, add any key metrics or results, choose your preferred tone and length, and click generate. ReportIQ AI reads your notes and writes a polished professional client report with proper sections including work completed, key results, and coming up next. The whole process takes under 30 seconds."
-                  },
-                  {
-                    q: "What types of client reports can I generate with ReportIQ?",
-                    a: "ReportIQ generates any type of client report including monthly progress reports, SEO performance reports, social media analytics reports, Google Ads and PPC reports, web design project updates, content marketing reports, email marketing reports, and custom reports for any service type."
-                  },
-                  {
-                    q: "Can I send the report directly to my client?",
-                    a: "Yes. Every report gets a unique public link like reportiq.xyz/r/abc123 that you can copy and send to your client via email, WhatsApp, or any messaging app. Your client opens the link instantly in their browser with no account or login required."
-                  },
-                  {
-                    q: "Does ReportIQ support custom branding?",
-                    a: "Yes. Starter and Pro plan users can upload their agency logo and customize their brand colors. All public client reports display your agency branding so clients see your professional identity not ReportIQ."
-                  },
-                  {
-                    q: "Is my client data secure?",
-                    a: "Yes. All data is stored in an encrypted Supabase PostgreSQL database with row level security enabled. Only you can access your clients and reports. We never share or sell your data."
-                  },
-                  {
-                    q: "Can I use ReportIQ for multiple clients?",
-                    a: "Yes. Free plan supports up to 2 clients. Starter plan supports up to 10 clients. Pro plan supports unlimited clients. Each client has their own folder with all their reports organized by date."
-                  },
-                  {
-                    q: "What makes ReportIQ different from other reporting tools?",
-                    a: "Most client reporting tools require you to connect integrations and pull data automatically. ReportIQ is different — it works from your natural language notes. You describe what you did, our AI writes the report. No complex integrations, no data connectors, no technical setup. Works for any niche, any service type, any agency size."
-                  },
-                  {
-                    q: "How do I get started with ReportIQ?",
-                    a: "Go to reportiq.xyz and click Create Account. Sign up for free in 30 seconds, add your first client, and generate your first report immediately. No credit card required."
-                  }
-                ].map((item, idx) => {
-                  const isOpen = activeLandingFaq === idx;
-                  return (
-                    <div key={idx} className="border border-slate-200 rounded-2xl bg-white overflow-hidden transition-all duration-300 shadow-3xs">
-                      <button
-                        type="button"
-                        onClick={() => setActiveLandingFaq(isOpen ? null : idx)}
-                        className="w-full py-4 px-6 flex justify-between items-center font-bold text-slate-800 text-sm hover:text-indigo-600 transition-colors text-left cursor-pointer bg-transparent border-none outline-none"
-                      >
-                        <span>{item.q}</span>
-                        <span className={`text-indigo-600 text-lg transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>+</span>
-                      </button>
-                      <div className={`transition-all duration-300 ${isOpen ? "max-h-60 border-t border-slate-100 p-6" : "max-h-0"} overflow-hidden text-slate-550 text-xs sm:text-sm leading-relaxed`}>
-                        {item.a}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
         </main>
 
         <footer className="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-400">
           <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>© 2026 ReportIQ · Professional Intelligent Client Portals</p>
             <div className="flex items-center gap-5 flex-wrap justify-center font-semibold text-slate-555">
+              <a
+                href="/features"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveMarketingPage("features");
+                  window.history.pushState(null, "", "/features");
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="hover:text-indigo-600 transition-colors cursor-pointer no-underline"
+              >
+                Features
+              </a>
               <a
                 href="/about"
                 onClick={(e) => {
