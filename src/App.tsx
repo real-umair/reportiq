@@ -2066,10 +2066,7 @@ export default function App() {
 
             {/* Interactive Search Dashboard Card */}
             <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-md text-left mb-8">
-              <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-2">
-                What do you want to generate today?
-              </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   placeholder="Search 16 tools (e.g. scope of work, competitor, SEO, weekly...)"
@@ -2077,6 +2074,15 @@ export default function App() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-3.5 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-400 font-sans"
                 />
+                <button
+                  onClick={() => {
+                    setAuthError(null);
+                    setShowAuthForm("signup");
+                  }}
+                  className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 hover:shadow-md text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm shrink-0 border-none cursor-pointer text-center whitespace-nowrap"
+                >
+                  Get Started Free &rarr;
+                </button>
               </div>
 
               {/* Quick Select Buttons */}
@@ -2105,22 +2111,61 @@ export default function App() {
               </div>
             </div>
 
-            {/* Trusted Brand Partner Logos */}
-            <div className="max-w-2xl mx-auto border-t border-slate-200/80 pt-8 pb-12 text-center mb-8">
-              <p className="text-[10px] font-extrabold font-mono tracking-widest text-slate-500 uppercase mb-5">
-                COMPATIBLE WITH AND TRUSTED BY TEAMS FROM
+            {/* Trusted Brand Partner Logos Infinite Marquee */}
+            <div className="max-w-4xl mx-auto border-t border-slate-200/80 pt-10 pb-8 text-center overflow-hidden select-none relative mb-8">
+              <p className="text-[10px] font-extrabold font-mono tracking-widest text-slate-400 uppercase mb-6">
+                COMPATIBLE WITH AND TRUSTED BY TEAMS FROM 500+ COMPANIES
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-4 select-none">
+              
+              {/* Fade masks for smooth edges */}
+              <div className="absolute top-16 bottom-8 left-0 w-24 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
+              <div className="absolute top-16 bottom-8 right-0 w-24 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
+
+              <div className="flex w-max animate-marquee gap-14 items-center text-slate-400 font-sans pr-14 font-black select-none">
                 {[
-                  { name: "Vercel", color: "bg-slate-900 text-white border-slate-950" },
-                  { name: "HubSpot", color: "bg-orange-50 text-orange-600 border-orange-100" },
-                  { name: "Stripe", color: "bg-indigo-50 text-indigo-600 border-indigo-100" },
-                  { name: "Shopify", color: "bg-emerald-50 text-emerald-700 border-emerald-100" },
-                  { name: "Webflow", color: "bg-blue-50 text-blue-600 border-blue-100" }
+                  { name: "Vercel", color: "hover:text-slate-900" },
+                  { name: "HubSpot", color: "hover:text-orange-600" },
+                  { name: "Stripe", color: "hover:text-indigo-600" },
+                  { name: "Shopify", color: "hover:text-emerald-700" },
+                  { name: "Webflow", color: "hover:text-blue-600" },
+                  { name: "Slack", color: "hover:text-purple-650" },
+                  { name: "Notion", color: "hover:text-slate-905" },
+                  { name: "Figma", color: "hover:text-rose-500" },
+                  { name: "Salesforce", color: "hover:text-sky-500" },
+                  { name: "Asana", color: "hover:text-pink-500" },
+                  { name: "Miro", color: "hover:text-amber-500" },
+                  { name: "Airbnb", color: "hover:text-rose-500" },
+                  { name: "Linear", color: "hover:text-slate-800" },
+                  { name: "Zoom", color: "hover:text-blue-500" }
                 ].map((logo, idx) => (
                   <span 
                     key={idx} 
-                    className={`px-4.5 py-2.5 rounded-xl text-xs font-black tracking-wider uppercase border shadow-3xs hover:scale-105 transition-transform duration-200 cursor-default ${logo.color}`}
+                    className={`transition-colors duration-205 cursor-default text-base sm:text-lg tracking-wider ${logo.color}`}
+                  >
+                    {logo.name}
+                  </span>
+                ))}
+                
+                {/* Second set for loop */}
+                {[
+                  { name: "Vercel", color: "hover:text-slate-900" },
+                  { name: "HubSpot", color: "hover:text-orange-600" },
+                  { name: "Stripe", color: "hover:text-indigo-600" },
+                  { name: "Shopify", color: "hover:text-emerald-700" },
+                  { name: "Webflow", color: "hover:text-blue-600" },
+                  { name: "Slack", color: "hover:text-purple-650" },
+                  { name: "Notion", color: "hover:text-slate-905" },
+                  { name: "Figma", color: "hover:text-rose-500" },
+                  { name: "Salesforce", color: "hover:text-sky-500" },
+                  { name: "Asana", color: "hover:text-pink-500" },
+                  { name: "Miro", color: "hover:text-amber-500" },
+                  { name: "Airbnb", color: "hover:text-rose-500" },
+                  { name: "Linear", color: "hover:text-slate-800" },
+                  { name: "Zoom", color: "hover:text-blue-500" }
+                ].map((logo, idx) => (
+                  <span 
+                    key={`loop-${idx}`} 
+                    className={`transition-colors duration-205 cursor-default text-base sm:text-lg tracking-wider ${logo.color}`}
                   >
                     {logo.name}
                   </span>
