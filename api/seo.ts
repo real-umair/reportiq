@@ -127,11 +127,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let canonicalUrl = 'https://www.reportiq.xyz' + (req.url?.split('?')[0] || '');
   let jsonLdSchema = '';
 
+  // Data variables for HTML body pre-rendering
+  let blogPostData: any = null;
+  let blogHomePostsData: any[] = [];
+
   // 3. Resolve metadata details based on page type
   try {
     if (type === 'blog-home') {
       title = 'Client Reporting Blog — Tips for Freelancers and Agencies | ReportIQ';
       description = 'Expert tips on client reporting, agency growth, freelance productivity, and AI tools. Free resources updated weekly. Automate your client reports.';
+      try {
+        const { data: posts } = await supabase
+          .from('blogs')
+          .select('title, slug, excerpt, author, published_at')
+          .eq('published', true)
+          .order('published_at', { ascending: false });
+        if (posts) {
+          blogHomePostsData = posts;
+        }
+      } catch (dbErr) {
+        console.error("Failed to query blog posts for sitemap/SEO handler:", dbErr);
+      }
     } else if (type === 'blog' && slug && typeof slug === 'string') {
       const { data: post, error } = await supabase
         .from('blogs')
@@ -140,6 +156,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .maybeSingle();
 
       if (post) {
+        blogPostData = post;
         title = post.meta_title || `${post.title} | ReportIQ Blog`;
         description = post.meta_description || post.excerpt || `Read our guide about ${post.title} on the ReportIQ blog.`;
         if (post.cover_image_url) {
@@ -300,6 +317,45 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           </ul>
         </div>
         <p style="font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+          This page is pre-rendered for search indexers. Use a JavaScript-enabled web browser to access the interactive ReportIQ workspace.
+        </p>
+      </div>
+    `;
+  } else if (type === 'blog' && blogPostData) {
+    bodyContent = `
+      <div style="padding: 40px; font-family: sans-serif; max-width: 800px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
+        <p style="margin-bottom: 20px;"><a href="/blog" style="color: #4f46e5; text-decoration: none; font-weight: 600;">&larr; Back to Blog</a></p>
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-bottom: 10px;">${escapeHtml(blogPostData.title)}</h1>
+        <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 30px;">
+          <span>By ${escapeHtml(blogPostData.author || 'ReportIQ Team')}</span> &bull; 
+          <span>Published on ${blogPostData.published_at ? new Date(blogPostData.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'June 15, 2026'}</span>
+        </div>
+        ${blogPostData.cover_image_url ? `<img src="${escapeHtml(blogPostData.cover_image_url)}" alt="${escapeHtml(blogPostData.title)}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-bottom: 30px;" />` : ''}
+        <div style="font-size: 1.1rem; color: #334155;">
+          ${blogPostData.content ? blogPostData.content.split('\\n\\n').map((para: string) => `<p style="margin-bottom: 1.5em;">${escapeHtml(para)}</p>`).join('') : ''}
+        </div>
+        <p style="font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 40px;">
+          This page is pre-rendered for search indexers. Use a JavaScript-enabled web browser to access the interactive ReportIQ workspace.
+        </p>
+      </div>
+    `;
+  } else if (type === 'blog-home' && blogHomePostsData.length > 0) {
+    bodyContent = `
+      <div style="padding: 40px; font-family: sans-serif; max-width: 800px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: #4f46e5; margin-bottom: 20px;">The Client Reporting Blog</h1>
+        <p style="font-size: 1.1rem; color: #475569; margin-bottom: 40px;">Tips, templates, and strategies for freelancers and agencies.</p>
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+          ${blogHomePostsData.map(post => `
+            <article style="border-bottom: 1px solid #e2e8f0; padding-bottom: 30px;">
+              <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 10px;">
+                <a href="/blog/${escapeHtml(post.slug)}" style="color: #0f172a; text-decoration: none; hover:text-decoration: underline;">${escapeHtml(post.title)}</a>
+              </h2>
+              <p style="color: #475569; font-size: 0.95rem; margin-bottom: 15px;">${escapeHtml(post.excerpt || '')}</p>
+              <a href="/blog/${escapeHtml(post.slug)}" style="color: #4f46e5; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Read Full Article &rarr;</a>
+            </article>
+          `).join('\\n')}
+        </div>
+        <p style="font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 40px;">
           This page is pre-rendered for search indexers. Use a JavaScript-enabled web browser to access the interactive ReportIQ workspace.
         </p>
       </div>

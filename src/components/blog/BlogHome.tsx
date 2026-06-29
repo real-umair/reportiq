@@ -46,7 +46,8 @@ export default function BlogHome() {
     fetchPosts();
   }, []);
 
-  const handleNavigate = (path: string) => {
+  const handleNavigate = (path: string, e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     window.history.pushState(null, '', path);
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
@@ -119,9 +120,10 @@ export default function BlogHome() {
               className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col group hover:border-indigo-200"
             >
               {/* Cover image with fallback gradient */}
-              <div 
-                className="h-48 w-full overflow-hidden relative cursor-pointer"
-                onClick={() => handleNavigate(`/blog/${post.slug}`)}
+              <a 
+                href={`/blog/${post.slug}`}
+                className="block h-48 w-full overflow-hidden relative cursor-pointer"
+                onClick={(e) => handleNavigate(`/blog/${post.slug}`, e)}
               >
                 {post.cover_image_url ? (
                   <img
@@ -140,7 +142,7 @@ export default function BlogHome() {
                   <Sparkles className="w-12 h-12 text-white/20 absolute -right-4 -bottom-4 rotate-12" />
                   <span className="text-sm line-clamp-2 leading-snug">{post.title}</span>
                 </div>
-              </div>
+              </a>
 
               {/* Card body */}
               <div className="p-6 flex-1 flex flex-col justify-between">
@@ -159,11 +161,14 @@ export default function BlogHome() {
                     </div>
                   )}
 
-                  <h3
-                    className="font-extrabold font-display text-slate-950 text-base leading-tight mb-2.5 group-hover:text-indigo-600 transition-colors cursor-pointer line-clamp-2"
-                    onClick={() => handleNavigate(`/blog/${post.slug}`)}
-                  >
-                    {post.title}
+                  <h3 className="font-extrabold font-display text-slate-950 text-base leading-tight mb-2.5 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                    <a
+                      href={`/blog/${post.slug}`}
+                      onClick={(e) => handleNavigate(`/blog/${post.slug}`, e)}
+                      className="no-underline text-inherit hover:text-indigo-600"
+                    >
+                      {post.title}
+                    </a>
                   </h3>
 
                   <p className="text-slate-550 text-xs leading-relaxed line-clamp-3 mb-4 font-sans">
@@ -184,13 +189,14 @@ export default function BlogHome() {
                     </span>
                   </div>
 
-                  <button
-                    onClick={() => handleNavigate(`/blog/${post.slug}`)}
-                    className="w-full py-2 bg-slate-50 hover:bg-indigo-600 text-slate-700 hover:text-white border border-slate-200 hover:border-indigo-600 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs"
+                  <a
+                    href={`/blog/${post.slug}`}
+                    onClick={(e) => handleNavigate(`/blog/${post.slug}`, e)}
+                    className="w-full py-2 bg-slate-50 hover:bg-indigo-600 text-slate-700 hover:text-white border border-slate-200 hover:border-indigo-600 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-3xs no-underline"
                   >
                     Read More
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
+                  </a>
                 </div>
               </div>
             </article>
