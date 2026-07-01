@@ -78,7 +78,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       throw new Error("GROQ_API_KEY environment variable is not defined");
     }
 
-    console.log("Generating report using highly accelerated Groq Llama-3-70b model...");
+    console.log("Generating report using highly accelerated Groq GPT OSS 120B model...");
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -86,14 +86,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
         ],
         response_format: { type: "json_object" },
         max_tokens: maxTokens,
-        temperature: 0.2
+        temperature: 0.2,
+        include_reasoning: false
       })
     });
 

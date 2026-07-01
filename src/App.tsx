@@ -2259,7 +2259,7 @@ export default function App() {
                   {
                     step: "03",
                     title: "AI Writes Summary",
-                    desc: "Our Groq Llama compiler compiles detailed progress, KPIs, and goals in seconds.",
+                    desc: "Our Groq GPT OSS compiler compiles detailed progress, KPIs, and goals in seconds.",
                   },
                   {
                     step: "04",
@@ -3223,8 +3223,8 @@ export default function App() {
                           },
                           {
                             step: "Step 3",
-                            title: "Compile with Advanced Llama AI Models",
-                            desc: "Adjust settings like content length target (brief, detailed) and aesthetic tone (casual, professional). Click 'Generate Section with AI' (Starter Plan) to invoke our high-performance Llama compiler, transforming raw notes into fully written business prose summaries."
+                            title: "Compile with Advanced GPT OSS AI Models",
+                            desc: "Adjust settings like content length target (brief, detailed) and aesthetic tone (casual, professional). Click 'Generate Section with AI' (Starter Plan) to invoke our high-performance GPT OSS compiler, transforming raw notes into fully written business prose summaries."
                           },
                           {
                             step: "Step 4",
@@ -3305,7 +3305,7 @@ export default function App() {
                         {[
                           {
                             q: "How does the AI report content compiler write summaries?",
-                            a: "ReportIQ connects to high-performance generative models (such as Groq Llama text model servers). When you click 'Generate Section with AI', it digests all text notes, milestones, links, and documents uploaded to the client workspace, compiling a professionally structured narrative matching your target lengths and aesthetics."
+                            a: "ReportIQ connects to high-performance generative models (such as Groq GPT OSS text model servers). When you click 'Generate Section with AI', it digests all text notes, milestones, links, and documents uploaded to the client workspace, compiling a professionally structured narrative matching your target lengths and aesthetics."
                           },
                           {
                             q: "Is my client metadata and metrics data secure?",

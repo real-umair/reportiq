@@ -44,13 +44,14 @@ Please generate the section title and content. No markdown or wrappers outside t
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.7
+        temperature: 0.7,
+        include_reasoning: false
       })
     });
 

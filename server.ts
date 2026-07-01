@@ -155,7 +155,7 @@ app.post("/api/reports/generate", requireAuth, async (req, res) => {
       throw new Error("GROQ_API_KEY environment variable is not defined");
     }
 
-    console.log("Generating report using highly accelerated Groq Llama-3-70b model...");
+    console.log("Generating report using highly accelerated Groq GPT OSS 120B model...");
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -163,14 +163,15 @@ app.post("/api/reports/generate", requireAuth, async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
         ],
         response_format: { type: "json_object" },
         max_tokens: maxTokens,
-        temperature: 0.2
+        temperature: 0.2,
+        include_reasoning: false
       })
     });
 
@@ -271,13 +272,14 @@ Please generate the section title and content. No markdown or wrappers outside t
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.7
+        temperature: 0.7,
+        include_reasoning: false
       })
     });
 
@@ -484,7 +486,7 @@ Our official support email is support@reportiq.xyz (and NOT support@reportiq.com
 Key features of ReportIQ:
 - Connect clients to agency workspaces.
 - Compose reports manually or upload PDF/DOCX/TXT/Excel documents.
-- Generate executive summaries and milestone sections with Groq Llama-3 AI.
+- Generate executive summaries and milestone sections with Groq GPT OSS AI.
 - Share interactive public links with clients.
 - Starter tier ($29/mo) unlocks: Custom Brand Logo, report attachments (images, docs, links), advanced tones (Formal, Friendly, Bold, Minimal) and length settings, AI section writer.
 - Pro tier ($79/mo) unlocks: White labeling (removes ReportIQ branding), report analytics (track view counts and open timestamps), client portal logins, priority 24h support, branded agency URLs.
@@ -498,13 +500,14 @@ Answer user questions briefly, professionally, and clearly.`;
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages
         ],
         temperature: 0.7,
-        max_tokens: 300
+        max_tokens: 300,
+        include_reasoning: false
       })
     });
 
