@@ -221,6 +221,21 @@ export default function BlogAdmin() {
         showNotification('success', 'Blog post created successfully.');
       }
 
+      // Ping IndexNow (Bing) if the post is published/live
+      if (isLive) {
+        try {
+          const postUrl = `https://www.reportiq.xyz/blog/${slug}`;
+          // Ping the specific blog post URL
+          fetch(`https://www.bing.com/indexnow?url=${encodeURIComponent(postUrl)}&key=c8efbe0c12e84fa0bc80562e84d43615`, { mode: 'no-cors' });
+          // Also ping the blog homepage
+          fetch(`https://www.bing.com/indexnow?url=${encodeURIComponent('https://www.reportiq.xyz/blog')}&key=c8efbe0c12e84fa0bc80562e84d43615`, { mode: 'no-cors' });
+          // Also ping the sitemap
+          fetch(`https://www.bing.com/indexnow?url=${encodeURIComponent('https://www.reportiq.xyz/sitemap.xml')}&key=c8efbe0c12e84fa0bc80562e84d43615`, { mode: 'no-cors' });
+        } catch (pingErr) {
+          console.error("Failed to ping IndexNow:", pingErr);
+        }
+      }
+
       setEditingPost(null);
       await loadAllPosts();
     } catch (err: any) {

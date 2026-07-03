@@ -259,6 +259,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   outputHtml = outputHtml.replace(/<meta name="twitter:description" content="[^"]*"/i, `<meta name="twitter:description" content="${escDesc}"`);
   outputHtml = outputHtml.replace(/<meta name="twitter:image" content="[^"]*"/i, `<meta name="twitter:image" content="${escImg}"`);
 
+  // Inject dynamic canonical link
+  const canonicalTag = `<link rel="canonical" href="${escUrl}" />`;
+  outputHtml = outputHtml.replace('</head>', `  ${canonicalTag}\n</head>`);
+
   // Inject dynamic JSON-LD schema into head before closing tag
   if (jsonLdSchema) {
     outputHtml = outputHtml.replace('</head>', `${jsonLdSchema}\n</head>`);
