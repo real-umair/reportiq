@@ -62,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } else if (extension === ".docx") {
       const result = await mammoth.extractRawText({ buffer });
       text = result.value || "";
-    } else if (extension === ".txt") {
+    } else if (extension === ".txt" || extension === ".csv" || extension === ".json") {
       text = buffer.toString("utf8");
     } else if (extension === ".xlsx" || extension === ".xls") {
       const workbook = XLSX.read(buffer, { type: "buffer" });
@@ -76,7 +76,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       text = sheetsText.join("\n\n");
     } else {
-      return res.status(400).json({ error: `Unsupported file type: ${extension}` });
+      return res.status(400).json({ error: `Unsupported file type: ${extension}. Supported formats: .pdf, .docx, .txt, .csv, .json, .xlsx, .xls` });
     }
 
     return res.status(200).json({ text: text.trim(), filename: originalname });

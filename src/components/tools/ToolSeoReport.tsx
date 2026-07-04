@@ -6,13 +6,14 @@ export default function ToolSeoReport() {
     { name: 'website', label: 'Website URL', placeholder: 'acme.com' },
     { name: 'keywords', label: 'Target Keywords', placeholder: 'seo tools, client reporting' },
     { name: 'month', label: 'Report Month', placeholder: 'June 2026' },
+    { name: 'rawData', label: 'Raw SEO Metrics / GSC Export', placeholder: 'Optional: Paste metrics or upload a Google Search Console / Google Analytics CSV/Excel sheet (e.g. Traffic: +15% MoM, CTR: 4.2%)...', type: 'textarea', required: false, maxLength: 3000 },
   ];
 
   const instructions = [
     "Provide your target website domain and target keyword phrases.",
     "Specify the reporting month to track traffic changes.",
-    "<strong>SEO Tip:</strong> Optimize your web resource headers using keywords like <strong>seo report generator free</strong> or <strong>low competition keyword finder</strong> to drive targeted traffic to your services.",
-    "Be sure to swap out the simulated AI placeholder figures with your real organic traffic analytics from Google Analytics or GSC before presenting to clients."
+    "<strong>SEO Tip:</strong> Upload or paste actual data from Google Search Console or Analytics in the 'Raw SEO Metrics' field to generate a 100% correct performance report.",
+    "Before delivering this report, check the recommendations to make sure they align with your client's search goals."
   ];
 
   const seoContent = (
@@ -47,13 +48,14 @@ export default function ToolSeoReport() {
   return (
     <ToolPage
       title="Free SEO Report Generator"
-      description="Generate professional SEO reports instantly with AI. Free for SEO freelancers and agencies."
+      description="Generate professional SEO reports instantly with AI. Upload your Search Console CSV or analytics metrics to base reports on real data."
       fields={fields}
       apiEndpoint="/api/tools/seo-report"
       metaTitle="Free SEO Report Generator — AI Powered | ReportIQ"
-      metaDescription="Generate professional SEO reports instantly with AI. Free seo report generator, organic traffic summary template."
+      metaDescription="Create professional SEO reports instantly with AI. Upload Google Search Console CSVs or spreadsheets to build accurate organic traffic summaries."
       instructions={instructions}
       seoContent={seoContent}
+      allowDocumentUpload={true}
     />
   );
 }

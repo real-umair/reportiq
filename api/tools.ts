@@ -255,12 +255,22 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       break;
     }
     case 'seo-report': {
-      const { website, keywords, month } = req.body || {};
+      const { website, keywords, month, rawData } = req.body || {};
       if (!validateFields({ website, keywords, month }, res)) return;
       const sWebsite = sanitizeInput(website);
       const sKeywords = sanitizeInput(keywords);
       const sMonth = sanitizeInput(month);
-      prompt = `Write a professional SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Include: Overview, Keyword Performance, Traffic Summary, Recommendations. 300 words maximum.`;
+      const sRawData = rawData ? sanitizeInput(rawData) : '';
+
+      let rawDataContent = '';
+      if (sRawData) {
+        rawDataContent = `Here is the actual raw SEO performance data and metrics (use this data for your analysis and do not make up fake metrics or numbers):
+        ${sRawData}
+        
+        Strict rule: Focus your findings and recommendations on this raw data.`;
+      }
+
+      prompt = `Write a professional SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Include: Overview, Keyword Performance, Traffic Summary, Recommendations. ${rawDataContent} 300 words maximum.`;
       break;
     }
     case 'client-email': {
@@ -328,12 +338,22 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       break;
     }
     case 'competitor-analysis': {
-      const { clientName, competitor, focusArea } = req.body || {};
+      const { clientName, competitor, focusArea, rawData } = req.body || {};
       if (!validateFields({ clientName, competitor, focusArea }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sCompetitor = sanitizeInput(competitor);
       const sFocusArea = sanitizeInput(focusArea);
-      prompt = `Write a professional competitor analysis summary for ${sClientName} comparing against competitor ${sCompetitor} focusing on ${sFocusArea}. Detail their strengths, positioning advantages, and strategic recommendations for our client. 300 words maximum.`;
+      const sRawData = rawData ? sanitizeInput(rawData) : '';
+
+      let rawDataContent = '';
+      if (sRawData) {
+        rawDataContent = `Here is the actual raw competitor data and metrics (use this data for your analysis and do not make up fake metrics or numbers):
+        ${sRawData}
+        
+        Strict rule: Focus your findings and recommendations on this raw data.`;
+      }
+
+      prompt = `Write a professional competitor analysis summary for ${sClientName} comparing against competitor ${sCompetitor} focusing on ${sFocusArea}. Detail their strengths, positioning advantages, and strategic recommendations for our client. ${rawDataContent} 300 words maximum.`;
       break;
     }
     case 'weekly-report': {

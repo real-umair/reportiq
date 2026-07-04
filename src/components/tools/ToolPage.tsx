@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft, BookOpen, Lock, X } from 'lucide-react';
+import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft, BookOpen, Lock, X, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 export interface ToolField {
@@ -7,6 +7,8 @@ export interface ToolField {
   label: string;
   placeholder: string;
   type?: 'text' | 'textarea';
+  required?: boolean;
+  maxLength?: number;
 }
 
 interface ToolPageProps {
@@ -18,6 +20,7 @@ interface ToolPageProps {
   metaDescription: string;
   instructions: string[];
   seoContent?: React.ReactNode;
+  allowDocumentUpload?: boolean;
 }
 
 const RELATED_TOOLS = [
@@ -112,10 +115,12 @@ export default function ToolPage({
   metaDescription,
   instructions,
   seoContent,
+  allowDocumentUpload = false,
 }: ToolPageProps) {
   const [user, setUser] = useState<any>(null);
   const [showExitPopup, setShowExitPopup] = useState(false);
   const [exitEmail, setExitEmail] = useState('');
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
 
   // Track auth state
   useEffect(() => {
@@ -197,6 +202,56 @@ export default function ToolPage({
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileUpload = async (fieldName: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!user) {
+      window.dispatchEvent(new CustomEvent('open-auth', { detail: 'signup' }));
+      return;
+    }
+
+    setUploadingField(fieldName);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const { getAuthHeaders } = await import('../../lib/supabase');
+      const authHeaders = await getAuthHeaders();
+
+      const response = await fetch('/api/extract-document', {
+        method: 'POST',
+        headers: {
+          ...authHeaders,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Failed to extract text from file.');
+      }
+
+      const data = await response.json();
+      const extractedText = data.text || '';
+      
+      const targetField = fields.find(f => f.name === fieldName);
+      const maxL = targetField?.maxLength || 500;
+
+      setFormValues((prev) => ({
+        ...prev,
+        [fieldName]: extractedText.slice(0, maxL)
+      }));
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Failed to parse file.');
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -206,7 +261,7 @@ export default function ToolPage({
 
     // Validate client-side first
     for (const field of fields) {
-      if (!formValues[field.name]?.trim()) {
+      if (field.required !== false && !formValues[field.name]?.trim()) {
         setError('All fields are required');
         setLoading(false);
         return;
@@ -303,12 +358,12 @@ export default function ToolPage({
             {fields.map((field) => (
               <div key={field.name} className="text-left">
                 <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
-                  {field.label}
+                  {field.label} {field.required === false && <span className="text-slate-400 font-sans normal-case">(Optional)</span>}
                 </label>
                 {field.type === 'textarea' ? (
                   <textarea
-                    required
-                    maxLength={500}
+                    required={field.required !== false}
+                    maxLength={field.maxLength || 500}
                     placeholder={field.placeholder}
                     value={formValues[field.name]}
                     onChange={(e) => handleInputChange(field.name, e.target.value)}
@@ -318,17 +373,57 @@ export default function ToolPage({
                 ) : (
                   <input
                     type="text"
-                    required
-                    maxLength={500}
+                    required={field.required !== false}
+                    maxLength={field.maxLength || 500}
                     placeholder={field.placeholder}
                     value={formValues[field.name]}
                     onChange={(e) => handleInputChange(field.name, e.target.value)}
                     className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-3 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-400"
                   />
                 )}
-                <div className="text-[10px] text-slate-400 text-right mt-1 font-mono">
-                  {formValues[field.name]?.length || 0} / 500 characters
+                <div className="flex justify-between items-center mt-1 text-[10px] text-slate-400 font-mono">
+                  <span>
+                    {field.required === false ? 'Optional field' : 'Required field'}
+                  </span>
+                  <span>
+                    {formValues[field.name]?.length || 0} / {field.maxLength || 500} characters
+                  </span>
                 </div>
+
+                {field.type === 'textarea' && allowDocumentUpload && (
+                  <div className="mt-2.5 flex items-center justify-between text-[11px] bg-slate-50 border border-slate-200/65 rounded-xl p-2.5">
+                    <div className="flex flex-col gap-0.5 text-left">
+                      <span className="font-semibold text-slate-700">Auto-fill from spreadsheet/document</span>
+                      <span className="text-[10px] text-slate-400 font-sans">Upload PDF, DOCX, XLSX, CSV, JSON</span>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept=".pdf,.docx,.txt,.xlsx,.xls,.csv,.json"
+                        id={`file-upload-${field.name}`}
+                        className="hidden"
+                        disabled={uploadingField === field.name}
+                        onChange={(e) => handleFileUpload(field.name, e)}
+                      />
+                      <label
+                        htmlFor={`file-upload-${field.name}`}
+                        className="flex items-center gap-1.5 py-1.5 px-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-600 hover:text-indigo-600 text-[10px] font-bold cursor-pointer transition-all shadow-3xs"
+                      >
+                        {uploadingField === field.name ? (
+                          <>
+                            <div className="w-3.5 h-3.5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                            <span>Parsing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Upload File</span>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
 

@@ -6,13 +6,14 @@ export default function ToolCompetitorAnalysis() {
     { name: 'clientName', label: 'Client Business Name', placeholder: 'Acme Inc' },
     { name: 'competitor', label: 'Competitor Name / URL', placeholder: 'competitor.com' },
     { name: 'focusArea', label: 'Focus Area (e.g. SEO, Social, Ads, Product)', placeholder: 'Organic Search & SEO Performance' },
+    { name: 'rawData', label: 'Raw Competitor Metrics', placeholder: 'Optional: Paste SEMrush, Ahrefs or Similarweb metrics (e.g., traffic: 5k/mo, rank: #4, top keywords) to base findings on real data...', type: 'textarea', required: false, maxLength: 3000 },
   ];
 
   const instructions = [
     "Enter your client's name and the primary competitor's name or website domain.",
     "Specify a focus area to tailor the analytical breakdown (e.g., SEO keyword overlaps, ad copy tactics, or product offerings).",
-    "<strong>SEO Tip:</strong> Build client trust by sharing visual keyword maps or traffic comparison graphs alongside this generated text.",
-    "Before delivering this report, enrich the AI observations with actual metrics from SEMrush, Ahrefs, or Similarweb."
+    "<strong>SEO Tip:</strong> Upload or paste actual metrics from SEMrush, Ahrefs, or Similarweb into the 'Raw Competitor Metrics' field to ensure the report is 100% correct.",
+    "Before delivering this report, check the recommendations to make sure they align with your client's goals."
   ];
 
   const seoContent = (
@@ -38,13 +39,14 @@ export default function ToolCompetitorAnalysis() {
   return (
     <ToolPage
       title="Free Competitor Analysis Generator"
-      description="Create professional competitive analysis summaries instantly with AI. Compare market rivals easily."
+      description="Create professional competitor analysis summaries instantly with AI. Upload SEO audits or spreadsheet metrics to base your audit on real data."
       fields={fields}
       apiEndpoint="/api/tools/competitor-analysis"
       metaTitle="Free Competitor Analysis Generator — AI Powered | ReportIQ"
-      metaDescription="Generate detailed competitor analysis reports instantly with AI. Free marketing and SWOT competitive summary builder."
+      metaDescription="Create detailed competitor analysis reports with AI. Upload SEMrush, Ahrefs, or Google spreadsheets to build accurate competitive audits."
       instructions={instructions}
       seoContent={seoContent}
+      allowDocumentUpload={true}
     />
   );
 }

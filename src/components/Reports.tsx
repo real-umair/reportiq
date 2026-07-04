@@ -768,7 +768,7 @@ This month we achieved extreme operational improvements, focusing on scaling cli
 - Satisfaction Score: 4.9/5 stars
 -----------------------------------------------
 
-Prepare your file as .txt, .docx, .pdf, or .xlsx and upload it to generate a highly detailed executive analytics suite immediately.`;
+Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to generate a highly detailed executive analytics suite immediately.`;
 
     const blob = new Blob([templateContent], { type: "text/plain;charset=utf-8" });
     const fileUrl = URL.createObjectURL(blob);
@@ -2548,13 +2548,13 @@ Prepare your file as .txt, .docx, .pdf, or .xlsx and upload it to generate a hig
                       </button>
                     </div>
                     <p className="text-[11px] text-slate-500 leading-normal mb-1">
-                      Extract updates directly from project briefs, milestone dumps, spreadsheets or summaries. Supported formats: .pdf, .docx, .txt, .xlsx files.
+                      Extract updates directly from project briefs, milestone dumps, spreadsheets, reports or summaries. Supported formats: .pdf, .docx, .txt, .xlsx, .csv, .json files.
                     </p>
                     
                     <div className="relative border-2 border-dashed border-slate-300 bg-white hover:border-indigo-400 rounded-xl p-5 text-center transition-all">
                       <input
                         type="file"
-                        accept=".pdf,.docx,.txt,.xlsx,.xls"
+                        accept=".pdf,.docx,.txt,.xlsx,.xls,.csv,.json"
                         id="document-upload-input"
                         className="hidden"
                         onChange={async (e) => {

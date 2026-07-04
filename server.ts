@@ -211,7 +211,7 @@ app.post("/api/extract-document", requireAuth, upload.single("file"), async (req
     } else if (extension === ".docx") {
       const result = await mammoth.extractRawText({ buffer });
       text = result.value || "";
-    } else if (extension === ".txt") {
+    } else if (extension === ".txt" || extension === ".csv" || extension === ".json") {
       text = buffer.toString("utf8");
     } else if (extension === ".xlsx" || extension === ".xls") {
       const workbook = XLSX.read(buffer, { type: "buffer" });
@@ -226,7 +226,7 @@ app.post("/api/extract-document", requireAuth, upload.single("file"), async (req
       }
       text = sheetsText.join("\n\n");
     } else {
-      res.status(400).json({ error: `Unsupported file type: ${extension}` });
+      res.status(400).json({ error: `Unsupported file type: ${extension}. Supported formats: .pdf, .docx, .txt, .csv, .json, .xlsx, .xls` });
       return;
     }
 
