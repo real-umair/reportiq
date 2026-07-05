@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft, BookOpen, Lock, X, Upload } from 'lucide-react';
+import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft, BookOpen, Lock, X, Upload, FileText } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 export interface ToolField {
@@ -494,20 +494,27 @@ export default function ToolPage({
                 
                 <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-3xs">
                   {user ? (
-                    <div className="max-h-[300px] overflow-y-auto text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text">
-                      {result}
+                    <div id="printable-report-area" className="print:p-4 print:max-h-none print:overflow-visible">
+                      {/* Print only header */}
+                      <div className="hidden print:block mb-6 border-b border-slate-200 pb-4 text-left">
+                        <h1 className="text-xl font-bold font-display text-slate-900">{title}</h1>
+                        <p className="text-[10px] text-slate-450 font-mono tracking-wider uppercase mt-1">Generated via ReportIQ AI Engine</p>
+                      </div>
+                      <div className="max-h-[300px] print:max-h-none overflow-y-auto print:overflow-visible text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text text-left">
+                        {result}
+                      </div>
                     </div>
                   ) : (
                     <div className="relative min-h-[200px]">
                       {/* Preview Text */}
-                      <div className="text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text">
+                      <div className="text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text text-left">
                         {result.slice(0, 150)}
                       </div>
                       
                       {/* Blurred Remainder */}
                       {result.length > 150 && (
                         <div 
-                          className="text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-none opacity-60 pointer-events-none mt-2"
+                          className="text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-none opacity-60 pointer-events-none mt-2 text-left"
                           style={{ filter: 'blur(4px)' }}
                         >
                           {result.slice(150)}
@@ -545,12 +552,12 @@ export default function ToolPage({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 z-20">
+              <div className="flex flex-wrap items-center gap-3 z-20">
                 <button
                   disabled={!user}
                   onClick={user ? handleCopyToClipboard : undefined}
-                  title={user ? undefined : "Sign up free to copy and download"}
-                  className={`flex-1 py-2 px-3 border rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-3xs ${
+                  title={user ? undefined : "Sign up free to copy, download and print"}
+                  className={`flex-1 py-2 px-3 border rounded-xl font-bold text-[10px] tracking-wide transition-all flex items-center justify-center gap-1.5 shadow-3xs ${
                     !user
                       ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
                       : copied
@@ -573,8 +580,8 @@ export default function ToolPage({
                 <button
                   disabled={!user}
                   onClick={user ? handleDownloadTxt : undefined}
-                  title={user ? undefined : "Sign up free to copy and download"}
-                  className={`flex-1 py-2 px-3 border rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-3xs ${
+                  title={user ? undefined : "Sign up free to copy, download and print"}
+                  className={`flex-1 py-2 px-3 border rounded-xl font-bold text-[10px] tracking-wide transition-all flex items-center justify-center gap-1.5 shadow-3xs ${
                     !user
                       ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
                       : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 cursor-pointer'
@@ -582,6 +589,19 @@ export default function ToolPage({
                 >
                   <Download className="w-3.5 h-3.5 text-slate-400" />
                   Download TXT
+                </button>
+                <button
+                  disabled={!user}
+                  onClick={user ? () => window.print() : undefined}
+                  title={user ? undefined : "Sign up free to copy, download and print"}
+                  className={`flex-1 py-2 px-3 border rounded-xl font-bold text-[10px] tracking-wide transition-all flex items-center justify-center gap-1.5 shadow-3xs ${
+                    !user
+                      ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
+                      : 'bg-indigo-650 hover:bg-indigo-750 text-white border-indigo-655 cursor-pointer hover:text-white shadow-xs'
+                  }`}
+                >
+                  <FileText className="w-3.5 h-3.5 text-indigo-200" />
+                  Print / PDF
                 </button>
               </div>
             </div>

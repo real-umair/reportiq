@@ -181,6 +181,15 @@ export default function ClientPortal() {
             </p>
           </div>
 
+          <style dangerouslySetInnerHTML={{__html: `
+            .portal-report-card:hover {
+              border-color: ${brandColor} !important;
+            }
+            .portal-report-card:hover h3 {
+              color: ${brandColor} !important;
+            }
+          `}} />
+
           {clientReports.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {clientReports.map(report => (
@@ -189,7 +198,7 @@ export default function ClientPortal() {
                   href={`/r/${report.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white border border-slate-200 hover:border-indigo-400 hover:shadow-md rounded-2xl p-6 flex flex-col justify-between h-56 transition-all shadow-2xs group cursor-pointer text-left"
+                  className="portal-report-card bg-white border border-slate-200 hover:shadow-md rounded-2xl p-6 flex flex-col justify-between h-56 transition-all shadow-2xs group cursor-pointer text-left"
                 >
                   <div>
                     <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
@@ -199,13 +208,13 @@ export default function ClientPortal() {
                       </span>
                     </div>
 
-                    <h3 className="font-bold font-display text-slate-955 text-base mt-4 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug">
+                    <h3 className="font-bold font-display text-slate-955 text-base mt-4 transition-colors line-clamp-2 leading-snug">
                       {report.title}
                     </h3>
                   </div>
 
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
-                    <span className="flex items-center gap-1.5 font-semibold text-indigo-600">
+                    <span style={{ color: brandColor }} className="flex items-center gap-1.5 font-semibold">
                       View Report
                       <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-1 transition-transform" />
                     </span>
