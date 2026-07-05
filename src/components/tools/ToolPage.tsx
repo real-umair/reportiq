@@ -424,7 +424,31 @@ export default function ToolPage({
                   <div className="mt-2.5 flex items-center justify-between text-[11px] bg-slate-50 border border-slate-200/65 rounded-xl p-2.5">
                     <div className="flex flex-col gap-0.5 text-left">
                       <span className="font-semibold text-slate-700">Auto-fill from spreadsheet/document</span>
-                      <span className="text-[10px] text-slate-400 font-sans">Upload PDF, DOCX, XLSX, CSV, JSON</span>
+                      <span className="text-[10px] text-slate-400 font-sans">
+                        Upload PDF, DOCX, XLSX, CSV, JSON (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const isPpc = title.toLowerCase().includes('ppc');
+                            const csvContent = isPpc 
+                              ? "Campaign,Platform,Ad Spend,Conversions,CPA,ROAS\nGoogle Search Ads,Google,1000,95,10.50,3.5\nMeta Retargeting,Facebook,500,45,11.10,2.8"
+                              : "Query,Clicks,Impressions,CTR,Position\nseo tools,1540,12000,12.83%,3.2\nclient reporting,840,9500,8.84%,4.5";
+                            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement("a");
+                            link.setAttribute("href", url);
+                            link.setAttribute("download", `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-sample.csv`);
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                          className="text-indigo-600 hover:text-indigo-750 underline font-semibold bg-transparent border-none p-0 cursor-pointer inline"
+                        >
+                          Download Sample CSV
+                        </button>
+                        )
+                      </span>
                     </div>
                     <div className="relative">
                       <input

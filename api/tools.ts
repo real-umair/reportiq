@@ -366,12 +366,22 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       break;
     }
     case 'ppc-report': {
-      const { clientName, adSpend, results } = req.body || {};
+      const { clientName, adSpend, results, rawData } = req.body || {};
       if (!validateFields({ clientName, adSpend, results }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sAdSpend = sanitizeInput(adSpend);
       const sResults = sanitizeInput(results);
-      prompt = `Write a professional paid advertising performance report for client ${sClientName}. Spend details: ${sAdSpend}. Campaign outcomes: ${sResults}. Include sections: Campaign Summary, Performance Analysis, Recommendations. 300 words maximum.`;
+      const sRawData = rawData ? sanitizeInput(rawData) : '';
+
+      let rawDataContent = '';
+      if (sRawData) {
+        rawDataContent = `Here is the actual raw campaign metrics and PPC data (use this data for your analysis and do not make up fake metrics or numbers):
+        ${sRawData}
+        
+        Strict rule: Focus your findings and recommendations on this raw data.`;
+      }
+
+      prompt = `Write a professional paid advertising performance report for client ${sClientName}. Spend details: ${sAdSpend}. Campaign outcomes: ${sResults}. Include sections: Campaign Summary, Performance Analysis, Recommendations. ${rawDataContent} 300 words maximum.`;
       break;
     }
     case 'scope-of-work': {

@@ -6,6 +6,7 @@ export default function ToolPpcReport() {
     { name: 'clientName', label: 'Client Name', placeholder: 'Acme Store' },
     { name: 'adSpend', label: 'Ad Spend & Platforms', placeholder: '$1,500 spent on Google Search & Facebook Ads' },
     { name: 'results', label: 'Key Campaign Results', placeholder: 'Generated 140 conversions at $10.70 CPA with 3.2x ROAS', type: 'textarea' },
+    { name: 'rawData', label: 'Raw PPC Metrics / Ads Export', placeholder: 'Paste metrics or upload a Google Ads / Meta Ads CSV/Excel export...', type: 'textarea', required: true, maxLength: 3000 },
   ];
 
   const instructions = [
@@ -45,6 +46,7 @@ export default function ToolPpcReport() {
       metaDescription="Generate paid search and social ad performance reports instantly with AI. Free PPC report builder."
       instructions={instructions}
       seoContent={seoContent}
+      allowDocumentUpload={true}
     />
   );
 }
