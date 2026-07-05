@@ -6,7 +6,7 @@ export default function ToolSeoReport() {
     { name: 'website', label: 'Website URL', placeholder: 'acme.com' },
     { name: 'keywords', label: 'Target Keywords', placeholder: 'seo tools, client reporting' },
     { name: 'month', label: 'Report Month', placeholder: 'June 2026' },
-    { name: 'rawData', label: 'Raw SEO Metrics / GSC Export', placeholder: 'Optional: Paste metrics or upload a Google Search Console / Google Analytics CSV/Excel sheet (e.g. Traffic: +15% MoM, CTR: 4.2%)...', type: 'textarea', required: false, maxLength: 3000 },
+    { name: 'rawData', label: 'Raw SEO Metrics / GSC Export', placeholder: 'Paste metrics or upload a Google Search Console / Google Analytics CSV/Excel sheet (e.g. Traffic: +15% MoM, CTR: 4.2%)...', type: 'textarea', required: true, maxLength: 3000 },
   ];
 
   const instructions = [

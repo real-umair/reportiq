@@ -215,27 +215,57 @@ export default function ToolPage({
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      const extension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+      let extractedText = "";
 
-      const { getAuthHeaders } = await import('../../lib/supabase');
-      const authHeaders = await getAuthHeaders();
+      if (extension === ".txt" || extension === ".csv" || extension === ".json") {
+        extractedText = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target?.result as string || "");
+          reader.onerror = (err) => reject(err);
+          reader.readAsText(file);
+        });
+      } else if (extension === ".xlsx" || extension === ".xls") {
+        const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target?.result as ArrayBuffer);
+          reader.onerror = (err) => reject(err);
+          reader.readAsArrayBuffer(file);
+        });
+        const XLSX = await import('xlsx');
+        const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+        let sheetsText: string[] = [];
+        for (const sheetName of workbook.SheetNames) {
+          const sheet = workbook.Sheets[sheetName];
+          const csv = XLSX.utils.sheet_to_csv(sheet);
+          if (csv.trim()) {
+            sheetsText.push(`--- Sheet: ${sheetName} ---\n${csv}`);
+          }
+        }
+        extractedText = sheetsText.join("\n\n");
+      } else {
+        const formData = new FormData();
+        formData.append('file', file);
 
-      const response = await fetch('/api/extract-document', {
-        method: 'POST',
-        headers: {
-          ...authHeaders,
-        },
-        body: formData,
-      });
+        const { getAuthHeaders } = await import('../../lib/supabase');
+        const authHeaders = await getAuthHeaders();
 
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        throw new Error(errJson.error || 'Failed to extract text from file.');
+        const response = await fetch('/api/extract-document', {
+          method: 'POST',
+          headers: {
+            ...authHeaders,
+          },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errJson = await response.json().catch(() => ({}));
+          throw new Error(errJson.error || 'Failed to extract text from file.');
+        }
+
+        const data = await response.json();
+        extractedText = data.text || '';
       }
-
-      const data = await response.json();
-      const extractedText = data.text || '';
       
       const targetField = fields.find(f => f.name === fieldName);
       const maxL = targetField?.maxLength || 500;
