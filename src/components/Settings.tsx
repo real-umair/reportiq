@@ -20,6 +20,7 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatarUrl || "");
   const [brandLogoUrl, setBrandLogoUrl] = useState(profile?.brandLogoUrl || "");
   const [whiteLabel, setWhiteLabel] = useState(profile?.whiteLabel || false);
+  const [brandColor, setBrandColor] = useState(profile?.brandColor || "#6366f1");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -40,6 +41,7 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
       setAvatarUrl(profile.avatarUrl || "");
       setBrandLogoUrl(profile.brandLogoUrl || "");
       setWhiteLabel(profile.whiteLabel || false);
+      setBrandColor(profile.brandColor || "#6366f1");
     }
   }, [userId, profile]);
 
@@ -106,6 +108,7 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
         avatarUrl: avatarUrl || null,
         brandLogoUrl: brandLogoUrl || null,
         whiteLabel: whiteLabel,
+        brandColor: brandColor,
       });
 
       setSaveSuccess(true);
@@ -284,6 +287,59 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                 className="w-full rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50"
                 maxLength={100}
               />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-2">
+                Brand Color (White-Label Accent)
+              </label>
+              <div className="flex flex-wrap items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                {[
+                  { name: "Indigo", hex: "#6366f1" },
+                  { name: "Emerald", hex: "#10b981" },
+                  { name: "Sky", hex: "#0ea5e9" },
+                  { name: "Rose", hex: "#f43f5e" },
+                  { name: "Amber", hex: "#f59e0b" },
+                  { name: "Slate", hex: "#475569" },
+                ].map((color) => (
+                  <button
+                    key={color.hex}
+                    type="button"
+                    onClick={() => setBrandColor(color.hex)}
+                    style={{ backgroundColor: color.hex }}
+                    title={color.name}
+                    className={`w-7 h-7 rounded-full cursor-pointer transition-transform relative ${
+                      brandColor === color.hex ? "scale-110 ring-2 ring-slate-400 ring-offset-2" : "hover:scale-105"
+                    }`}
+                  >
+                    {brandColor === color.hex && (
+                      <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] font-bold">✓</span>
+                    )}
+                  </button>
+                ))}
+                
+                <div className="flex items-center gap-2 border-l border-slate-200 pl-3.5 ml-2.5">
+                  <input
+                    type="color"
+                    value={brandColor}
+                    onChange={(e) => setBrandColor(e.target.value)}
+                    className="w-8 h-8 rounded-lg cursor-pointer border border-slate-200 bg-white"
+                  />
+                  <input
+                    type="text"
+                    value={brandColor}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val.startsWith('#') && val.length <= 7) {
+                        setBrandColor(val);
+                      }
+                    }}
+                    placeholder="#6366f1"
+                    className="w-20 rounded-lg border border-slate-200 outline-none p-1.5 px-2 bg-white text-xs font-mono uppercase focus:border-indigo-600 focus:ring-1 focus:ring-indigo-100"
+                    maxLength={7}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
