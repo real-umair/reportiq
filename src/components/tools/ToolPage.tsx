@@ -432,8 +432,8 @@ export default function ToolPage({
                             e.preventDefault();
                             const isPpc = title.toLowerCase().includes('ppc');
                             const csvContent = isPpc 
-                              ? "Campaign,Platform,Ad Spend,Conversions,CPA,ROAS\nGoogle Search Ads,Google,1000,95,10.50,3.5\nMeta Retargeting,Facebook,500,45,11.10,2.8"
-                              : "Query,Clicks,Impressions,CTR,Position\nseo tools,1540,12000,12.83%,3.2\nclient reporting,840,9500,8.84%,4.5";
+                              ? "Campaign Name,Platform,Impressions,Clicks,CTR,Ad Spend,Conversions,CVR,CPA,ROAS\nBrand Search - US/CA,Google Ads,45000,3150,7.00%,1250.00,420,13.33%,2.98,6.2x\nCompetitor Conquesting,Google Ads,85000,1700,2.00%,2100.00,85,5.00%,24.71,1.8x\nGeneric Non-Brand SEO,Google Ads,120000,3600,3.00%,4800.00,160,4.44%,30.00,2.1x\nRetargeting - Meta Pixel,Meta Ads,32000,960,3.00%,850.00,115,11.98%,7.39,4.8x\nLookalike Prospecting,Meta Ads,150000,2250,1.50%,3200.00,92,4.09%,34.78,2.4x\nLinkedIn Lead Gen - B2B,LinkedIn Ads,18000,270,1.50%,1500.00,18,6.67%,83.33,1.5x\nYouTube Video Awareness,Google Ads,250000,1250,0.50%,800.00,10,0.80%,80.00,0.8x"
+                              : "Keyword,Clicks,Impressions,CTR,Average Position,Traffic Growth MoM\nseo reporting tool,4850,32000,15.16%,1.8,+12.5%\nclient portal for agencies,2920,18500,15.78%,2.1,+8.2%\nwhite label seo dashboard,1840,15200,12.11%,3.4,+15.4%\nfree competitor analysis report,920,8900,10.34%,4.2,+4.1%\nagency automated updates,680,7100,9.58%,5.5,-2.1%\nseo report template xlsx,450,5200,8.65%,6.3,+20.5%\nppc performance generator,310,4100,7.56%,7.1,+5.2%\nclient management system,180,3100,5.81%,8.9,+1.8%\nonboarding questionnaire template,95,1200,7.92%,9.5,+10.0%\nproject post mortem debrief,60,980,6.12%,10.2,+0.5%\ninvoice descriptions generator,45,750,6.00%,11.4,-5.0%\nmarketing retainer pricing,20,320,6.25%,12.8,+30.0%";
                             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                             const url = URL.createObjectURL(blob);
                             const link = document.createElement("a");
@@ -443,7 +443,7 @@ export default function ToolPage({
                             link.click();
                             document.body.removeChild(link);
                           }}
-                          className="text-indigo-600 hover:text-indigo-750 underline font-semibold bg-transparent border-none p-0 cursor-pointer inline"
+                          className="text-indigo-600 hover:text-indigo-755 underline font-semibold bg-transparent border-none p-0 cursor-pointer inline"
                         >
                           Download Sample CSV
                         </button>

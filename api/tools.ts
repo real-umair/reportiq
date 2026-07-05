@@ -255,12 +255,13 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       break;
     }
     case 'seo-report': {
-      const { website, keywords, month, rawData } = req.body || {};
+      const { website, keywords, month, rawData, workDone } = req.body || {};
       if (!validateFields({ website, keywords, month }, res)) return;
       const sWebsite = sanitizeInput(website);
       const sKeywords = sanitizeInput(keywords);
       const sMonth = sanitizeInput(month);
       const sRawData = rawData ? sanitizeInput(rawData) : '';
+      const sWorkDone = workDone ? sanitizeInput(workDone) : '';
 
       let rawDataContent = '';
       if (sRawData) {
@@ -270,7 +271,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
         Strict rule: Focus your findings and recommendations on this raw data.`;
       }
 
-      prompt = `Write a professional SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Include: Overview, Keyword Performance, Traffic Summary, Recommendations. ${rawDataContent} 300 words maximum.`;
+      prompt = `Write a professional SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Work completed and SEO optimizations: ${sWorkDone}. Include: Overview, Keyword Performance, Traffic Summary, Recommendations. ${rawDataContent} 300 words maximum.`;
       break;
     }
     case 'client-email': {
@@ -366,12 +367,13 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       break;
     }
     case 'ppc-report': {
-      const { clientName, adSpend, results, rawData } = req.body || {};
+      const { clientName, adSpend, results, rawData, workDone } = req.body || {};
       if (!validateFields({ clientName, adSpend, results }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sAdSpend = sanitizeInput(adSpend);
       const sResults = sanitizeInput(results);
       const sRawData = rawData ? sanitizeInput(rawData) : '';
+      const sWorkDone = workDone ? sanitizeInput(workDone) : '';
 
       let rawDataContent = '';
       if (sRawData) {
@@ -381,7 +383,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
         Strict rule: Focus your findings and recommendations on this raw data.`;
       }
 
-      prompt = `Write a professional paid advertising performance report for client ${sClientName}. Spend details: ${sAdSpend}. Campaign outcomes: ${sResults}. Include sections: Campaign Summary, Performance Analysis, Recommendations. ${rawDataContent} 300 words maximum.`;
+      prompt = `Write a professional paid advertising performance report for client ${sClientName}. Spend details: ${sAdSpend}. Campaign outcomes: ${sResults}. Adjustments & work completed: ${sWorkDone}. Include sections: Campaign Summary, Performance Analysis, Recommendations. ${rawDataContent} 300 words maximum.`;
       break;
     }
     case 'scope-of-work': {
