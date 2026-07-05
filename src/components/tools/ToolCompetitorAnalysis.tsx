@@ -6,7 +6,7 @@ export default function ToolCompetitorAnalysis() {
     { name: 'clientName', label: 'Client Business Name', placeholder: 'Acme Inc' },
     { name: 'competitor', label: 'Competitor Name / URL', placeholder: 'competitor.com' },
     { name: 'focusArea', label: 'Focus Area (e.g. SEO, Social, Ads, Product)', placeholder: 'Organic Search & SEO Performance' },
-    { name: 'rawData', label: 'Raw Competitor Metrics', placeholder: 'Optional: Paste SEMrush, Ahrefs or Similarweb metrics (e.g., traffic: 5k/mo, rank: #4, top keywords) to base findings on real data...', type: 'textarea', required: false, maxLength: 3000 },
+    { name: 'rawData', label: 'Raw Competitor Metrics', placeholder: 'Paste SEMrush, Ahrefs or Similarweb metrics (e.g., traffic: 5k/mo, rank: #4, top keywords) to base findings on real data...', type: 'textarea', required: true, maxLength: 3000 },
   ];
 
   const instructions = [

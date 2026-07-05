@@ -256,7 +256,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
     }
     case 'seo-report': {
       const { website, keywords, month, rawData, workDone } = req.body || {};
-      if (!validateFields({ website, keywords, month }, res)) return;
+      if (!validateFields({ website, keywords, month, workDone }, res)) return;
       const sWebsite = sanitizeInput(website);
       const sKeywords = sanitizeInput(keywords);
       const sMonth = sanitizeInput(month);
@@ -340,7 +340,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
     }
     case 'competitor-analysis': {
       const { clientName, competitor, focusArea, rawData } = req.body || {};
-      if (!validateFields({ clientName, competitor, focusArea }, res)) return;
+      if (!validateFields({ clientName, competitor, focusArea, rawData }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sCompetitor = sanitizeInput(competitor);
       const sFocusArea = sanitizeInput(focusArea);
@@ -368,7 +368,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
     }
     case 'ppc-report': {
       const { clientName, adSpend, results, rawData, workDone } = req.body || {};
-      if (!validateFields({ clientName, adSpend, results }, res)) return;
+      if (!validateFields({ clientName, adSpend, results, workDone }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sAdSpend = sanitizeInput(adSpend);
       const sResults = sanitizeInput(results);
