@@ -26,7 +26,7 @@ export default function ClientPortal() {
       const { data: dbClient, error: clientError } = await supabase
         .from("clients")
         .select("*")
-        .eq("email", emailInput)
+        .ilike("email", emailInput)
         .maybeSingle();
 
       if (clientError) throw clientError;

@@ -65,7 +65,7 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
       await supabaseDb.updateClient(editingClient.id, userId, {
         name: editName.trim(),
         company: editCompany.trim() || null,
-        email: editEmail.trim() || null,
+        email: editEmail.trim().toLowerCase() || null,
         notes: editNotes.trim() || null,
       });
       setEditingClient(null);
@@ -122,7 +122,7 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
       await supabaseDb.addClient(userId, {
         name: name.trim(),
         company: company.trim() || null,
-        email: email.trim() || null,
+        email: email.trim().toLowerCase() || null,
         logoUrl: null,
         notes: notes.trim() || null,
       });

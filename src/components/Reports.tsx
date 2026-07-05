@@ -1765,6 +1765,18 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
         </div>
 
         <div id="printable-report-area" className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xs relative overflow-hidden">
+          {profile?.plan === 'pro' && profile?.whiteLabel === true && (
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media print {
+                @page {
+                  margin: 0 !important;
+                }
+                body {
+                  padding: 1.6cm !important;
+                }
+              }
+            `}} />
+          )}
           <div className="absolute top-0 left-0 w-full h-1 bg-indigo-600 print:hidden" />
           
           <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-100 print:hidden">

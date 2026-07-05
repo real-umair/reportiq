@@ -427,8 +427,22 @@ export default function PublicReport({ slug }: PublicReportProps) {
     URL.revokeObjectURL(fileUrl);
   };
 
+  const isWhiteLabel = profile?.plan === 'pro' && profile?.whiteLabel === true;
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
+      {isWhiteLabel && (
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media print {
+            @page {
+              margin: 0 !important;
+            }
+            body {
+              padding: 1.6cm !important;
+            }
+          }
+        `}} />
+      )}
       {/* Dynamic top bar branded with customized profile color */}
       <div style={{ backgroundColor: brandColor }} className="h-2.5 w-full shrink-0" />
 
