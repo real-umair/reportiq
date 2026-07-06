@@ -65,6 +65,26 @@
       "destination": "/api/seo.ts?type=blog-home"
     },
     {
+      "source": "/api/reports/generate",
+      "destination": "/api/reports.ts?action=generate"
+    },
+    {
+      "source": "/api/reports/generate-section",
+      "destination": "/api/reports.ts?action=generate-section"
+    },
+    {
+      "source": "/api/reports/send-email",
+      "destination": "/api/reports.ts?action=send-email"
+    },
+    {
+      "source": "/api/reports/slug/:slug",
+      "destination": "/api/reports.ts?action=slug&slug=:slug"
+    },
+    {
+      "source": "/api/reports/:id/feedback",
+      "destination": "/api/reports.ts?action=feedback&id=:id"
+    },
+    {
       "source": "/api/health",
       "destination": "/api/tools.ts?tool=health"
     },
