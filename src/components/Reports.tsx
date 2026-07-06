@@ -1620,10 +1620,10 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
                         if (shareUrl) {
                           const iframe = document.createElement("iframe");
                           iframe.style.position = "fixed";
-                          iframe.style.right = "0";
-                          iframe.style.bottom = "0";
-                          iframe.style.width = "0";
-                          iframe.style.height = "0";
+                          iframe.style.left = "-9999px";
+                          iframe.style.top = "-9999px";
+                          iframe.style.width = "1024px";
+                          iframe.style.height = "768px";
                           iframe.style.border = "none";
                           iframe.src = `${shareUrl}?print=true`;
                           document.body.appendChild(iframe);

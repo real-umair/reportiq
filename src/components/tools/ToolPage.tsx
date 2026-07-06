@@ -137,6 +137,36 @@ export default function ToolPage({
     };
   }, []);
 
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (!user) {
+      setProfile(null);
+      return;
+    }
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setProfile({
+            uid: data.id,
+            email: data.email,
+            fullName: data.full_name,
+            agencyName: data.agency_name,
+            logoUrl: data.logo_url || null,
+            brandColor: data.brand_color || "#6366f1",
+            plan: data.plan,
+            avatarUrl: data.avatar_url || null,
+            brandLogoUrl: data.brand_logo_url || null,
+            whiteLabel: data.white_label || false,
+          });
+        }
+      });
+  }, [user]);
+
   // Exit intent popup detection
   useEffect(() => {
     if (user) return;
@@ -552,11 +582,46 @@ export default function ToolPage({
                 
                 <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-3xs">
                   {user ? (
-                    <div id="printable-report-area" className="print:p-4 print:max-h-none print:overflow-visible">
+                    <div id="printable-report-area" className="print:p-4 print:max-h-none print:overflow-visible font-sans">
+                      {profile?.plan === 'pro' && (
+                        <div style={{ backgroundColor: profile.brandColor || "#6366f1" }} className="h-1.5 w-full mb-4 hidden print:block" />
+                      )}
                       {/* Print only header */}
                       <div className="hidden print:block mb-6 border-b border-slate-200 pb-4 text-left">
-                        <h1 className="text-xl font-bold font-display text-slate-900">{title}</h1>
-                        <p className="text-[10px] text-slate-450 font-mono tracking-wider uppercase mt-1">Generated via ReportIQ AI Engine</p>
+                        {profile?.plan === 'pro' ? (
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              {profile.brandLogoUrl ? (
+                                <img
+                                  src={profile.brandLogoUrl}
+                                  alt={profile.agencyName || "Agency Logo"}
+                                  className="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-200 p-1"
+                                />
+                              ) : (
+                                <div
+                                  style={{ backgroundColor: profile.brandColor || "#6366f1" }}
+                                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold"
+                                >
+                                  {profile.agencyName?.charAt(0).toUpperCase() || "A"}
+                                </div>
+                              )}
+                              <div>
+                                <p className="font-semibold text-slate-900 leading-tight">
+                                  {profile.agencyName || "Our Agency"}
+                                </p>
+                                <p className="text-[10px] text-slate-450 font-mono tracking-wider uppercase mt-1">Client Report</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <h1 className="text-base font-bold text-slate-900">{title}</h1>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <h1 className="text-xl font-bold font-display text-slate-900">{title}</h1>
+                            <p className="text-[10px] text-slate-450 font-mono tracking-wider uppercase mt-1">Generated via ReportIQ AI Engine</p>
+                          </>
+                        )}
                       </div>
                       <div className="max-h-[300px] print:max-h-none overflow-y-auto print:overflow-visible text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text text-left">
                         {result}

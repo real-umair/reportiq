@@ -268,13 +268,34 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
 
       let rawDataContent = '';
       if (sRawData) {
-        rawDataContent = `Here is the actual raw SEO performance data and metrics (use this data for your analysis and do not make up fake metrics or numbers):
+        rawDataContent = `Here is the actual raw SEO performance data and metrics:
         ${sRawData}
         
         Strict rule: Focus your findings and recommendations on this raw data.`;
       }
 
-      prompt = `Write a professional SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Work completed and SEO optimizations: ${sWorkDone}. Include: Overview, Keyword Performance, Traffic Summary, Recommendations. ${rawDataContent} 300 words maximum.`;
+      prompt = `Write a professional, comprehensive SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth}.
+Work completed and SEO optimizations: ${sWorkDone}.
+${rawDataContent}
+
+Format your response using Markdown, including the following exact sections:
+
+## Executive Summary
+Provide a 2-3 sentence executive summary comparing performance, strengths, and primary opportunities.
+
+## Opportunity Score
+Provide a Markdown table with columns (Category | Score) for these categories: Local SEO, Technical SEO, Content Strategy, Authority, Overall Opportunity.
+
+## Priority Levels
+Provide a Markdown table with columns (Priority | Recommendation) listing recommendations with priority emojis (🔴 High, 🟠 Medium, 🟢 Low).
+
+## Expected Impact
+Provide a Markdown table with columns (Recommendation | Expected Impact) listing recommendations and their expected impact (High, Medium, Low).
+
+## Conclusion
+Write a short, encouraging concluding paragraph.
+
+Ensure all tables are formatted correctly. Maximum 600 words total.`;
       break;
     }
     case 'client-email': {
@@ -351,13 +372,33 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
 
       let rawDataContent = '';
       if (sRawData) {
-        rawDataContent = `Here is the actual raw competitor data and metrics (use this data for your analysis and do not make up fake metrics or numbers):
+        rawDataContent = `Here is the actual raw competitor data and metrics:
         ${sRawData}
         
         Strict rule: Focus your findings and recommendations on this raw data.`;
       }
 
-      prompt = `Write a professional competitor analysis summary for ${sClientName} comparing against competitor ${sCompetitor} focusing on ${sFocusArea}. Detail their strengths, positioning advantages, and strategic recommendations for our client. ${rawDataContent} 300 words maximum.`;
+      prompt = `Write a professional competitor analysis summary for ${sClientName} comparing against competitor ${sCompetitor} focusing on ${sFocusArea}.
+${rawDataContent}
+
+Format your response using Markdown, including the following exact sections:
+
+## Executive Summary
+Provide a 2-3 sentence executive summary comparing our client's current positioning against the competitor's strengths and weaknesses.
+
+## Opportunity Score
+Provide a Markdown table with columns (Category | Score) for these categories: Local SEO, Technical SEO, Content Strategy, Authority, Overall Opportunity, comparing our client to the competitor.
+
+## Priority Levels
+Provide a Markdown table with columns (Priority | Recommendation) listing recommendations to win market share, with priority emojis (🔴 High, 🟠 Medium, 🟢 Low).
+
+## Expected Impact
+Provide a Markdown table with columns (Recommendation | Expected Impact) listing recommendations and their expected impact (High, Medium, Low).
+
+## Conclusion
+Write a short, encouraging concluding paragraph.
+
+Ensure all tables are formatted correctly. Maximum 600 words total.`;
       break;
     }
     case 'weekly-report': {
@@ -380,13 +421,36 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
 
       let rawDataContent = '';
       if (sRawData) {
-        rawDataContent = `Here is the actual raw campaign metrics and PPC data (use this data for your analysis and do not make up fake metrics or numbers):
+        rawDataContent = `Here is the actual raw campaign metrics and PPC data:
         ${sRawData}
         
         Strict rule: Focus your findings and recommendations on this raw data.`;
       }
 
-      prompt = `Write a professional paid advertising performance report for client ${sClientName}. Spend details: ${sAdSpend}. Campaign outcomes: ${sResults}. Adjustments & work completed: ${sWorkDone}. Include sections: Campaign Summary, Performance Analysis, Recommendations. ${rawDataContent} 300 words maximum.`;
+      prompt = `Write a professional paid advertising performance report for client ${sClientName}.
+Spend details: ${sAdSpend}.
+Campaign outcomes: ${sResults}.
+Adjustments & work completed: ${sWorkDone}.
+${rawDataContent}
+
+Format your response using Markdown, including the following exact sections:
+
+## Executive Summary
+Provide a 2-3 sentence executive summary of the PPC campaign performance, highlighting ROI/ROAS, CPA, and spend efficiency.
+
+## Opportunity Score
+Provide a Markdown table with columns (Category | Score) for these categories: Campaign Structure, Conversion Rate, Bid Strategy, Ad Copy Relevance, Overall Opportunity.
+
+## Priority Levels
+Provide a Markdown table with columns (Priority | Recommendation) listing campaign recommendations with priority emojis (🔴 High, 🟠 Medium, 🟢 Low).
+
+## Expected Impact
+Provide a Markdown table with columns (Recommendation | Expected Impact) listing recommendations and their expected impact (High, Medium, Low).
+
+## Conclusion
+Write a short, encouraging concluding paragraph.
+
+Ensure all tables are formatted correctly. Maximum 600 words total.`;
       break;
     }
     case 'scope-of-work': {
@@ -424,7 +488,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
     const completion = await groqTools.chat.completions.create({
       model: 'openai/gpt-oss-120b',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 500,
+      max_tokens: 1200,
     });
 
     return res.status(200).json({ result: completion.choices[0].message.content });
