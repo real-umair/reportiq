@@ -299,10 +299,14 @@ export default function ToolPage({
     }
 
     try {
+      const { getAuthHeaders } = await import('../../lib/supabase');
+      const authHeaders = await getAuthHeaders();
+
       const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...authHeaders,
         },
         body: JSON.stringify(formValues),
       });

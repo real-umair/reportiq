@@ -3,7 +3,7 @@ import { groqTools } from './_utils/groqTools.js';
 import { checkRateLimit } from './_utils/rateLimit.js';
 import { handleCors } from './_utils/cors.js';
 import { sanitizeInput, validateFields } from './_utils/validation.js';
-import { supabase } from './_utils/supabase.js';
+import { supabase, getAuthUser } from './_utils/supabase.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Get the tool from query parameters first
@@ -36,14 +36,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Check rate limit only for prompt tools (exclude sitemap)
   if (tool !== 'sitemap') {
-    const ip = (req.headers['x-forwarded-for'] as string || 'unknown').split(',')[0].trim();
-    const allowed = checkRateLimit(ip, tool);
-    
-    if (!allowed) {
-      return res.status(429).json({ 
-        limited: true, 
-        message: "You have reached today's free limit. Sign up for ReportIQ to get unlimited access → reportiq.xyz"
-      });
+    const user = await getAuthUser(req);
+    if (!user) {
+      const ip = (req.headers['x-forwarded-for'] as string || 'unknown').split(',')[0].trim();
+      const allowed = checkRateLimit(ip, tool);
+      
+      if (!allowed) {
+        return res.status(429).json({ 
+          limited: true, 
+          message: "You have reached today's free limit. Sign up for ReportIQ to get unlimited access → reportiq.xyz"
+        });
+      }
     }
   }
 
@@ -256,7 +259,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
     }
     case 'seo-report': {
       const { website, keywords, month, rawData, workDone } = req.body || {};
-      if (!validateFields({ website, keywords, month, workDone }, res)) return;
+      if (!validateFields({ website, keywords, month, rawData }, res)) return;
       const sWebsite = sanitizeInput(website);
       const sKeywords = sanitizeInput(keywords);
       const sMonth = sanitizeInput(month);
@@ -340,7 +343,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
     }
     case 'competitor-analysis': {
       const { clientName, competitor, focusArea, rawData } = req.body || {};
-      if (!validateFields({ clientName, competitor, focusArea, rawData }, res)) return;
+      if (!validateFields({ clientName, competitor, focusArea }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sCompetitor = sanitizeInput(competitor);
       const sFocusArea = sanitizeInput(focusArea);
@@ -368,7 +371,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
     }
     case 'ppc-report': {
       const { clientName, adSpend, results, rawData, workDone } = req.body || {};
-      if (!validateFields({ clientName, adSpend, results, workDone }, res)) return;
+      if (!validateFields({ clientName, adSpend, rawData }, res)) return;
       const sClientName = sanitizeInput(clientName);
       const sAdSpend = sanitizeInput(adSpend);
       const sResults = sanitizeInput(results);

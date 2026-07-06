@@ -28,7 +28,8 @@ export function validateFields(fields: Record<string, any>, res: VercelResponse)
       res.status(400).json({ error: 'All fields are required' });
       return false;
     }
-    if (String(value).length > 500) {
+    const maxLength = ['rawData', 'workDone', 'results', 'wentWell', 'challenges', 'kpis', 'metrics', 'deliverables', 'tasksDone', 'goals'].includes(key) ? 3000 : 500;
+    if (String(value).length > maxLength) {
       res.status(400).json({ error: 'Input too long' });
       return false;
     }
