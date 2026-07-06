@@ -22,94 +22,24 @@ export default function ClientPortal() {
         throw new Error("Please enter your email address.");
       }
 
-      // 1. Fetch client matching email
-      const { data: dbClient, error: clientError } = await supabase
-        .from("clients")
-        .select("*")
-        .ilike("email", emailInput)
-        .maybeSingle();
+      const response = await fetch("/api/portal/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: emailInput }),
+      });
 
-      if (clientError) throw clientError;
-
-      if (!dbClient) {
-        throw new Error("No client portal registered for this email address. Please contact your agency.");
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `Server returned error status ${response.status}`);
       }
 
-      // 2. Fetch agency owner profile
-      const { data: dbProfile, error: profileError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", dbClient.user_id)
-        .maybeSingle();
+      const { client, profile, reports } = await response.json();
 
-      if (profileError) throw profileError;
-
-      if (!dbProfile) {
-        throw new Error("Unable to locate parent agency profile.");
-      }
-
-      // Check plan limits - MUST be Pro plan
-      if (dbProfile.plan !== "pro") {
-        throw new Error("The client portal is only available on Pro plans. Please contact your agency provider.");
-      }
-
-      // 3. Fetch reports linked to this client (status must be ready or sent)
-      const { data: dbReports, error: reportsError } = await supabase
-        .from("reports")
-        .select("*")
-        .eq("client_id", dbClient.id)
-        .in("status", ["ready", "sent"])
-        .order("created_at", { ascending: false });
-
-      if (reportsError) throw reportsError;
-
-      // Map values
-      const mappedClient: Client = {
-        id: dbClient.id,
-        userId: dbClient.user_id,
-        name: dbClient.name,
-        email: dbClient.email,
-        company: dbClient.company,
-        logoUrl: dbClient.logo_url || null,
-        notes: dbClient.notes,
-        createdAt: dbClient.created_at,
-      };
-
-      const mappedProfile: Profile = {
-        uid: dbProfile.id,
-        email: dbProfile.email,
-        fullName: dbProfile.full_name,
-        agencyName: dbProfile.agency_name,
-        logoUrl: dbProfile.logo_url || null,
-        brandColor: dbProfile.brand_color || "#6366f1",
-        plan: dbProfile.plan,
-        reportsGeneratedThisMonth: dbProfile.reports_generated_this_month || 0,
-        avatarUrl: dbProfile.avatar_url || null,
-        brandLogoUrl: dbProfile.brand_logo_url || null,
-      };
-
-      const mappedReports: Report[] = (dbReports || []).map((r: any) => ({
-        id: r.id,
-        userId: r.user_id,
-        clientId: r.client_id,
-        title: r.title,
-        periodStart: r.period_start,
-        periodEnd: r.period_end,
-        status: r.status,
-        slug: r.slug,
-        aiSummary: r.ai_summary,
-        rawData: r.raw_data || {},
-        sections: r.sections || [],
-        customMessage: r.custom_message,
-        attachments: r.attachments || [],
-        tone: r.tone || "Formal & Corporate",
-        viewCount: r.view_count || 0,
-        createdAt: r.created_at,
-      }));
-
-      setClientObj(mappedClient);
-      setAgencyProfile(mappedProfile);
-      setClientReports(mappedReports);
+      setClientObj(client);
+      setAgencyProfile(profile);
+      setClientReports(reports);
     } catch (err: any) {
       console.error("Portal login failed:", err);
       setError(err.message || "Failed to log in.");

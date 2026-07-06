@@ -5,9 +5,9 @@ export default function ToolPpcReport() {
   const fields: ToolField[] = [
     { name: 'clientName', label: 'Client Name', placeholder: 'Acme Store' },
     { name: 'adSpend', label: 'Ad Spend & Platforms', placeholder: '$1,500 spent on Google Search & Facebook Ads' },
-    { name: 'results', label: 'Key Campaign Results', placeholder: 'Generated 140 conversions at $10.70 CPA with 3.2x ROAS', type: 'textarea' },
-    { name: 'workDone', label: 'Optimizations & Work Completed', placeholder: 'Describe PPC adjustments and campaign optimizations completed (e.g. refreshed ad creatives, added negative keywords, set up retargeting, adjusted bids)...', type: 'textarea', required: true, maxLength: 2000 },
-    { name: 'rawData', label: 'Raw PPC Metrics / Ads Export', placeholder: 'Optional: Paste metrics or upload a Google Ads / Meta Ads CSV/Excel export...', type: 'textarea', required: false, maxLength: 3000 },
+    { name: 'results', label: 'Key Campaign Results', placeholder: 'Generated 140 conversions at $10.70 CPA with 3.2x ROAS', type: 'textarea', required: false },
+    { name: 'workDone', label: 'Optimizations & Work Completed', placeholder: 'Describe PPC adjustments and campaign optimizations completed (e.g. refreshed ad creatives, added negative keywords, set up retargeting, adjusted bids)...', type: 'textarea', required: false, maxLength: 2000 },
+    { name: 'rawData', label: 'Raw PPC Metrics / Ads Export', placeholder: 'Paste metrics or upload a Google Ads / Meta Ads CSV/Excel export...', type: 'textarea', required: true, maxLength: 3000 },
   ];
 
   const instructions = [
