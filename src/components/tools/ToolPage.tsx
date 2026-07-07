@@ -626,7 +626,7 @@ export default function ToolPage({
                       </div>
                       <div 
                         className="max-h-[300px] print:max-h-none overflow-y-auto print:overflow-visible text-xs text-slate-800 leading-relaxed font-sans select-text text-left"
-                        dangerouslySetInnerHTML={{ __html: parseMarkdown(result) }}
+                        dangerouslySetInnerHTML={{ __html: parseMarkdown(result, profile?.brandColor) }}
                       />
                     </div>
                   ) : (
@@ -634,7 +634,7 @@ export default function ToolPage({
                       {/* Preview Text */}
                       <div 
                         className="text-xs text-slate-800 leading-relaxed font-sans select-text text-left"
-                        dangerouslySetInnerHTML={{ __html: parseMarkdown(result.slice(0, 150)) }}
+                        dangerouslySetInnerHTML={{ __html: parseMarkdown(result.slice(0, 150), profile?.brandColor) }}
                       />
                       
                       {/* Blurred Remainder */}
@@ -642,7 +642,7 @@ export default function ToolPage({
                         <div 
                           className="text-xs text-slate-800 leading-relaxed font-sans select-none opacity-60 pointer-events-none mt-2 text-left"
                           style={{ filter: 'blur(4px)' }}
-                          dangerouslySetInnerHTML={{ __html: parseMarkdown(result.slice(150)) }}
+                          dangerouslySetInnerHTML={{ __html: parseMarkdown(result.slice(150), profile?.brandColor) }}
                         />
                       )}
                       

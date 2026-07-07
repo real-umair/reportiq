@@ -33,17 +33,22 @@ function renderVideo(url: string): string {
   </div>`;
 }
 
-function renderHtmlTable(rows: string[][], alignment: string[]): string {
+function renderHtmlTable(rows: string[][], alignment: string[], brandColor?: string): string {
   if (rows.length === 0) return '';
   
   const headers = rows[0];
   const dataRows = rows.slice(1);
   
-  let headerHtml = '<thead>\n<tr class="bg-indigo-600 text-white font-semibold uppercase tracking-wider text-xs sm:text-sm">';
+  const headerBgStyle = brandColor ? `style="background-color: ${brandColor}"` : '';
+  const headerClass = brandColor ? 'text-white font-semibold uppercase tracking-wider text-xs sm:text-sm' : 'bg-indigo-600 text-white font-semibold uppercase tracking-wider text-xs sm:text-sm';
+
+  let headerHtml = `<thead>\n<tr class="${headerClass}" ${headerBgStyle}>`;
   headers.forEach((header, idx) => {
     const align = alignment[idx] || 'left';
     const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left';
-    headerHtml += `<th class="py-3 px-4 border border-indigo-700/50 ${alignClass}">${header}</th>`;
+    const thBorderStyle = brandColor ? `style="border-color: ${brandColor}33"` : '';
+    const thClass = brandColor ? `py-3 px-4 border ${alignClass}` : `py-3 px-4 border border-indigo-700/50 ${alignClass}`;
+    headerHtml += `<th class="${thClass}" ${thBorderStyle}>${header}</th>`;
   });
   headerHtml += '\n</tr>\n</thead>';
   
@@ -69,7 +74,7 @@ ${bodyHtml}
 </div>`;
 }
 
-export function parseMarkdown(md: string): string {
+export function parseMarkdown(md: string, brandColor?: string): string {
   if (!md) return '';
   let html = md;
 
@@ -92,7 +97,7 @@ export function parseMarkdown(md: string): string {
 
   // Headers: ###, ##, #
   html = html.replace(/^### (.*?)$/gm, '<h3 class="text-base sm:text-lg font-bold text-slate-900 mt-6 mb-2 font-display">$1</h3>');
-  html = html.replace(/^## (.*?)$/gm, '<h2 class="text-lg sm:text-xl font-bold text-slate-950 mt-8 mb-3 border-b border-slate-150 pb-1.5 font-display">$1</h2>');
+  html = html.replace(/^## (.*?)$/gm, '<h2 class="text-lg sm:text-xl font-bold text-slate-955 mt-8 mb-3 border-b border-slate-150 pb-1.5 font-display">$1</h2>');
   html = html.replace(/^# (.*?)$/gm, '<h1 class="text-2xl sm:text-3xl font-black text-slate-955 mt-10 mb-4 font-display">$1</h1>');
 
   // Bold: **text**
@@ -102,13 +107,21 @@ export function parseMarkdown(md: string): string {
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
   // Links: [text](url) - FIX text/url capture groups
-  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-indigo-600 hover:underline font-semibold" target="_blank" rel="noopener noreferrer">$1</a>');
+  if (brandColor) {
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, `<a href="$2" class="hover:underline font-semibold" style="color: ${brandColor}" target="_blank" rel="noopener noreferrer">$1</a>`);
+  } else {
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-indigo-600 hover:underline font-semibold" target="_blank" rel="noopener noreferrer">$1</a>');
+  }
 
   // Unordered Lists: - item or * item
   html = html.replace(/^\s*[-*]\s+(.*?)$/gm, '<li class="ml-5 list-disc leading-relaxed mt-1.5 text-slate-700 text-sm sm:text-base font-sans">$1</li>');
 
   // Blockquotes: > text
-  html = html.replace(/^>\s+(.*?)$/gm, '<blockquote class="border-l-4 border-indigo-500 pl-4 py-2 my-5 bg-slate-50 rounded-r-2xl italic text-slate-655 text-xs sm:text-sm">$1</blockquote>');
+  if (brandColor) {
+    html = html.replace(/^>\s+(.*?)$/gm, `<blockquote class="border-l-4 pl-4 py-2 my-5 bg-slate-50 rounded-r-2xl italic text-slate-655 text-xs sm:text-sm" style="border-color: ${brandColor}">$1</blockquote>`);
+  } else {
+    html = html.replace(/^>\s+(.*?)$/gm, '<blockquote class="border-l-4 border-indigo-500 pl-4 py-2 my-5 bg-slate-50 rounded-r-2xl italic text-slate-655 text-xs sm:text-sm">$1</blockquote>');
+  }
 
   // Tables parsing
   const lines = html.split('\n');
@@ -150,7 +163,7 @@ export function parseMarkdown(md: string): string {
       }
     } else {
       if (inTable) {
-        processedLines.push(renderHtmlTable(tableRows, alignment));
+        processedLines.push(renderHtmlTable(tableRows, alignment, brandColor));
         inTable = false;
         tableRows = [];
         alignment = [];
@@ -159,7 +172,7 @@ export function parseMarkdown(md: string): string {
     }
   }
   if (inTable) {
-    processedLines.push(renderHtmlTable(tableRows, alignment));
+    processedLines.push(renderHtmlTable(tableRows, alignment, brandColor));
   }
   html = processedLines.join('\n');
 
