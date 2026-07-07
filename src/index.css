@@ -72,6 +72,30 @@
     visibility: visible !important;
   }
   
+  /* Collapse parent elements to prevent layout shifting and clipping */
+  :has(#printable-report-area) {
+    visibility: visible !important;
+    overflow: visible !important;
+    position: static !important;
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Hide all siblings of the printable area's ancestors to remove their layout space */
+  :has(#printable-report-area) > :not(:has(#printable-report-area)):not(#printable-report-area) {
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   .no-print, .no-print *, button, aside, header.no-print, footer.no-print {
     visibility: hidden !important;
     display: none !important;
@@ -83,9 +107,7 @@
   
   #printable-report-area {
     display: block !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+    position: static !important;
     width: 100% !important;
     max-width: 100% !important;
     border: none !important;
