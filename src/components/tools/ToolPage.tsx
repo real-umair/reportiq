@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, Download, Sparkles, Check, AlertCircle, ArrowRight, ArrowLeft, BookOpen, Lock, X, Upload, FileText } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { parseMarkdown } from '../blog/markdown';
 
 export interface ToolField {
   name: string;
@@ -623,25 +624,26 @@ export default function ToolPage({
                           </>
                         )}
                       </div>
-                      <div className="max-h-[300px] print:max-h-none overflow-y-auto print:overflow-visible text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text text-left">
-                        {result}
-                      </div>
+                      <div 
+                        className="max-h-[300px] print:max-h-none overflow-y-auto print:overflow-visible text-xs text-slate-800 leading-relaxed font-sans select-text text-left"
+                        dangerouslySetInnerHTML={{ __html: parseMarkdown(result) }}
+                      />
                     </div>
                   ) : (
                     <div className="relative min-h-[200px]">
                       {/* Preview Text */}
-                      <div className="text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-text text-left">
-                        {result.slice(0, 150)}
-                      </div>
+                      <div 
+                        className="text-xs text-slate-800 leading-relaxed font-sans select-text text-left"
+                        dangerouslySetInnerHTML={{ __html: parseMarkdown(result.slice(0, 150)) }}
+                      />
                       
                       {/* Blurred Remainder */}
                       {result.length > 150 && (
                         <div 
-                          className="text-xs text-slate-800 leading-relaxed font-sans whitespace-pre-wrap select-none opacity-60 pointer-events-none mt-2 text-left"
+                          className="text-xs text-slate-800 leading-relaxed font-sans select-none opacity-60 pointer-events-none mt-2 text-left"
                           style={{ filter: 'blur(4px)' }}
-                        >
-                          {result.slice(150)}
-                        </div>
+                          dangerouslySetInnerHTML={{ __html: parseMarkdown(result.slice(150)) }}
+                        />
                       )}
                       
                       {/* Overlay Box */}
