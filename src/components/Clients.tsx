@@ -386,7 +386,7 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
       {/* modal block overlay form popup */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 animate-fade-in backdrop-blur-xs">
-          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 shadow-xl relative animate-scale-up">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto shadow-xl relative animate-scale-up">
             <button
               onClick={() => setShowAddModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 cursor-pointer"
@@ -575,7 +575,7 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
       {/* Edit client modal overlay popup */}
       {editingClient && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 animate-fade-in backdrop-blur-xs">
-          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 shadow-xl relative animate-scale-up">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto shadow-xl relative animate-scale-up">
             <button
               onClick={() => setEditingClient(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-50 cursor-pointer"
