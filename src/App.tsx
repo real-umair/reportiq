@@ -315,6 +315,63 @@ export default function App() {
   const [workspaceOwnerId, setWorkspaceOwnerId] = useState<string>("");
   const [teamRole, setTeamRole] = useState<'owner' | 'viewer' | 'editor' | 'admin'>("owner");
 
+  const [allAgencies, setAllAgencies] = useState<{ id: string; agencyName: string; email: string }[]>([]);
+
+  useEffect(() => {
+    async function loadAllAgencies() {
+      if (user?.email === "farooquiumair18@gmail.com") {
+        try {
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("id, agencyName, email");
+          if (data && !error) {
+            setAllAgencies(data.map(p => ({
+              id: p.id,
+              agencyName: p.agencyName || p.email || "Unnamed Agency",
+              email: p.email || ""
+            })));
+          }
+        } catch (e) {
+          console.error("Failed to load agencies list:", e);
+        }
+      }
+    }
+    if (user) {
+      loadAllAgencies();
+    }
+  }, [user]);
+
+  const handleSwitchWorkspace = async (targetProfileId: string) => {
+    if (!user) return;
+    try {
+      setDataLoading(true);
+      if (targetProfileId === "" || targetProfileId === user.id) {
+        // Reset to admin's own workspace
+        setWorkspaceOwnerId(user.id);
+        await loadUserProfile(user.id);
+        const loadedClients = await supabaseDb.getClients(user.id);
+        setClients(loadedClients);
+        const loadedReports = await supabaseDb.getReports(user.id);
+        setReports(loadedReports);
+      } else {
+        // Switch to the target agency workspace
+        setWorkspaceOwnerId(targetProfileId);
+        const dbProfile = await supabaseDb.getProfile(targetProfileId);
+        if (dbProfile) {
+          setProfile(dbProfile);
+        }
+        const loadedClients = await supabaseDb.getClients(targetProfileId);
+        setClients(loadedClients);
+        const loadedReports = await supabaseDb.getReports(targetProfileId);
+        setReports(loadedReports);
+      }
+    } catch (e) {
+      console.error("Failed to switch workspace context:", e);
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
   // Marketing pages states
   const [activeMarketingPage, setActiveMarketingPage] = useState<"about" | "contact" | "privacy" | "terms" | "docs" | null>(() => {
     const path = window.location.pathname;
@@ -3575,13 +3632,13 @@ export default function App() {
       <aside className="w-64 bg-slate-900 text-slate-400 flex flex-col justify-between shrink-0 font-sans shadow-lg">
         <div>
           <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-800">
-            {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.avatarUrl ? (
+            {profile?.whiteLabel && profile?.avatarUrl ? (
               <img 
                 src={profile.avatarUrl} 
                 alt={profile.agencyName || "Agency Logo"} 
                 className="w-9 h-9 rounded-xl object-cover bg-slate-800 border border-slate-700 p-0.5 shrink-0" 
               />
-            ) : profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.brandLogoUrl ? (
+            ) : profile?.whiteLabel && profile?.brandLogoUrl ? (
               <img 
                 src={profile.brandLogoUrl} 
                 alt={profile.agencyName || "Agency Logo"} 
@@ -3594,17 +3651,17 @@ export default function App() {
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-1">
-                <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block max-w-[110px]" title={profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
-                  {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.agencyName ? profile.agencyName : "ReportIQ"}
+                <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block max-w-[110px]" title={profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
+                  {profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}
                 </span>
-                {profile?.email === "farooquiumair18@gmail.com" && (
+                {user?.email === "farooquiumair18@gmail.com" && (
                   <button
                     onClick={async () => {
                       if (!user || !profile) return;
                       const nextVal = !profile.whiteLabel;
                       try {
                         setProfile({ ...profile, whiteLabel: nextVal });
-                        await supabaseDb.updateProfile(user.id, { whiteLabel: nextVal });
+                        await supabaseDb.updateProfile(profile.id, { whiteLabel: nextVal });
                       } catch (e) {
                         console.error("Failed to toggle whiteLabel view:", e);
                       }
@@ -3617,8 +3674,25 @@ export default function App() {
                 )}
               </div>
               <p className="text-[9px] font-mono text-slate-500 tracking-wider">
-                {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" ? "AGENCY HUB" : "WORKSPACE NODE"}
+                {profile?.whiteLabel ? "AGENCY HUB" : "WORKSPACE NODE"}
               </p>
+              
+              {user?.email === "farooquiumair18@gmail.com" && allAgencies.length > 0 && (
+                <div className="mt-2">
+                  <select
+                    value={workspaceOwnerId || user.id}
+                    onChange={(e) => handleSwitchWorkspace(e.target.value)}
+                    className="w-full bg-slate-950 text-slate-300 border border-slate-800 rounded-lg p-1 text-[9px] outline-none font-mono focus:border-indigo-650 cursor-pointer"
+                  >
+                    <option value={user.id}>Master Workspace</option>
+                    {allAgencies.map(agency => (
+                      <option key={agency.id} value={agency.id}>
+                        {agency.agencyName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 
