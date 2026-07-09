@@ -3592,10 +3592,30 @@ export default function App() {
                 <FileText className="w-5 h-5" />
               </div>
             )}
-            <div>
-              <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block max-w-[140px]" title={profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
-                {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.agencyName ? profile.agencyName : "ReportIQ"}
-              </span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-1">
+                <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block max-w-[110px]" title={profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
+                  {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.agencyName ? profile.agencyName : "ReportIQ"}
+                </span>
+                {profile?.email === "farooquiumair18@gmail.com" && (
+                  <button
+                    onClick={async () => {
+                      if (!user || !profile) return;
+                      const nextVal = !profile.whiteLabel;
+                      try {
+                        setProfile({ ...profile, whiteLabel: nextVal });
+                        await supabaseDb.updateProfile(user.id, { whiteLabel: nextVal });
+                      } catch (e) {
+                        console.error("Failed to toggle whiteLabel view:", e);
+                      }
+                    }}
+                    className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer select-none"
+                    title="Quick Brand Switcher"
+                  >
+                    <Compass className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
               <p className="text-[9px] font-mono text-slate-500 tracking-wider">
                 {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" ? "AGENCY HUB" : "WORKSPACE NODE"}
               </p>
