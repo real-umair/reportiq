@@ -423,8 +423,8 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                 </div>
               </div>
               
-              {/* White Label toggle (only shows for Pro users) */}
-              {profile?.plan === 'pro' && (
+              {/* White Label toggle (only shows for Pro master owner) */}
+              {profile?.plan === 'pro' && profile?.email === "farooquiumair18@gmail.com" && (
                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5 w-full">
                   <div className="flex items-center justify-between">
                     <div>

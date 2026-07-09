@@ -3575,13 +3575,13 @@ export default function App() {
       <aside className="w-64 bg-slate-900 text-slate-400 flex flex-col justify-between shrink-0 font-sans shadow-lg">
         <div>
           <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-800">
-            {profile?.whiteLabel && profile?.avatarUrl ? (
+            {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.avatarUrl ? (
               <img 
                 src={profile.avatarUrl} 
                 alt={profile.agencyName || "Agency Logo"} 
                 className="w-9 h-9 rounded-xl object-cover bg-slate-800 border border-slate-700 p-0.5 shrink-0" 
               />
-            ) : profile?.whiteLabel && profile?.brandLogoUrl ? (
+            ) : profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.brandLogoUrl ? (
               <img 
                 src={profile.brandLogoUrl} 
                 alt={profile.agencyName || "Agency Logo"} 
@@ -3593,11 +3593,11 @@ export default function App() {
               </div>
             )}
             <div>
-              <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block max-w-[140px]" title={profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
-                {profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}
+              <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block max-w-[140px]" title={profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
+                {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" && profile?.agencyName ? profile.agencyName : "ReportIQ"}
               </span>
               <p className="text-[9px] font-mono text-slate-500 tracking-wider">
-                {profile?.whiteLabel ? "AGENCY HUB" : "WORKSPACE NODE"}
+                {profile?.whiteLabel && profile?.email === "farooquiumair18@gmail.com" ? "AGENCY HUB" : "WORKSPACE NODE"}
               </p>
             </div>
           </div>
