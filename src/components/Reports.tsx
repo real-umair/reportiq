@@ -40,7 +40,7 @@ interface ReportsProps {
   onRefresh: () => void;
   onNavigate: (tab: string) => void;
   showLock: (feature: string, plan: "Starter" | "Pro", price: string) => void;
-  onUpgrade: (targetPlan: "starter" | "pro") => void;
+  onUpgrade: (targetPlan: "starter" | "pro" | "arbitrage") => void;
 }
 
 export default function Reports({

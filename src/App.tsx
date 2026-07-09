@@ -129,7 +129,7 @@ export default function App() {
     });
   };
 
-  const triggerUpgrade = async (targetPlan: "starter" | "pro") => {
+  const triggerUpgrade = async (targetPlan: "starter" | "pro" | "arbitrage") => {
     if (profile?.email === "farooquiumair18@gmail.com") {
       try {
         if (!user) throw new Error("No active user session found.");
@@ -3670,27 +3670,9 @@ export default function App() {
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-1">
-                <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block max-w-[110px]" title={profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
+                <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block" title={profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
                   {profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}
                 </span>
-                {user?.email === "farooquiumair18@gmail.com" && (
-                  <button
-                    onClick={async () => {
-                      if (!user || !profile) return;
-                      const nextVal = !profile.whiteLabel;
-                      try {
-                        setProfile({ ...profile, whiteLabel: nextVal });
-                        await supabaseDb.updateProfile(profile.id, { whiteLabel: nextVal });
-                      } catch (e) {
-                        console.error("Failed to toggle whiteLabel view:", e);
-                      }
-                    }}
-                    className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer select-none"
-                    title="Quick Brand Switcher"
-                  >
-                    <Compass className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
               <p className="text-[9px] font-mono text-slate-500 tracking-wider">
                 {profile?.whiteLabel ? "AGENCY HUB" : "WORKSPACE NODE"}
