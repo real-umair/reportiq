@@ -152,8 +152,24 @@ export default function PublicReport({ slug }: PublicReportProps) {
     );
   }
 
-  const brandColor = profile?.brandColor || "#6366f1";
-  const agencyName = profile?.agencyName || "Smith Digital";
+  // Extract client-specific brand configuration if present (Option 2)
+  const getClientBranding = () => {
+    let clientBrandColor = "";
+    try {
+      const parsed = JSON.parse(client?.notes || "{}");
+      if (parsed && typeof parsed === "object" && parsed.brandColor) {
+        clientBrandColor = parsed.brandColor;
+      }
+    } catch (e) {}
+
+    return {
+      brandColor: clientBrandColor || profile?.brandColor || "#6366f1",
+      agencyName: client?.company || profile?.agencyName || "Smith Digital",
+      logoUrl: client?.logoUrl || profile?.brandLogoUrl || null
+    };
+  };
+
+  const { brandColor, agencyName, logoUrl } = getClientBranding();
 
   const downloadAsHtml = () => {
     if (!report) return;
@@ -343,15 +359,15 @@ export default function PublicReport({ slug }: PublicReportProps) {
   <header class="bg-white border-b border-slate-200 py-6 px-6 sm:px-12 sticky top-0 z-10 shadow-xs no-print">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        ${profile?.brandLogoUrl ? `
-          <img src="${profile.brandLogoUrl}" alt="${agencyName}" class="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-200 p-1" />
+        ${logoUrl ? `
+          <img src="${logoUrl}" alt="${agencyName}" class="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-200 p-1" />
         ` : `
           <div style="background-color: ${brandColor}" class="w-10 h-10 rounded-xl flex items-center justify-center shadow-xs text-white text-base font-bold">
             ${agencyName.charAt(0).toUpperCase()}
           </div>
         `}
         <div>
-          <p class="font-bold text-slate-950 font-display tracking-tight text-base leading-tight">${agencyName}</p>
+          <p class="font-bold text-slate-955 font-display tracking-tight text-base leading-tight">${agencyName}</p>
           <p class="text-[10px] text-slate-500 font-mono">PORTABLE PERFORMANCE REPORT</p>
         </div>
       </div>
@@ -368,8 +384,8 @@ export default function PublicReport({ slug }: PublicReportProps) {
       <div class="flex flex-col gap-4 mb-6 pb-6 border-b border-slate-100">
         <!-- Logo / Agency Name -->
         <div class="flex items-center gap-3">
-          ${profile?.brandLogoUrl ? `
-            <img src="${profile.brandLogoUrl}" alt="${agencyName}" class="max-h-12 w-auto object-contain rounded-lg border border-slate-200 p-1" />
+          ${logoUrl ? `
+            <img src="${logoUrl}" alt="${agencyName}" class="max-h-12 w-auto object-contain rounded-lg border border-slate-200 p-1" />
             <span class="text-lg font-bold text-slate-955 font-display" style="font-family: 'Space Grotesk', sans-serif;">${agencyName}</span>
           ` : `
             <span class="text-lg font-bold text-slate-955 font-display" style="font-family: 'Space Grotesk', sans-serif;">${agencyName}</span>
@@ -449,9 +465,9 @@ export default function PublicReport({ slug }: PublicReportProps) {
       <header className="bg-white border-b border-slate-200 py-6 px-6 sm:px-12 sticky top-0 z-10 shadow-xs no-print">
         <div className="max-w-4xl mx-auto flex items-center justify-between font-sans">
           <div className="flex items-center space-x-3">
-            {profile?.brandLogoUrl ? (
+            {logoUrl ? (
               <img
-                src={profile.brandLogoUrl}
+                src={logoUrl}
                 alt={agencyName}
                 className="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-200 p-1"
               />
@@ -515,10 +531,10 @@ export default function PublicReport({ slug }: PublicReportProps) {
           <div className="relative flex flex-col gap-6 font-sans">
             {/* Top left Brand logo and Agency name */}
             <div className="flex flex-col gap-3">
-              {profile?.brandLogoUrl ? (
+              {logoUrl ? (
                 <div className="flex items-center gap-3">
                   <img
-                    src={profile.brandLogoUrl}
+                    src={logoUrl}
                     alt={agencyName}
                     className="max-h-12 w-auto object-contain rounded-lg bg-white/15 p-1.5 shadow-2xs"
                   />

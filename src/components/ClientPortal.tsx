@@ -104,7 +104,41 @@ export default function ClientPortal() {
   };
 
   if (clientObj && agencyProfile) {
-    const brandColor = agencyProfile.brandColor || "#6366f1";
+    const getClientBranding = () => {
+      let clientBrandColor = "";
+      try {
+        const parsed = JSON.parse(clientObj.notes || "{}");
+        if (parsed && typeof parsed === "object" && parsed.brandColor) {
+          clientBrandColor = parsed.brandColor;
+        }
+      } catch (e) {}
+
+      return {
+        brandColor: clientBrandColor || agencyProfile.brandColor || "#6366f1",
+        agencyName: clientObj.company || agencyProfile.agencyName || "Agency Partner",
+        logoUrl: clientObj.logoUrl || agencyProfile.brandLogoUrl || null
+      };
+    };
+
+    const { brandColor, agencyName, logoUrl } = getClientBranding();
+
+    const getReportLink = (reportSlug: string) => {
+      if (agencyProfile.plan === "pro") {
+        const slugify = (text: string) =>
+          text
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^\w\-]+/g, "")
+            .replace(/\-\-+/g, "-")
+            .replace(/^-+/, "")
+            .replace(/-+$/, "");
+        const agencySlug = slugify(agencyName);
+        return `/a/${agencySlug}/r/${reportSlug}`;
+      }
+      return `/r/${reportSlug}`;
+    };
+
     return (
       <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
         <div style={{ backgroundColor: brandColor }} className="h-2.5 w-full shrink-0" />
@@ -112,10 +146,10 @@ export default function ClientPortal() {
         <header className="bg-white border-b border-slate-200 py-5 px-6 sm:px-12 sticky top-0 z-10 shadow-xs">
           <div className="max-w-5xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {agencyProfile.brandLogoUrl ? (
+              {logoUrl ? (
                 <img 
-                  src={agencyProfile.brandLogoUrl} 
-                  alt={agencyProfile.agencyName || "Agency Logo"} 
+                  src={logoUrl} 
+                  alt={agencyName} 
                   className="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-200 p-1" 
                 />
               ) : (
@@ -123,12 +157,12 @@ export default function ClientPortal() {
                   style={{ backgroundColor: brandColor }} 
                   className="w-10 h-10 rounded-xl flex items-center justify-center shadow-xs text-white font-bold"
                 >
-                  {agencyProfile.agencyName?.charAt(0).toUpperCase() || "A"}
+                  {agencyName.charAt(0).toUpperCase()}
                 </div>
               )}
               <div>
                 <p className="font-semibold text-slate-955 tracking-tight text-base leading-none">
-                  {agencyProfile.agencyName}
+                  {agencyName}
                 </p>
                 <p className="text-[10px] text-slate-400 font-mono tracking-wider uppercase mt-1">Client Portal</p>
               </div>
@@ -151,11 +185,11 @@ export default function ClientPortal() {
 
         <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-12">
           <div className="mb-10 text-left">
-            <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-slate-950 tracking-tight leading-none">
+            <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-slate-955 tracking-tight leading-none">
               Your Performance Briefings
             </h1>
-            <p className="text-slate-500 text-sm mt-1.5">
-              Access all historical progress and analytics reports published by {agencyProfile.agencyName}
+            <p className="text-slate-550 text-sm mt-1.5">
+              Access all historical progress and analytics reports published by {agencyName}
             </p>
           </div>
 
@@ -173,7 +207,7 @@ export default function ClientPortal() {
               {clientReports.map(report => (
                 <a
                   key={report.id}
-                  href={`/r/${report.slug}`}
+                  href={getReportLink(report.slug)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="portal-report-card bg-white border border-slate-200 hover:shadow-md rounded-2xl p-6 flex flex-col justify-between h-56 transition-all shadow-2xs group cursor-pointer text-left"

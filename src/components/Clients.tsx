@@ -17,6 +17,8 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [brandColor, setBrandColor] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +28,8 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
   const [editName, setEditName] = useState("");
   const [editCompany, setEditCompany] = useState("");
   const [editEmail, setEditEmail] = useState("");
+  const [editLogoUrl, setEditLogoUrl] = useState("");
+  const [editBrandColor, setEditBrandColor] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -46,7 +50,24 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
     setEditName(clientObj.name);
     setEditCompany(clientObj.company || "");
     setEditEmail(clientObj.email || "");
-    setEditNotes(clientObj.notes || "");
+    setEditLogoUrl(clientObj.logoUrl || "");
+    
+    // Parse notes to extract text notes and brandColor
+    let parsedNotesText = "";
+    let parsedBrandColor = "";
+    try {
+      const parsed = JSON.parse(clientObj.notes || "{}");
+      if (parsed && typeof parsed === "object" && "brandColor" in parsed) {
+        parsedNotesText = parsed.text || "";
+        parsedBrandColor = parsed.brandColor || "";
+      } else {
+        parsedNotesText = clientObj.notes || "";
+      }
+    } catch (e) {
+      parsedNotesText = clientObj.notes || "";
+    }
+    setEditNotes(parsedNotesText);
+    setEditBrandColor(parsedBrandColor);
     setEditError(null);
   };
 
@@ -62,11 +83,18 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
 
     try {
       setEditSubmitting(true);
+      
+      const serializedNotes = JSON.stringify({
+        text: editNotes.trim(),
+        brandColor: editBrandColor.trim()
+      });
+
       await supabaseDb.updateClient(editingClient.id, userId, {
         name: editName.trim(),
         company: editCompany.trim() || null,
         email: editEmail.trim().toLowerCase() || null,
-        notes: editNotes.trim() || null,
+        logoUrl: editLogoUrl.trim() || null,
+        notes: serializedNotes,
       });
       setEditingClient(null);
       onRefresh();
@@ -118,19 +146,26 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
 
     try {
       setSubmitting(true);
+
+      const serializedNotes = JSON.stringify({
+        text: notes.trim(),
+        brandColor: brandColor.trim()
+      });
       
       await supabaseDb.addClient(userId, {
         name: name.trim(),
         company: company.trim() || null,
         email: email.trim().toLowerCase() || null,
-        logoUrl: null,
-        notes: notes.trim() || null,
+        logoUrl: logoUrl.trim() || null,
+        notes: serializedNotes,
       });
 
       // Reset state and refresh
       setName("");
       setCompany("");
       setEmail("");
+      setLogoUrl("");
+      setBrandColor("");
       setNotes("");
       setShowAddModal(false);
       onRefresh();
@@ -193,12 +228,40 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
               >
                 <div>
                   <div className="flex items-start justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold font-display text-sm shrink-0">
-                      {clientObj.name.substring(0, 2).toUpperCase()}
-                    </div>
-                    <span className="inline-flex px-2 py-0.5 text-[10px] font-mono leading-none bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100">
-                      {reportsCount} reports
-                    </span>
+                    {clientObj.logoUrl ? (
+                      <img 
+                        src={clientObj.logoUrl} 
+                        alt={clientObj.name} 
+                        className="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-200 p-1 shrink-0 animate-fade-in" 
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold font-display text-sm shrink-0">
+                        {clientObj.name.substring(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    
+                    {(() => {
+                      let parsedColor = "";
+                      try {
+                        const parsed = JSON.parse(clientObj.notes || "{}");
+                        if (parsed && typeof parsed === "object" && parsed.brandColor) {
+                          parsedColor = parsed.brandColor;
+                        }
+                      } catch(e) {}
+                      
+                      return parsedColor ? (
+                        <div className="flex items-center gap-1.5">
+                          <span style={{ backgroundColor: parsedColor }} className="w-2.5 h-2.5 rounded-full inline-block border border-slate-200 shrink-0" title={`Brand color: ${parsedColor}`} />
+                          <span className="inline-flex px-2 py-0.5 text-[10px] font-mono leading-none bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100 font-semibold">
+                            {reportsCount} reports
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="inline-flex px-2 py-0.5 text-[10px] font-mono leading-none bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100">
+                          {reportsCount} reports
+                        </span>
+                      );
+                    })()}
                   </div>
 
                   <h3 className="text-base font-bold font-display text-slate-950 mt-4 group-hover:text-indigo-600 transition-colors">
@@ -351,6 +414,41 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
 
               <div>
                 <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+                  Client Logo URL
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. https://domain.com/logo.png"
+                  value={logoUrl}
+                  onChange={e => setLogoUrl(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50"
+                  maxLength={1000}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+                  Client Brand Color Accent
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={brandColor || "#6366f1"}
+                    onChange={e => setBrandColor(e.target.value)}
+                    className="w-10 h-10 rounded-lg cursor-pointer border border-slate-200 shrink-0"
+                  />
+                  <input
+                    type="text"
+                    placeholder="e.g. #6366f1"
+                    value={brandColor}
+                    onChange={e => setBrandColor(e.target.value)}
+                    className="flex-1 rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
                   Notes / Context
                 </label>
                 <textarea
@@ -454,6 +552,41 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
                   className="w-full rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50"
                   maxLength={200}
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+                  Client Logo URL
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. https://domain.com/logo.png"
+                  value={editLogoUrl}
+                  onChange={e => setEditLogoUrl(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50"
+                  maxLength={1000}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
+                  Client Brand Color Accent
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={editBrandColor || "#6366f1"}
+                    onChange={e => setEditBrandColor(e.target.value)}
+                    className="w-10 h-10 rounded-lg cursor-pointer border border-slate-200 shrink-0"
+                  />
+                  <input
+                    type="text"
+                    placeholder="e.g. #6366f1"
+                    value={editBrandColor}
+                    onChange={e => setEditBrandColor(e.target.value)}
+                    className="flex-1 rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50 font-mono"
+                  />
+                </div>
               </div>
 
               <div>
