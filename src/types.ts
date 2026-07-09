@@ -1,4 +1,4 @@
-export type Plan = 'free' | 'starter' | 'pro';
+export type Plan = 'free' | 'starter' | 'pro' | 'arbitrage';
 export type ReportStatus = 'draft' | 'generating' | 'ready' | 'sent';
 export type IntegrationType = 'github' | 'manual' | 'google_analytics' | 'notion';
 
@@ -88,7 +88,8 @@ export interface Report {
 }
 
 export const PLAN_LIMITS: Record<Plan, { reports: number; clients: number }> = {
-  free:    { reports: 3,   clients: 2  },
-  starter: { reports: 20,  clients: 10 },
-  pro:     { reports: 999, clients: 999 },
+  free:      { reports: 3,    clients: 2    },
+  starter:   { reports: 20,   clients: 10   },
+  pro:       { reports: 999,  clients: 999  },
+  arbitrage: { reports: 9999, clients: 9999 },
 };

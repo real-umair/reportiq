@@ -34,6 +34,12 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
+  // Edit states for sub-clients
+  const [editSubClients, setEditSubClients] = useState<{ id: string; name: string; company: string; email: string }[]>([]);
+  const [newSubName, setNewSubName] = useState("");
+  const [newSubCompany, setNewSubCompany] = useState("");
+  const [newSubEmail, setNewSubEmail] = useState("");
+
   // Deletion confirmation custom state
   const [deleteConfirmClientId, setDeleteConfirmClientId] = useState<string | null>(null);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
@@ -91,14 +97,16 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
     setEditEmail(clientObj.email || "");
     setEditLogoUrl(clientObj.logoUrl || "");
     
-    // Parse notes to extract text notes and brandColor
+    // Parse notes to extract text notes, brandColor, and subClients
     let parsedNotesText = "";
     let parsedBrandColor = "";
+    let parsedSubClients: any[] = [];
     try {
       const parsed = JSON.parse(clientObj.notes || "{}");
-      if (parsed && typeof parsed === "object" && "brandColor" in parsed) {
+      if (parsed && typeof parsed === "object") {
         parsedNotesText = parsed.text || "";
         parsedBrandColor = parsed.brandColor || "";
+        parsedSubClients = parsed.subClients || [];
       } else {
         parsedNotesText = clientObj.notes || "";
       }
@@ -107,6 +115,10 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
     }
     setEditNotes(parsedNotesText);
     setEditBrandColor(parsedBrandColor);
+    setEditSubClients(parsedSubClients);
+    setNewSubName("");
+    setNewSubCompany("");
+    setNewSubEmail("");
     setEditError(null);
   };
 
@@ -125,7 +137,8 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
       
       const serializedNotes = JSON.stringify({
         text: editNotes.trim(),
-        brandColor: editBrandColor.trim()
+        brandColor: editBrandColor.trim(),
+        subClients: editSubClients
       });
 
       await supabaseDb.updateClient(editingClient.id, userId, {
@@ -188,7 +201,8 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
 
       const serializedNotes = JSON.stringify({
         text: notes.trim(),
-        brandColor: brandColor.trim()
+        brandColor: brandColor.trim(),
+        subClients: []
       });
       
       await supabaseDb.addClient(userId, {
@@ -700,6 +714,92 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
                   className="w-full rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50 resize-none"
                   maxLength={1000}
                 />
+              </div>
+
+              {/* Sub-Clients (End-Clients) Manager Section */}
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                  <span className="font-bold text-slate-800 text-xs">Sub-Clients (End-Clients)</span>
+                  <span className="text-[9px] font-mono bg-indigo-50 text-indigo-650 px-1.5 py-0.5 rounded border border-indigo-100 uppercase font-bold">
+                    Arbitrage Mode
+                  </span>
+                </div>
+
+                {/* Sub-Clients List */}
+                <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                  {editSubClients.length === 0 ? (
+                    <p className="text-[10px] text-slate-400 italic text-left">No sub-clients added yet. Add one below.</p>
+                  ) : (
+                    editSubClients.map((sub, idx) => (
+                      <div key={sub.id || idx} className="flex items-center justify-between bg-white border border-slate-200 p-2 rounded-xl text-xs gap-3 text-left">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-slate-800 truncate">{sub.name}</p>
+                          <p className="text-[10px] text-slate-450 truncate">
+                            {sub.company && `${sub.company} · `}{sub.email || "No email"}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setEditSubClients(editSubClients.filter(item => item.id !== sub.id))}
+                          className="text-slate-400 hover:text-red-650 p-1 rounded-lg hover:bg-slate-50 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-slate-450 hover:text-red-600" />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Add Sub-Client fields */}
+                <div className="border-t border-slate-200 pt-3 space-y-2 text-left">
+                  <span className="text-[10px] font-bold font-mono text-slate-500 uppercase block">Add New End-Client</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="Name *"
+                      value={newSubName}
+                      onChange={e => setNewSubName(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 bg-white outline-none p-1.5 text-xs focus:border-indigo-650"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Company"
+                      value={newSubCompany}
+                      onChange={e => setNewSubCompany(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 bg-white outline-none p-1.5 text-xs focus:border-indigo-650"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      placeholder="Contact Email"
+                      value={newSubEmail}
+                      onChange={e => setNewSubEmail(e.target.value)}
+                      className="flex-1 rounded-lg border border-slate-200 bg-white outline-none p-1.5 text-xs focus:border-indigo-650"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!newSubName.trim()) return;
+                        setEditSubClients([
+                          ...editSubClients,
+                          {
+                            id: Date.now().toString(),
+                            name: newSubName.trim(),
+                            company: newSubCompany.trim() || null,
+                            email: newSubEmail.trim().toLowerCase() || null
+                          } as any
+                        ]);
+                        setNewSubName("");
+                        setNewSubCompany("");
+                        setNewSubEmail("");
+                      }}
+                      className="px-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer select-none"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-2 flex items-center gap-3">

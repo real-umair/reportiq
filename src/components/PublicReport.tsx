@@ -173,7 +173,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
 
   const downloadAsHtml = () => {
     if (!report) return;
-    const clientName = client?.name || "Client Partner";
+    const clientName = report.rawData?.subClientName || client?.name || "Client Partner";
 
     const sectionsHtml = (report.sections || []).map((section) => `
       <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-xs" style="margin-bottom: 1.5rem;">
@@ -560,7 +560,7 @@ export default function PublicReport({ slug }: PublicReportProps) {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2 text-sm font-medium text-white/90">
               <span className="flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-white/70" />
-                {client?.name || "Client Partner"}
+                {report.rawData?.subClientName || client?.name || "Client Partner"}
               </span>
               <span className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-white/70" />

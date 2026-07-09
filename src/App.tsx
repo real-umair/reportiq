@@ -2548,7 +2548,7 @@ export default function App() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left items-center max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left items-stretch max-w-7xl mx-auto">
               {[
                 {
                   title: "Free Plan",
@@ -2607,6 +2607,25 @@ export default function App() {
                   planKey: "pro" as const,
                   featured: true, // Pro plan card stands out
                   badgeText: billingCycle === "lifetime" ? "Highly Recommended" : "Best Value"
+                },
+                {
+                  title: billingCycle === "lifetime" ? "Arbitrage Lifetime" : "Arbitrage Plan",
+                  price: billingCycle === "lifetime" ? "$199" : "$149",
+                  periodLabel: billingCycle === "lifetime" ? "one-time payment" : "/ month",
+                  limit: billingCycle === "lifetime" ? "Lifetime access for resellers" : "For B2B multi-agency resellers",
+                  feats: [
+                    "Everything in Pro plus:",
+                    "Full B2B Arbitrage Mode",
+                    "AI Tools Brand Switcher",
+                    "Unlimited Sub-Agencies",
+                    "Manage End-Clients roster",
+                    "Branded client login portals",
+                    "Dedicated arbitrage account"
+                  ],
+                  buttonText: billingCycle === "lifetime" ? "Get Lifetime Arbitrage" : "Upgrade to Arbitrage",
+                  planKey: "arbitrage" as const,
+                  featured: false,
+                  badgeText: "Arbitrage Mode"
                 },
               ].map((card, i) => (
                 <div

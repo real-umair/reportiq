@@ -139,24 +139,38 @@ export default function ToolPage({
   }, []);
 
   const [profile, setProfile] = useState<any>(null);
-  const [allAgencies, setAllAgencies] = useState<{ id: string; agencyName: string; brandLogoUrl: string | null; brandColor: string; whiteLabel: boolean; email: string }[]>([]);
+  const [allAgencies, setAllAgencies] = useState<any[]>([]);
   const [selectedAgencyId, setSelectedAgencyId] = useState<string>("");
+  const [subClients, setSubClients] = useState<{ id: string; name: string; company: string; email: string }[]>([]);
+  const [selectedSubClientId, setSelectedSubClientId] = useState<string>("");
 
   useEffect(() => {
     if (user?.email === "farooquiumair18@gmail.com") {
       supabase
-        .from('profiles')
-        .select('id, agency_name, email, brand_logo_url, brand_color, white_label')
+        .from('clients')
+        .select('*')
+        .eq('user_id', user.id)
         .then(({ data }) => {
           if (data) {
-            setAllAgencies(data.map(p => ({
-              id: p.id,
-              agencyName: p.agency_name || p.email || "Unnamed Agency",
-              email: p.email || "",
-              brandLogoUrl: p.brand_logo_url || null,
-              brandColor: p.brand_color || "#6366f1",
-              whiteLabel: p.white_label || false
-            })));
+            setAllAgencies(data.map(c => {
+              let brandColor = "#6366f1";
+              let subClientsList = [];
+              try {
+                const parsed = JSON.parse(c.notes || "{}");
+                if (parsed && typeof parsed === "object") {
+                  brandColor = parsed.brandColor || "#6366f1";
+                  subClientsList = parsed.subClients || [];
+                }
+              } catch (e) {}
+              return {
+                id: c.id,
+                agencyName: c.company || c.name || "Unnamed Agency",
+                brandLogoUrl: c.logo_url || null,
+                brandColor,
+                subClients: subClientsList,
+                email: c.email || ""
+              };
+            }));
           }
         });
     }
@@ -164,7 +178,9 @@ export default function ToolPage({
 
   const handleAgencySelect = (agencyId: string) => {
     setSelectedAgencyId(agencyId);
+    setSelectedSubClientId("");
     if (!agencyId || agencyId === user?.id) {
+      setSubClients([]);
       if (!user) return;
       // Restore default admin profile
       supabase
@@ -191,6 +207,7 @@ export default function ToolPage({
     } else {
       const selected = allAgencies.find(a => a.id === agencyId);
       if (selected) {
+        setSubClients(selected.subClients || []);
         setProfile({
           uid: selected.id,
           email: selected.email,
@@ -201,7 +218,7 @@ export default function ToolPage({
           plan: "pro", // treat as pro/white-label
           avatarUrl: selected.brandLogoUrl,
           brandLogoUrl: selected.brandLogoUrl,
-          whiteLabel: selected.whiteLabel,
+          whiteLabel: true,
         });
       }
     }
@@ -485,27 +502,54 @@ export default function ToolPage({
 
       {/* Admin Agency Branding Switcher Selector */}
       {user?.email === "farooquiumair18@gmail.com" && allAgencies.length > 0 && (
-        <div className="max-w-md mx-auto mb-10 p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-md text-left font-mono text-xs text-slate-350">
-          <div className="flex items-center justify-between gap-3 mb-2">
-            <span className="font-bold text-slate-400 uppercase text-[9px]">Active White-Label Agency Context</span>
-            <span className="inline-flex px-1.5 py-0.5 leading-none bg-indigo-500/20 text-indigo-400 rounded border border-indigo-500/20 text-[8px]">
-              ADMIN BYPASS
-            </span>
+        <div className="max-w-md mx-auto mb-10 p-4.5 bg-slate-900 border border-slate-800 rounded-3xl shadow-xl text-left font-mono text-xs text-slate-300 space-y-4">
+          <div>
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <span className="font-bold text-slate-400 uppercase text-[9px]">1. Active Agency Brand Context</span>
+              <span className="inline-flex px-1.5 py-0.5 leading-none bg-indigo-500/20 text-indigo-400 rounded border border-indigo-500/20 text-[8px]">
+                ARBITRAGE BYPASS
+              </span>
+            </div>
+            <select
+              value={selectedAgencyId}
+              onChange={(e) => handleAgencySelect(e.target.value)}
+              className="w-full bg-slate-950 text-slate-200 border border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-indigo-650 cursor-pointer"
+            >
+              <option value="">ReportScale (Default Master Brand)</option>
+              {allAgencies.map(agency => (
+                <option key={agency.id} value={agency.id}>
+                  {agency.agencyName} {agency.email ? `(${agency.email})` : ""}
+                </option>
+              ))}
+            </select>
           </div>
-          <select
-            value={selectedAgencyId}
-            onChange={(e) => handleAgencySelect(e.target.value)}
-            className="w-full bg-slate-950 text-slate-200 border border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-indigo-650 cursor-pointer"
-          >
-            <option value="">ReportScale (Default Master Brand)</option>
-            {allAgencies.map(agency => (
-              <option key={agency.id} value={agency.id}>
-                {agency.agencyName} ({agency.email})
-              </option>
-            ))}
-          </select>
-          <p className="text-[9px] text-slate-500 mt-2 font-sans leading-normal">
-            Select an agency context to instantly brand all PDF/Print outputs generated by this tool page under that agency's logo, colors, and white-label settings.
+
+          {selectedAgencyId && (
+            <div className="animate-fade-in">
+              <span className="font-bold text-slate-400 uppercase text-[9px] block mb-2">2. Target End-Client Recipient</span>
+              {subClients.length === 0 ? (
+                <p className="text-[10px] text-amber-500 italic font-sans leading-normal">
+                  No sub-clients registered for this agency. Add them in the Clients Directory tab first.
+                </p>
+              ) : (
+                <select
+                  value={selectedSubClientId}
+                  onChange={(e) => setSelectedSubClientId(e.target.value)}
+                  className="w-full bg-slate-950 text-slate-200 border border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-indigo-650 cursor-pointer"
+                >
+                  <option value="">-- Choose Sub-Client --</option>
+                  {subClients.map(sub => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name} {sub.company ? `(${sub.company})` : ""}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
+
+          <p className="text-[9px] text-slate-500 font-sans leading-normal border-t border-slate-800 pt-3">
+            Select an Agency Brand and End-Client. Printed or downloaded reports will instantly carry the Agency's white-labeled theme and logo, addressed to the selected sub-client.
           </p>
         </div>
       )}
@@ -705,6 +749,11 @@ export default function ToolPage({
                                   {profile.agencyName || "Our Agency"}
                                 </p>
                                 <p className="text-[10px] text-slate-450 font-mono tracking-wider uppercase mt-1">Client Report</p>
+                                {selectedSubClientId && (
+                                  <p className="text-[9px] text-slate-500 font-sans font-medium mt-0.5">
+                                    Prepared for: {subClients.find(s => s.id === selectedSubClientId)?.name}
+                                  </p>
+                                )}
                               </div>
                             </div>
                             <div className="text-right">

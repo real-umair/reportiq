@@ -57,6 +57,9 @@ export default function Reports({
 }: ReportsProps) {
   const [showGenModal, setShowGenModal] = useState(false);
   const [clientId, setClientId] = useState("");
+  const [isArbitrageMode, setIsArbitrageMode] = useState(false);
+  const [subClientId, setSubClientId] = useState("");
+  const [availableSubClients, setAvailableSubClients] = useState<{ id: string; name: string; company: string; email: string }[]>([]);
   const [periodStart, setPeriodStart] = useState("");
   const [periodEnd, setPeriodEnd] = useState("");
   const [reportTitle, setReportTitle] = useState("");
@@ -128,6 +131,30 @@ export default function Reports({
   // Client Feedback states
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [loadingFeedbacks, setLoadingFeedbacks] = useState(false);
+
+  useEffect(() => {
+    if (!clientId) {
+      setAvailableSubClients([]);
+      setSubClientId("");
+      return;
+    }
+    const selectedParent = clients.find(c => c.id === clientId);
+    if (selectedParent) {
+      try {
+        const parsed = JSON.parse(selectedParent.notes || "{}");
+        if (parsed && typeof parsed === "object" && Array.isArray(parsed.subClients)) {
+          setAvailableSubClients(parsed.subClients);
+        } else {
+          setAvailableSubClients([]);
+        }
+      } catch (e) {
+        setAvailableSubClients([]);
+      }
+    } else {
+      setAvailableSubClients([]);
+    }
+    setSubClientId("");
+  }, [clientId, clients]);
 
   useEffect(() => {
     async function fetchFeedback() {
@@ -294,6 +321,9 @@ export default function Reports({
       return;
     }
 
+    const matchedSubClient = availableSubClients.find(s => s.id === subClientId);
+    const targetClientName = (isArbitrageMode && matchedSubClient) ? matchedSubClient.name : matchedClient.name;
+
     if (reportMode === "document" && !extractedText.trim()) {
       setError("Please select and upload a valid document first, or write notes manually.");
       return;
@@ -311,7 +341,7 @@ export default function Reports({
           ...authHeaders,
         },
         body: JSON.stringify({
-          clientName: matchedClient.name,
+          clientName: targetClientName,
           agencyName: profile?.agencyName || "Smith Digital",
           periodStart,
           periodEnd,
@@ -332,7 +362,7 @@ export default function Reports({
 
       // Create secure client-side document write in Supabase
       const simpleSlug = Math.random().toString(36).substring(2, 9) + "-" + Date.now().toString(36).substring(4);
-      const titleToSave = reportTitle.trim() || `${matchedClient.name} — Progress Update (${periodStart})`;
+      const titleToSave = reportTitle.trim() || `${targetClientName} — Progress Update (${periodStart})`;
 
       const savedReport = await supabaseDb.addReport(userId, {
         clientId,
@@ -347,6 +377,8 @@ export default function Reports({
           customMetrics,
           isDocumentMode: reportMode === "document",
           documentName: reportMode === "document" ? extractedFileName : null,
+          isArbitrage: isArbitrageMode,
+          subClientName: targetClientName,
         },
         sections: (generatedData.sections || []).map((sec: any) => ({
           title: sec.title,
@@ -365,6 +397,8 @@ export default function Reports({
 
       // Clear generation state inputs
       setClientId("");
+      setIsArbitrageMode(false);
+      setSubClientId("");
       setPeriodStart("");
       setPeriodEnd("");
       setReportTitle("");
@@ -2430,6 +2464,52 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
                     ))}
                   </select>
                 </div>
+
+                {/* Arbitrage Mode Trigger (unlocked for Arbitrage and Pro plan owners) */}
+                {(profile?.plan === "arbitrage" || profile?.plan === "pro") && (
+                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-left">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={isArbitrageMode}
+                        onChange={(e) => {
+                          setIsArbitrageMode(e.target.checked);
+                          if (!e.target.checked) setSubClientId("");
+                        }}
+                        className="rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 w-4 h-4 shrink-0"
+                      />
+                      <div>
+                        <span className="text-xs font-bold text-slate-800">Enable B2B Arbitrage Mode</span>
+                        <p className="text-[10px] text-slate-400 leading-normal">Generate reports for your client agency's sub-clients under their white label.</p>
+                      </div>
+                    </label>
+
+                    {isArbitrageMode && (
+                      <div className="pt-2 border-t border-slate-200/60 animate-fade-in">
+                        <label className="block text-[10px] font-bold font-mono uppercase tracking-wider text-slate-500 mb-1">
+                          Select End-Client Partner *
+                        </label>
+                        {availableSubClients.length === 0 ? (
+                          <p className="text-[10px] text-amber-600 italic">No sub-clients found. Add sub-clients under this agency inside the Clients Directory tab first.</p>
+                        ) : (
+                          <select
+                            required={isArbitrageMode}
+                            value={subClientId}
+                            onChange={(e) => setSubClientId(e.target.value)}
+                            className="w-full rounded-lg border border-slate-200 bg-white p-2 text-xs outline-none focus:border-indigo-650 cursor-pointer"
+                          >
+                            <option value="">-- Choose Sub-Client --</option>
+                            {availableSubClients.map(sub => (
+                              <option key={sub.id} value={sub.id}>
+                                {sub.name} {sub.company ? `(${sub.company})` : ""}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
