@@ -3575,14 +3575,30 @@ export default function App() {
       <aside className="w-64 bg-slate-900 text-slate-400 flex flex-col justify-between shrink-0 font-sans shadow-lg">
         <div>
           <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-800">
-            <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0">
-              <FileText className="w-5 h-5" />
-            </div>
+            {profile?.whiteLabel && profile?.avatarUrl ? (
+              <img 
+                src={profile.avatarUrl} 
+                alt={profile.agencyName || "Agency Logo"} 
+                className="w-9 h-9 rounded-xl object-cover bg-slate-800 border border-slate-700 p-0.5 shrink-0" 
+              />
+            ) : profile?.whiteLabel && profile?.brandLogoUrl ? (
+              <img 
+                src={profile.brandLogoUrl} 
+                alt={profile.agencyName || "Agency Logo"} 
+                className="w-9 h-9 rounded-xl object-contain bg-white border border-slate-700 p-0.5 shrink-0" 
+              />
+            ) : (
+              <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0">
+                <FileText className="w-5 h-5" />
+              </div>
+            )}
             <div>
-              <span className="font-extrabold font-display text-white tracking-tight uppercase text-base">
-                ReportIQ
+              <span className="font-extrabold font-display text-white tracking-tight uppercase text-base truncate block max-w-[140px]" title={profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}>
+                {profile?.whiteLabel && profile?.agencyName ? profile.agencyName : "ReportIQ"}
               </span>
-              <p className="text-[9px] font-mono text-slate-500 tracking-wider">WORKSPACE NODE</p>
+              <p className="text-[9px] font-mono text-slate-500 tracking-wider">
+                {profile?.whiteLabel ? "AGENCY HUB" : "WORKSPACE NODE"}
+              </p>
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { supabaseDb } from "../lib/supabase";
+import { supabaseDb, supabase } from "../lib/supabase";
 import { Client, Profile, PLAN_LIMITS } from "../types";
 import { Users, Plus, ShieldAlert, CheckCircle2, X, Building2, Mail, FileText, Pencil, Trash2 } from "lucide-react";
 
@@ -38,6 +38,45 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
   const [deleteConfirmClientId, setDeleteConfirmClientId] = useState<string | null>(null);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [editUploadingLogo, setEditUploadingLogo] = useState(false);
+
+  const handleClientLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const setUploading = isEdit ? setEditUploadingLogo : setUploadingLogo;
+    const setUrl = isEdit ? setEditLogoUrl : setLogoUrl;
+    const bucket = 'logos';
+
+    try {
+      setUploading(true);
+      if (isEdit) setEditError(null); else setError(null);
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}_client_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+      setUrl(publicUrl);
+    } catch (err: any) {
+      console.error("Failed to upload client logo:", err);
+      const errMsg = `Failed to upload image: ${err.message || 'Error occurred.'}`;
+      if (isEdit) setEditError(errMsg); else setError(errMsg);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const plan = profile?.plan || "free";
   const limitObj = PLAN_LIMITS[plan];
@@ -414,14 +453,44 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
 
               <div>
                 <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
-                  Client Logo URL
+                  Client Logo
                 </label>
+                <div className="flex items-center gap-3">
+                  <div className="w-20 h-14 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center relative shrink-0 overflow-hidden shadow-3xs p-1">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="Client Logo Preview" className="w-full h-full object-contain" />
+                    ) : (
+                      <span className="text-xl">🏢</span>
+                    )}
+                    {uploadingLogo && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="w-4 h-4 border-2 border-white border-t-white rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <input
+                      type="file"
+                      id="client-logo-add-input"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleClientLogoUpload(e, false)}
+                    />
+                    <label
+                      htmlFor="client-logo-add-input"
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-[10px] font-bold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-3xs transition-all"
+                    >
+                      {uploadingLogo ? "Uploading..." : "Choose Logo File"}
+                    </label>
+                    <p className="text-[9px] text-slate-405">Or paste direct logo URL below:</p>
+                  </div>
+                </div>
                 <input
                   type="text"
                   placeholder="e.g. https://domain.com/logo.png"
                   value={logoUrl}
                   onChange={e => setLogoUrl(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50"
+                  className="w-full rounded-xl border border-slate-200 outline-none p-2 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-100 bg-slate-50/50 mt-2 text-xs font-sans"
                   maxLength={1000}
                 />
               </div>
@@ -556,14 +625,44 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
 
               <div>
                 <label className="block text-xs font-bold font-mono uppercase tracking-wider text-slate-500 mb-1.5">
-                  Client Logo URL
+                  Client Logo
                 </label>
+                <div className="flex items-center gap-3">
+                  <div className="w-20 h-14 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center relative shrink-0 overflow-hidden shadow-3xs p-1">
+                    {editLogoUrl ? (
+                      <img src={editLogoUrl} alt="Client Logo Preview" className="w-full h-full object-contain" />
+                    ) : (
+                      <span className="text-xl">🏢</span>
+                    )}
+                    {editUploadingLogo && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="w-4 h-4 border-2 border-white border-t-white rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <input
+                      type="file"
+                      id="client-logo-edit-input"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleClientLogoUpload(e, true)}
+                    />
+                    <label
+                      htmlFor="client-logo-edit-input"
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-[10px] font-bold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-3xs transition-all"
+                    >
+                      {editUploadingLogo ? "Uploading..." : "Choose Logo File"}
+                    </label>
+                    <p className="text-[9px] text-slate-405">Or paste direct logo URL below:</p>
+                  </div>
+                </div>
                 <input
                   type="text"
                   placeholder="e.g. https://domain.com/logo.png"
                   value={editLogoUrl}
                   onChange={e => setEditLogoUrl(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 outline-none p-2.5 px-3.5 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 bg-slate-50/50"
+                  className="w-full rounded-xl border border-slate-200 outline-none p-2 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-100 bg-slate-50/50 mt-2 text-xs font-sans"
                   maxLength={1000}
                 />
               </div>
