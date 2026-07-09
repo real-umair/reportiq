@@ -423,8 +423,8 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                 </div>
               </div>
               
-              {/* White Label toggle (only shows for Pro master owner) */}
-              {profile?.plan === 'pro' && profile?.email === "farooquiumair18@gmail.com" && (
+              {/* White Label toggle (shows for Pro and Arbitrage plan master owner) */}
+              {(profile?.plan === 'pro' || profile?.plan === 'arbitrage') && profile?.email === "farooquiumair18@gmail.com" && (
                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5 w-full">
                   <div className="flex items-center justify-between">
                     <div>
@@ -485,7 +485,7 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                   <span className="text-slate-500 text-[10px] font-mono uppercase tracking-wider">Active plan tier</span>
                   <div className="flex items-center gap-2 mt-0.5">
                     <h3 className="text-base font-bold font-display uppercase tracking-wider text-indigo-600">
-                      {plan === "starter" ? "Starter Plan" : plan === "pro" ? "Pro Plan" : "Free Plan"}
+                      {plan === "starter" ? "Starter Plan" : plan === "pro" ? "Pro Plan" : plan === "arbitrage" ? "Arbitrage Plan" : "Free Plan"}
                     </h3>
                     <span className="inline-flex px-2 py-0.5 text-[9px] font-mono leading-none bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100">
                       ACTIVE
@@ -610,7 +610,7 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
           </div>
 
           {/* Pricing Grid options */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-2 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-2 items-stretch">
             {[
               {
                 id: "free" as const,
@@ -664,6 +664,25 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                 ],
                 featured: true, // Pro plan card stands out
                 badgeText: billingCycle === "lifetime" ? "Highly Recommended" : "Best Value"
+              },
+              {
+                id: "arbitrage" as const,
+                title: "Arbitrage Plan",
+                price: "$149",
+                period: "per month",
+                limitLabel: "For B2B multi-agency resellers (monthly only)",
+                features: [
+                  "Unlimited reports & clients",
+                  "Everything in Pro plus:",
+                  "Full B2B Arbitrage Mode",
+                  "AI Tools Brand Switcher",
+                  "Unlimited Sub-Agencies",
+                  "Manage End-Clients roster",
+                  "Branded client login portals",
+                  "Dedicated arbitrage account"
+                ],
+                featured: false,
+                badgeText: "Arbitrage Mode"
               },
             ].map(planCard => {
               const active = plan === planCard.id;

@@ -2609,10 +2609,10 @@ export default function App() {
                   badgeText: billingCycle === "lifetime" ? "Highly Recommended" : "Best Value"
                 },
                 {
-                  title: billingCycle === "lifetime" ? "Arbitrage Lifetime" : "Arbitrage Plan",
-                  price: billingCycle === "lifetime" ? "$199" : "$149",
-                  periodLabel: billingCycle === "lifetime" ? "one-time payment" : "/ month",
-                  limit: billingCycle === "lifetime" ? "Lifetime access for resellers" : "For B2B multi-agency resellers",
+                  title: "Arbitrage Plan",
+                  price: "$149",
+                  periodLabel: "/ month",
+                  limit: "B2B multi-agency reseller plan (monthly only)",
                   feats: [
                     "Everything in Pro plus:",
                     "Full B2B Arbitrage Mode",
@@ -2622,7 +2622,7 @@ export default function App() {
                     "Branded client login portals",
                     "Dedicated arbitrage account"
                   ],
-                  buttonText: billingCycle === "lifetime" ? "Get Lifetime Arbitrage" : "Upgrade to Arbitrage",
+                  buttonText: "Upgrade to Arbitrage",
                   planKey: "arbitrage" as const,
                   featured: false,
                   badgeText: "Arbitrage Mode"
