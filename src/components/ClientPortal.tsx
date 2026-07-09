@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { Client, Report, Profile } from "../types";
 import { FileText, Lock, Mail, Eye, ShieldAlert, ArrowRight, LogOut, Calendar, Building2 } from "lucide-react";
@@ -10,6 +10,53 @@ export default function ClientPortal() {
   const [clientObj, setClientObj] = useState<Client | null>(null);
   const [agencyProfile, setAgencyProfile] = useState<Profile | null>(null);
   const [clientReports, setClientReports] = useState<Report[]>([]);
+  const [preloadedAgency, setPreloadedAgency] = useState<Profile | null>(null);
+
+  const getAgencyIdFromUrl = () => {
+    const path = window.location.pathname;
+    const match = path.match(/^\/portal\/([a-zA-Z0-9_-]+)\/?$/);
+    if (match) return match[1];
+
+    const params = new URLSearchParams(window.location.search);
+    return params.get("agency");
+  };
+
+  useEffect(() => {
+    const loadPreloadedAgency = async () => {
+      const agencyId = getAgencyIdFromUrl();
+      if (!agencyId) return;
+
+      try {
+        const { data: dbProfile, error: profileError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", agencyId)
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+        if (dbProfile && dbProfile.plan === "pro") {
+          const mappedProfile: Profile = {
+            uid: dbProfile.id,
+            email: dbProfile.email,
+            fullName: dbProfile.full_name,
+            agencyName: dbProfile.agency_name,
+            logoUrl: dbProfile.logo_url || null,
+            brandColor: dbProfile.brand_color || "#6366f1",
+            plan: dbProfile.plan,
+            reportsGeneratedThisMonth: dbProfile.reports_generated_this_month || 0,
+            avatarUrl: dbProfile.avatar_url || null,
+            brandLogoUrl: dbProfile.brand_logo_url || null,
+            whiteLabel: dbProfile.white_label || false,
+          };
+          setPreloadedAgency(mappedProfile);
+        }
+      } catch (e) {
+        console.error("Failed to preload agency profile:", e);
+      }
+    };
+
+    loadPreloadedAgency();
+  }, []);
 
   const handlePortalLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,12 +69,13 @@ export default function ClientPortal() {
         throw new Error("Please enter your email address.");
       }
 
+      const agencyId = getAgencyIdFromUrl();
       const response = await fetch("/api/portal/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: emailInput }),
+        body: JSON.stringify({ email: emailInput, agencyId }),
       });
 
       if (!response.ok) {

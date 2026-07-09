@@ -11,7 +11,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { email } = req.body;
+    const { email, agencyId } = req.body;
     if (!email) {
       return res.status(400).json({ error: "Please enter your email address." });
     }
@@ -22,11 +22,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const activeClient = supabaseAdmin || supabase;
 
     // 1. Fetch client matching email
-    const { data: dbClient, error: clientError } = await activeClient
+    let query = activeClient
       .from("clients")
       .select("*")
-      .ilike("email", emailInput)
-      .maybeSingle();
+      .ilike("email", emailInput);
+
+    if (agencyId) {
+      query = query.eq("user_id", agencyId);
+    }
+
+    const { data: dbClient, error: clientError } = await query.maybeSingle();
 
     if (clientError) throw clientError;
 

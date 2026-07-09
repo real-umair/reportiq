@@ -1597,7 +1597,9 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
                     <button
                       type="button"
                       onClick={() => {
-                        const portalUrl = `${window.location.protocol}//${window.location.host}/portal`;
+                        const portalUrl = profile?.plan === "pro"
+                          ? `${window.location.protocol}//${window.location.host}/portal/${profile.uid}`
+                          : `${window.location.protocol}//${window.location.host}/portal`;
                         navigator.clipboard.writeText(portalUrl);
                         alert("Client Portal link copied to clipboard:\n" + portalUrl);
                       }}
