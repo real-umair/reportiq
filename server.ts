@@ -1086,7 +1086,7 @@ app.get("/api/reports/slug/:slug", async (req, res) => {
 
 app.post("/api/portal/login", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, agencyId } = req.body;
     if (!email) {
       res.status(400).json({ error: "Please enter your email address." });
       return;
@@ -1100,39 +1100,81 @@ app.post("/api/portal/login", async (req, res) => {
     let dbClient = null;
     let matchingSubClient: any = null;
 
-    // 1. Fetch client matching email directly
-    const { data: directClient, error: clientError } = await activeClient
-      .from("clients")
-      .select("*")
-      .ilike("email", emailInput)
-      .maybeSingle();
-
-    if (clientError) throw clientError;
-
-    if (directClient) {
-      dbClient = directClient;
-    } else {
-      // 2. Search notes column for subClients with matching email
-      const { data: candidates, error: notesError } = await activeClient
+    // If agencyId is provided, let's first check if it matches a client ID directly
+    if (agencyId) {
+      const { data: clientById } = await activeClient
         .from("clients")
         .select("*")
-        .like("notes", `%${emailInput}%`);
+        .eq("id", agencyId)
+        .maybeSingle();
 
-      if (notesError) throw notesError;
-
-      if (candidates && candidates.length > 0) {
-        for (const candidate of candidates) {
+      if (clientById) {
+        let isMatch = false;
+        if (clientById.email && clientById.email.trim().toLowerCase() === emailInput) {
+          isMatch = true;
+        } else {
           try {
-            const parsed = JSON.parse(candidate.notes || "{}");
+            const parsed = JSON.parse(clientById.notes || "{}");
             if (parsed && Array.isArray(parsed.subClients)) {
               const sub = parsed.subClients.find((s: any) => s.email && s.email.trim().toLowerCase() === emailInput);
               if (sub) {
-                dbClient = candidate;
+                isMatch = true;
                 matchingSubClient = sub;
-                break;
               }
             }
           } catch(e) {}
+        }
+
+        if (isMatch) {
+          dbClient = clientById;
+        }
+      }
+    }
+
+    if (!dbClient) {
+      // 1. Fetch client matching email directly
+      let query = activeClient
+        .from("clients")
+        .select("*")
+        .ilike("email", emailInput);
+
+      if (agencyId) {
+        query = query.eq("user_id", agencyId);
+      }
+
+      const { data: directClient, error: clientError } = await query.maybeSingle();
+      if (clientError) throw clientError;
+
+      if (directClient) {
+        dbClient = directClient;
+      } else {
+        // 2. Search notes column for subClients with matching email
+        let notesQuery = activeClient
+          .from("clients")
+          .select("*")
+          .like("notes", `%${emailInput}%`);
+
+        if (agencyId) {
+          notesQuery = notesQuery.eq("user_id", agencyId);
+        }
+
+        const { data: candidates, error: notesError } = await notesQuery;
+        if (notesError) throw notesError;
+
+        if (candidates && candidates.length > 0) {
+          for (const candidate of candidates) {
+            try {
+              const parsed = JSON.parse(candidate.notes || "{}");
+              if (parsed && Array.isArray(parsed.subClients)) {
+                const sub = parsed.subClients.find((s: any) => s.email && s.email.trim().toLowerCase() === emailInput);
+                if (sub) {
+                  dbClient = candidate;
+                  matchingSubClient = sub;
+                  break;
+                }
+              }
+            } catch(e) {}
+          }
         }
       }
     }
