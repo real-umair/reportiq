@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { supabaseDb, supabase } from "../lib/supabase";
 import { Client, Profile, PLAN_LIMITS } from "../types";
-import { Users, Plus, ShieldAlert, CheckCircle2, X, Building2, Mail, FileText, Pencil, Trash2, Globe } from "lucide-react";
+import { Users, Plus, ShieldAlert, CheckCircle2, X, Building2, Mail, FileText, Pencil, Trash2 } from "lucide-react";
 
 interface ClientsProps {
   userId: string;
@@ -340,18 +340,6 @@ export default function Clients({ userId, clients, profile, reportsCountByClient
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
                   <span className="font-mono text-[10px] text-slate-400">Registered: {new Date(clientObj.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span>
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        const portalUrl = `${window.location.protocol}//${window.location.host}/portal/${clientObj.id}`;
-                        navigator.clipboard.writeText(portalUrl);
-                        alert("Client Portal Link copied to clipboard:\n" + portalUrl);
-                      }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-800 transition-all cursor-pointer border border-slate-200"
-                      title="Copy branded client portal link"
-                    >
-                      <Globe className="w-3.5 h-3.5 text-indigo-650 shrink-0" />
-                      <span>Portal Link</span>
-                    </button>
                     <button
                       onClick={() => handleStartEdit(clientObj)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 hover:text-indigo-800 transition-all cursor-pointer border border-indigo-200"

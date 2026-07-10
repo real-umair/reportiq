@@ -658,9 +658,7 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                   "White label — zero ReportIQ branding",
                   "Report analytics & view logs",
                   "Client feedback log viewer",
-                  "Client portal logins",
-                  "Priority 24h support",
-                  "Branded agency URLs"
+                  "Priority 24h support"
                 ],
                 featured: true, // Pro plan card stands out
                 badgeText: billingCycle === "lifetime" ? "Highly Recommended" : "Best Value"
@@ -678,7 +676,6 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                   "AI Tools Brand Switcher",
                   "Unlimited Sub-Agencies",
                   "Manage End-Clients roster",
-                  "Branded client login portals",
                   "Dedicated arbitrage account"
                 ],
                 featured: false,

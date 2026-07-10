@@ -2599,9 +2599,7 @@ export default function App() {
                     "White label — zero ReportIQ branding",
                     "Report analytics & view logs",
                     "Client feedback log viewer",
-                    "Client portal logins",
-                    "Priority 24h support",
-                    "Branded agency URLs"
+                    "Priority 24h support"
                   ],
                   buttonText: billingCycle === "lifetime" ? "Get Lifetime Pro" : "Upgrade to Pro",
                   planKey: "pro" as const,
@@ -2619,7 +2617,6 @@ export default function App() {
                     "AI Tools Brand Switcher",
                     "Unlimited Sub-Agencies",
                     "Manage End-Clients roster",
-                    "Branded client login portals",
                     "Dedicated arbitrage account"
                   ],
                   buttonText: "Upgrade to Arbitrage",
@@ -3743,37 +3740,7 @@ export default function App() {
               </button>
             )}
 
-            <div className="pt-4 mt-4 border-t border-slate-800/80 px-1">
-              <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-800 text-[10px] space-y-2">
-                <div className="flex items-center justify-between text-slate-350 font-bold font-mono uppercase tracking-wider">
-                  <span>Client Access</span>
-                  <span className="inline-flex px-1.5 py-0.5 leading-none bg-indigo-500/20 text-indigo-400 rounded-md border border-indigo-500/20 text-[8px]">
-                    Pro Portal
-                  </span>
-                </div>
-                <p className="text-[9px] text-slate-500 leading-normal">
-                  Give clients secure portal access to view all active reports.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (profile?.plan === "arbitrage") {
-                      alert("B2B Arbitrage Mode Active:\nTo keep your identity fully hidden and display only your client's custom logo/color override, please copy their specific portal link by clicking the 'Portal Link' button inside the 'Clients Directory' tab!");
-                    } else {
-                      const portalUrl = (profile?.plan === "pro")
-                        ? `${window.location.protocol}//${window.location.host}/portal/${profile.uid}`
-                        : `${window.location.protocol}//${window.location.host}/portal`;
-                      navigator.clipboard.writeText(portalUrl);
-                      alert("Client Portal link copied to clipboard:\n" + portalUrl);
-                    }
-                  }}
-                  className="w-full py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg font-bold transition-all text-[9px] flex items-center justify-center gap-1 cursor-pointer border border-slate-750"
-                >
-                  <Globe className="w-3.5 h-3.5 text-indigo-400" />
-                  Copy Portal Link
-                </button>
-              </div>
-            </div>
+
           </nav>
         </div>
 
