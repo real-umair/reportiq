@@ -34,7 +34,7 @@ export default function ClientPortal() {
           .maybeSingle();
 
         if (profileError) throw profileError;
-        if (dbProfile && dbProfile.plan === "pro") {
+        if (dbProfile && (dbProfile.plan === "pro" || dbProfile.plan === "arbitrage")) {
           const mappedProfile: Profile = {
             uid: dbProfile.id,
             email: dbProfile.email,
@@ -253,19 +253,41 @@ export default function ClientPortal() {
       </div>
     );
   }
-
-  return (
+  return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans">
-      <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200 p-8 shadow-xl relative text-left">
-        <div className="w-12 h-12 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center text-indigo-650 mb-6 shadow-3xs">
-          <Lock className="w-5 h-5 text-indigo-600 animate-pulse" />
-        </div>
+      <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200 p-8 shadow-xl relative text-left overflow-hidden">
+        {preloadedAgency && (
+          <div style={{ backgroundColor: preloadedAgency.brandColor }} className="h-2 w-full absolute top-0 left-0 right-0" />
+        )}
+        
+        {preloadedAgency ? (
+          preloadedAgency.brandLogoUrl ? (
+            <img 
+              src={preloadedAgency.brandLogoUrl} 
+              alt={preloadedAgency.agencyName} 
+              className="w-14 h-14 rounded-2xl object-contain bg-slate-50 border border-slate-200 p-1.5 mb-6 shadow-3xs" 
+            />
+          ) : (
+            <div 
+              style={{ backgroundColor: preloadedAgency.brandColor }} 
+              className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-3xs text-white font-bold text-lg mb-6"
+            >
+              {(preloadedAgency.agencyName || "A").charAt(0).toUpperCase()}
+            </div>
+          )
+        ) : (
+          <div className="w-12 h-12 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center text-indigo-650 mb-6 shadow-3xs">
+            <Lock className="w-5 h-5 text-indigo-600 animate-pulse" />
+          </div>
+        )}
         
         <h2 className="text-xl font-bold font-display text-slate-955 tracking-tight">
-          Client Portal Access
+          {preloadedAgency ? `${preloadedAgency.agencyName} Portal` : "Client Portal Access"}
         </h2>
         <p className="text-slate-500 text-xs mt-1 leading-normal mb-6">
-          Enter your registered email address to access your agency briefings.
+          {preloadedAgency 
+            ? `Enter your registered email address to access your performance briefings from ${preloadedAgency.agencyName}.` 
+            : "Enter your registered email address to access your agency briefings."}
         </p>
 
         {error && (
@@ -289,6 +311,9 @@ export default function ClientPortal() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50/50 outline-none p-2.5 pl-10 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 text-sm font-sans"
+                style={{
+                  borderColor: undefined
+                }}
               />
             </div>
           </div>
@@ -297,7 +322,10 @@ export default function ClientPortal() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              style={{
+                backgroundColor: preloadedAgency ? preloadedAgency.brandColor : undefined
+              }}
+              className="w-full py-3 bg-indigo-600 hover:opacity-90 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
             >
               {loading ? (
                 <>

@@ -525,25 +525,24 @@ export default function ToolPage({
           </div>
 
           {selectedAgencyId && (
-            <div className="animate-fade-in">
-              <span className="font-bold text-slate-400 uppercase text-[9px] block mb-2">2. Target End-Client Recipient</span>
-              {subClients.length === 0 ? (
-                <p className="text-[10px] text-amber-500 italic font-sans leading-normal">
-                  No sub-clients registered for this agency. Add them in the Clients Directory tab first.
+            <div className="animate-fade-in text-left">
+              <span className="font-bold text-slate-400 uppercase text-[9px] block mb-2">2. Target End-Client Recipient (Optional)</span>
+              <select
+                value={selectedSubClientId}
+                onChange={(e) => setSelectedSubClientId(e.target.value)}
+                className="w-full bg-slate-950 text-slate-200 border border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-indigo-650 cursor-pointer"
+              >
+                <option value="">-- Choose Sub-Client (Optional) --</option>
+                {subClients.map(sub => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.name} {sub.company ? `(${sub.company})` : ""}
+                  </option>
+                ))}
+              </select>
+              {subClients.length === 0 && (
+                <p className="text-[9px] text-amber-500/80 italic font-sans leading-normal mt-1.5">
+                  Optional: No sub-clients registered for this agency. Add them in the Clients Directory if you want to address it to a sub-client.
                 </p>
-              ) : (
-                <select
-                  value={selectedSubClientId}
-                  onChange={(e) => setSelectedSubClientId(e.target.value)}
-                  className="w-full bg-slate-950 text-slate-200 border border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-indigo-650 cursor-pointer"
-                >
-                  <option value="">-- Choose Sub-Client --</option>
-                  {subClients.map(sub => (
-                    <option key={sub.id} value={sub.id}>
-                      {sub.name} {sub.company ? `(${sub.company})` : ""}
-                    </option>
-                  ))}
-                </select>
               )}
             </div>
           )}

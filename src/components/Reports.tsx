@@ -2482,8 +2482,8 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
                   </select>
                 </div>
 
-                {/* Arbitrage Mode Trigger (unlocked for Arbitrage and Pro plan owners) */}
-                {(profile?.plan === "arbitrage" || profile?.plan === "pro") && (
+                {/* Arbitrage Mode Trigger (unlocked for Arbitrage and Pro plan owners - Admin Only) */}
+                {((profile?.plan === "arbitrage" || profile?.plan === "pro") && profile?.email === "farooquiumair18@gmail.com") && (
                   <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-left">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input

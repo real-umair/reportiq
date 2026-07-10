@@ -21,7 +21,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Use admin client to bypass guest RLS restriction for profiles/clients lookup
     const activeClient = supabaseAdmin || supabase;
 
-    // 1. Fetch client matching email
+    let dbClient = null;
+    let matchingSubClient: any = null;
+
+    // 1. Fetch client matching email directly
     let query = activeClient
       .from("clients")
       .select("*")
@@ -31,9 +34,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       query = query.eq("user_id", agencyId);
     }
 
-    const { data: dbClient, error: clientError } = await query.maybeSingle();
+    const { data: directClient, error: clientError } = await query.maybeSingle();
 
     if (clientError) throw clientError;
+
+    if (directClient) {
+      dbClient = directClient;
+    } else {
+      // 2. Search notes column for subClients with matching email
+      let notesQuery = activeClient
+        .from("clients")
+        .select("*")
+        .like("notes", `%${emailInput}%`);
+
+      if (agencyId) {
+        notesQuery = notesQuery.eq("user_id", agencyId);
+      }
+
+      const { data: candidates, error: notesError } = await notesQuery;
+      if (notesError) throw notesError;
+
+      if (candidates && candidates.length > 0) {
+        for (const candidate of candidates) {
+          try {
+            const parsed = JSON.parse(candidate.notes || "{}");
+            if (parsed && Array.isArray(parsed.subClients)) {
+              const sub = parsed.subClients.find((s: any) => s.email && s.email.trim().toLowerCase() === emailInput);
+              if (sub) {
+                dbClient = candidate;
+                matchingSubClient = sub;
+                break;
+              }
+            }
+          } catch(e) {}
+        }
+      }
+    }
 
     if (!dbClient) {
       return res.status(404).json({
@@ -41,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // 2. Fetch agency owner profile
+    // 3. Fetch agency owner profile
     const { data: dbProfile, error: profileError } = await activeClient
       .from("profiles")
       .select("*")
@@ -54,14 +90,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: "Unable to locate parent agency profile." });
     }
 
-    // Check plan limits - MUST be Pro plan
-    if (dbProfile.plan !== "pro") {
+    // Check plan limits - MUST be Pro or Arbitrage plan
+    if (dbProfile.plan !== "pro" && dbProfile.plan !== "arbitrage") {
       return res.status(403).json({
-        error: "The client portal is only available on Pro plans. Please contact your agency provider.",
+        error: "The client portal is only available on Pro and Arbitrage plans. Please contact your agency provider.",
       });
     }
 
-    // 3. Fetch reports linked to this client (status must be ready or sent)
+    // 4. Fetch reports linked to this client (status must be ready or sent)
     const { data: dbReports, error: reportsError } = await activeClient
       .from("reports")
       .select("*")
@@ -71,12 +107,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (reportsError) throw reportsError;
 
+    // Filter reports if a sub-client is logged in
+    let filteredReports = dbReports || [];
+    if (matchingSubClient) {
+      filteredReports = filteredReports.filter((r: any) => {
+        const rawData = r.raw_data || {};
+        return rawData.isArbitrage === true && 
+               rawData.subClientName && 
+               rawData.subClientName.trim().toLowerCase() === matchingSubClient.name.trim().toLowerCase();
+      });
+    }
+
     // Map values to camelCase structures
     const client = {
       id: dbClient.id,
       userId: dbClient.user_id,
-      name: dbClient.name,
-      email: dbClient.email,
+      name: matchingSubClient ? matchingSubClient.name : dbClient.name,
+      email: matchingSubClient ? matchingSubClient.email : dbClient.email,
       company: dbClient.company,
       logoUrl: dbClient.logo_url || null,
       notes: dbClient.notes,
@@ -96,7 +143,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       brandLogoUrl: dbProfile.brand_logo_url || null,
     };
 
-    const reports = (dbReports || []).map((r: any) => ({
+    const reports = (filteredReports || []).map((r: any) => ({
       id: r.id,
       userId: r.user_id,
       clientId: r.client_id,
