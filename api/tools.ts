@@ -245,7 +245,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       const sClientName = sanitizeInput(clientName);
       const sIndustry = sanitizeInput(industry);
       const sWorkDone = sanitizeInput(workDone);
-      prompt = `Write a professional client report for ${sClientName} in the ${sIndustry} industry. Work completed: ${sWorkDone}. Include sections: Work Completed, Key Results, Coming Up Next. 300 words maximum.`;
+      prompt = `Write a highly detailed, professional client progress report for ${sClientName} in the ${sIndustry} industry. Work completed: ${sWorkDone}. Include sections: Work Completed, Key Results, Coming Up Next. Ensure each section has extensive, descriptive, and actionable content (minimum 600 words total).`;
       break;
     }
     case 'agency-report': {
@@ -254,7 +254,7 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
       const sAgencyName = sanitizeInput(agencyName);
       const sClientName = sanitizeInput(clientName);
       const sMonth = sanitizeInput(month);
-      prompt = `Write a professional agency report from ${sAgencyName} for client ${sClientName} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Include: Executive Summary, Work Completed, Results, Next Steps. 300 words maximum.`;
+      prompt = `Write a comprehensive, professional agency report from ${sAgencyName} for client ${sClientName} for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Include: Executive Summary, Work Completed, Results, Next Steps. Ensure each section is detailed, descriptive, and professional (minimum 700 words total).`;
       break;
     }
     case 'seo-report': {
@@ -274,14 +274,14 @@ ${blogUrls ? blogUrls + '\n' : ''}</urlset>`;
         Strict rule: Focus your findings and recommendations on this raw data.`;
       }
 
-      prompt = `Write a professional, comprehensive SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth}.
+      prompt = `Write an extensive, highly professional, and comprehensive SEO report for ${sWebsite} targeting keywords: ${sKeywords} for the exact period of ${sMonth}.
 Work completed and SEO optimizations: ${sWorkDone}.
 ${rawDataContent}
 
 Format your response using Markdown, including the following exact sections:
 
 ## Executive Summary
-Provide a 2-3 sentence executive summary comparing performance, strengths, and primary opportunities.
+Provide a detailed, multi-paragraph executive summary comparing performance, strengths, and primary opportunities.
 
 ## Opportunity Score
 Provide a Markdown table with columns (Category | Score) for these categories: Local SEO, Technical SEO, Content Strategy, Authority, Overall Opportunity.
@@ -293,9 +293,9 @@ Provide a Markdown table with columns (Priority | Recommendation) listing recomm
 Provide a Markdown table with columns (Recommendation | Expected Impact) listing recommendations and their expected impact (High, Medium, Low).
 
 ## Conclusion
-Write a short, encouraging concluding paragraph.
+Write a thorough, professional, and encouraging concluding section.
 
-Ensure all tables are formatted correctly. Maximum 600 words total.`;
+Ensure all tables are formatted correctly. Each section must have deep, thorough analysis and explanations (minimum 1000 words total).`;
       break;
     }
     case 'client-email': {
@@ -304,7 +304,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sClientName = sanitizeInput(clientName);
       const sWorkCompleted = sanitizeInput(workCompleted);
       const sNextSteps = sanitizeInput(nextSteps);
-      prompt = `Write a professional client update email to ${sClientName}. Work completed: ${sWorkCompleted}. Next steps: ${sNextSteps}. Friendly professional tone. 200 words maximum.`;
+      prompt = `Write a detailed, professional client update email to ${sClientName}. Work completed: ${sWorkCompleted}. Next steps: ${sNextSteps}. Friendly yet professional tone, ensuring everything is explained clearly and comprehensively (minimum 400 words total).`;
       break;
     }
     case 'monthly-report': {
@@ -313,7 +313,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sBusinessType = sanitizeInput(businessType);
       const sMonth = sanitizeInput(month);
       const sKeyResults = sanitizeInput(keyResults);
-      prompt = `Write a monthly report for a ${sBusinessType} business for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Key results: ${sKeyResults}. Include: Monthly Summary, Key Achievements, Metrics, Next Month Plan. 300 words maximum.`;
+      prompt = `Write an in-depth monthly performance report for a ${sBusinessType} business for the exact period of ${sMonth} (you must output the exact year and month from the input and do not default to other years). Key results: ${sKeyResults}. Include: Monthly Summary, Key Achievements, Metrics, Next Month Plan. Ensure every section has detailed, professional analysis (minimum 700 words total).`;
       break;
     }
     case 'kpi-report': {
@@ -322,7 +322,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sBusinessName = sanitizeInput(businessName);
       const sKpis = sanitizeInput(kpis);
       const sPeriod = sanitizeInput(period);
-      prompt = `Write a professional KPI summary report for ${sBusinessName} for the exact period of ${sPeriod} (you must output the exact year and month/period from the input and do not default to other years). KPIs: ${sKpis}. Include: KPI Overview, Performance Analysis, Highlights, Recommendations. 300 words maximum.`;
+      prompt = `Write a highly detailed, professional KPI summary report for ${sBusinessName} for the exact period of ${sPeriod} (you must output the exact year and month/period from the input and do not default to other years). KPIs: ${sKpis}. Include: KPI Overview, Performance Analysis, Highlights, Recommendations. Ensure sections are thoroughly detailed with analytical insights (minimum 700 words total).`;
       break;
     }
     case 'social-media-report': {
@@ -331,7 +331,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sClientName = sanitizeInput(clientName);
       const sPlatforms = sanitizeInput(platforms);
       const sMetrics = sanitizeInput(metrics);
-      prompt = `Write a social media performance report for ${sClientName} on ${sPlatforms}. Metrics: ${sMetrics}. Include: Performance Overview, Platform Breakdown, Key Wins, Next Month Strategy. 300 words maximum.`;
+      prompt = `Write an in-depth social media performance report for ${sClientName} on ${sPlatforms}. Metrics: ${sMetrics}. Include: Performance Overview, Platform Breakdown, Key Wins, Next Month Strategy. Ensure each platform analysis is detailed, specific, and actionable (minimum 700 words total).`;
       break;
     }
     case 'invoice-description': {
@@ -340,7 +340,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sService = sanitizeInput(service);
       const sClientName = sanitizeInput(clientName);
       const sHours = sanitizeInput(hours);
-      prompt = `Write professional invoice line item descriptions for ${sService} provided to ${sClientName} for ${sHours} hours. Write 3 professional line items. 150 words maximum.`;
+      prompt = `Write professional and detailed invoice line item descriptions for ${sService} provided to ${sClientName} for ${sHours} hours. Write 3 professional, descriptive line items. 250 words maximum.`;
       break;
     }
     case 'project-status': {
@@ -350,7 +350,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sCompletedTasks = sanitizeInput(completedTasks);
       const sBlockers = sanitizeInput(blockers);
       const sNextSteps = sanitizeInput(nextSteps);
-      prompt = `Write a professional project status report for ${sProjectName}. Completed: ${sCompletedTasks}. Blockers: ${sBlockers}. Next steps: ${sNextSteps}. 300 words maximum.`;
+      prompt = `Write a detailed, professional project status report for ${sProjectName}. Completed: ${sCompletedTasks}. Blockers: ${sBlockers}. Next steps: ${sNextSteps}. Ensure each section is descriptive and thorough (minimum 600 words total).`;
       break;
     }
     case 'onboarding-email': {
@@ -359,7 +359,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sClientName = sanitizeInput(clientName);
       const sServiceType = sanitizeInput(serviceType);
       const sStartDate = sanitizeInput(startDate);
-      prompt = `Write a professional client onboarding welcome email for ${sClientName} starting ${sServiceType} on ${sStartDate}. Include: warm welcome, what to expect, next steps. 250 words maximum.`;
+      prompt = `Write a comprehensive, professional client onboarding welcome email for ${sClientName} starting ${sServiceType} on ${sStartDate}. Include: warm welcome, what to expect, next steps. Explain onboarding phases and resources in detail (minimum 450 words total).`;
       break;
     }
     case 'competitor-analysis': {
@@ -378,13 +378,13 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
         Strict rule: Focus your findings and recommendations on this raw data.`;
       }
 
-      prompt = `Write a professional competitor analysis summary for ${sClientName} comparing against competitor ${sCompetitor} focusing on ${sFocusArea}.
+      prompt = `Write a highly detailed, professional competitor analysis summary for ${sClientName} comparing against competitor ${sCompetitor} focusing on ${sFocusArea}.
 ${rawDataContent}
 
 Format your response using Markdown, including the following exact sections:
 
 ## Executive Summary
-Provide a 2-3 sentence executive summary comparing our client's current positioning against the competitor's strengths and weaknesses.
+Provide a detailed, multi-paragraph executive summary comparing our client's current positioning against the competitor's strengths and weaknesses.
 
 ## Opportunity Score
 Provide a Markdown table with columns (Category | Score) for these categories: Local SEO, Technical SEO, Content Strategy, Authority, Overall Opportunity, comparing our client to the competitor.
@@ -396,9 +396,9 @@ Provide a Markdown table with columns (Priority | Recommendation) listing recomm
 Provide a Markdown table with columns (Recommendation | Expected Impact) listing recommendations and their expected impact (High, Medium, Low).
 
 ## Conclusion
-Write a short, encouraging concluding paragraph.
+Write a thorough, professional, and encouraging concluding paragraph.
 
-Ensure all tables are formatted correctly. Maximum 600 words total.`;
+Ensure all tables are formatted correctly. Each section must provide deep analytical comparison and strategic insights (minimum 1000 words total).`;
       break;
     }
     case 'weekly-report': {
@@ -407,7 +407,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sClientName = sanitizeInput(clientName);
       const sTasksDone = sanitizeInput(tasksDone);
       const sNextSteps = sanitizeInput(nextSteps);
-      prompt = `Write a professional weekly progress report for client ${sClientName}. Completed this week: ${sTasksDone}. Next week priorities: ${sNextSteps}. Include sections: Accomplishments, Next Steps. 300 words maximum.`;
+      prompt = `Write a detailed, professional weekly progress report for client ${sClientName}. Completed this week: ${sTasksDone}. Next week priorities: ${sNextSteps}. Include sections: Accomplishments, Next Steps. Provide thorough status updates for each task (minimum 600 words total).`;
       break;
     }
     case 'ppc-report': {
@@ -427,7 +427,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
         Strict rule: Focus your findings and recommendations on this raw data.`;
       }
 
-      prompt = `Write a professional paid advertising performance report for client ${sClientName}.
+      prompt = `Write a highly detailed, professional paid advertising performance report for client ${sClientName}.
 Spend details: ${sAdSpend}.
 Campaign outcomes: ${sResults}.
 Adjustments & work completed: ${sWorkDone}.
@@ -436,7 +436,7 @@ ${rawDataContent}
 Format your response using Markdown, including the following exact sections:
 
 ## Executive Summary
-Provide a 2-3 sentence executive summary of the PPC campaign performance, highlighting ROI/ROAS, CPA, and spend efficiency.
+Provide a detailed, multi-paragraph executive summary of the PPC campaign performance, highlighting ROI/ROAS, CPA, and spend efficiency.
 
 ## Opportunity Score
 Provide a Markdown table with columns (Category | Score) for these categories: Campaign Structure, Conversion Rate, Bid Strategy, Ad Copy Relevance, Overall Opportunity.
@@ -448,9 +448,9 @@ Provide a Markdown table with columns (Priority | Recommendation) listing campai
 Provide a Markdown table with columns (Recommendation | Expected Impact) listing recommendations and their expected impact (High, Medium, Low).
 
 ## Conclusion
-Write a short, encouraging concluding paragraph.
+Write a thorough, professional, and encouraging concluding section.
 
-Ensure all tables are formatted correctly. Maximum 600 words total.`;
+Ensure all tables are formatted correctly. Each section must explain ROAS/CPA dynamics and keyword/placement performance in detail (minimum 1000 words total).`;
       break;
     }
     case 'scope-of-work': {
@@ -459,7 +459,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sProjectName = sanitizeInput(projectName);
       const sDeliverables = sanitizeInput(deliverables);
       const sTimeline = sanitizeInput(timeline);
-      prompt = `Write a professional Scope of Work (SOW) outline for the project ${sProjectName}. Deliverables: ${sDeliverables}. Timeline & fee: ${sTimeline}. Include sections: Project Overview, Core Deliverables, Out-of-Scope Items, Timeline & Budget. 350 words maximum.`;
+      prompt = `Write a comprehensive, professional Scope of Work (SOW) outline for the project ${sProjectName}. Deliverables: ${sDeliverables}. Timeline & fee: ${sTimeline}. Include sections: Project Overview, Core Deliverables, Out-of-Scope Items, Timeline & Budget. Provide specific details under each heading (minimum 750 words total).`;
       break;
     }
     case 'post-mortem': {
@@ -468,7 +468,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sProjectName = sanitizeInput(projectName);
       const sWentWell = sanitizeInput(wentWell);
       const sChallenges = sanitizeInput(challenges);
-      prompt = `Write a professional project post-mortem and retrospective report for ${sProjectName}. Successes: ${sWentWell}. Bottlenecks/learnings: ${sChallenges}. Include sections: Retrospective Summary, Key Wins, Challenges & Root Causes, Future Sprints Recommendations. 300 words maximum.`;
+      prompt = `Write an in-depth, professional project post-mortem and retrospective report for ${sProjectName}. Successes: ${sWentWell}. Bottlenecks/learnings: ${sChallenges}. Include sections: Retrospective Summary, Key Wins, Challenges & Root Causes, Future Sprints Recommendations. Explain takeaways and future prevention strategies in detail (minimum 700 words total).`;
       break;
     }
     case 'onboarding-questionnaire': {
@@ -477,7 +477,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
       const sServiceType = sanitizeInput(serviceType);
       const sIndustry = sanitizeInput(industry);
       const sGoals = sanitizeInput(goals);
-      prompt = `Write a professional client onboarding questionnaire template for a ${sServiceType} campaign in the ${sIndustry} industry targeting ${sGoals}. Create 10 strategic questions to gather critical requirements and brand alignment. 300 words maximum.`;
+      prompt = `Write a comprehensive, professional client onboarding questionnaire template for a ${sServiceType} campaign in the ${sIndustry} industry targeting ${sGoals}. Create 10 strategic questions to gather critical requirements and brand alignment, adding guidance and context for why each question is asked (minimum 700 words total).`;
       break;
     }
     default:
@@ -488,7 +488,7 @@ Ensure all tables are formatted correctly. Maximum 600 words total.`;
     const completion = await groqTools.chat.completions.create({
       model: 'openai/gpt-oss-120b',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 1200,
+      max_tokens: 2500,
     });
 
     return res.status(200).json({ result: completion.choices[0].message.content });
