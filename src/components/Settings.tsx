@@ -681,7 +681,7 @@ export default function Settings({ userId, profile, onRefresh, showLock }: Setti
                 featured: false,
                 badgeText: "Arbitrage Mode"
               },
-            ].map(planCard => {
+            ].filter(planCard => planCard.id !== "arbitrage" || profile?.email === "farooquiumair18@gmail.com").map(planCard => {
               const active = plan === planCard.id;
               return (
                 <div

@@ -2624,7 +2624,7 @@ export default function App() {
                   featured: false,
                   badgeText: "Arbitrage Mode"
                 },
-              ].map((card, i) => (
+              ].filter(card => card.planKey !== "arbitrage" || profile?.email === "farooquiumair18@gmail.com").map((card, i) => (
                 <div
                   key={i}
                   className={`border rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 ${
