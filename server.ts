@@ -1071,6 +1071,7 @@ app.get("/api/reports/slug/:slug", async (req, res) => {
           name: dbClient.name,
           company: dbClient.company,
           logoUrl: dbClient.logo_url,
+          notes: dbClient.notes,
           createdAt: dbClient.created_at,
         };
       }

@@ -14,7 +14,7 @@ function getDomainName(url: string) {
 
 function getShareUrl(profile: Profile | null, slug: string) {
   const host = `${window.location.protocol}//${window.location.host}`;
-  if (profile?.plan === "pro") {
+  if (profile?.plan === "pro" || profile?.plan === "arbitrage") {
     const slugify = (text: string) =>
       text
         .toLowerCase()
@@ -1631,7 +1631,7 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
                     <button
                       type="button"
                       onClick={() => {
-                        const portalUrl = profile?.plan === "pro"
+                        const portalUrl = (profile?.plan === "pro" || profile?.plan === "arbitrage")
                           ? `${window.location.protocol}//${window.location.host}/portal/${profile.uid}`
                           : `${window.location.protocol}//${window.location.host}/portal`;
                         navigator.clipboard.writeText(portalUrl);
@@ -1716,8 +1716,25 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
   if (selectedReport) {
     const parentClientObj = clients.find(c => c.id === selectedReport.clientId);
     const publicUrl = getShareUrl(profile, selectedReport.slug);
-    const brandColor = profile?.brandColor || "#6366f1";
-    const agencyName = profile?.agencyName || "Smith Digital";
+
+    // Resolve client-specific branding overrides
+    const getPreviewBranding = () => {
+      let clientBrandColor = "";
+      try {
+        const parsed = JSON.parse(parentClientObj?.notes || "{}");
+        if (parsed && typeof parsed === "object" && parsed.brandColor) {
+          clientBrandColor = parsed.brandColor;
+        }
+      } catch (e) {}
+
+      return {
+        brandColor: clientBrandColor || profile?.brandColor || "#6366f1",
+        agencyName: parentClientObj?.company || profile?.agencyName || "Smith Digital",
+        logoUrl: parentClientObj?.logoUrl || profile?.brandLogoUrl || null
+      };
+    };
+
+    const { brandColor, agencyName, logoUrl } = getPreviewBranding();
 
     return (
       <div className="space-y-6 animate-fade-in font-sans">
@@ -1837,10 +1854,10 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
             <div className="relative flex flex-col gap-6 font-sans">
               {/* Top left Brand logo and Agency name */}
               <div className="flex flex-col gap-3">
-                {profile?.brandLogoUrl ? (
+                {logoUrl ? (
                   <div className="flex items-center gap-3">
                     <img 
-                      src={profile.brandLogoUrl} 
+                      src={logoUrl} 
                       alt={agencyName} 
                       className="max-h-12 w-auto object-contain rounded-lg bg-white/15 p-1.5 shadow-2xs" 
                     />
@@ -1866,7 +1883,7 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2 text-sm font-medium text-white/90">
                 <span className="flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-white/70" />
-                  {parentClientObj?.name || "Client Partner"}
+                  {selectedReport.rawData?.subClientName || parentClientObj?.name || "Client Partner"}
                 </span>
                 <span className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-white/70" />
@@ -1878,8 +1895,8 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
 
           {/* Report Analytics & Client View Logs (Pro only, shown but locked for other plans) */}
           <div className="p-6 bg-indigo-50/30 border border-indigo-150 rounded-2xl mb-8 font-sans text-left relative overflow-hidden">
-            {plan !== "pro" && (
-              <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-xs flex flex-col items-center justify-center rounded-2xl z-10 p-4 border border-dashed border-slate-200 cursor-pointer text-center animate-fade-in"
+            {plan !== "pro" && plan !== "arbitrage" && (
+              <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-xs flex flex-col items-center justify-center rounded-2xl z-10 p-4 border border-dashed border-slate-200 pointer-events-auto cursor-pointer text-center animate-fade-in"
                    onClick={() => showLock("Report Analytics & View Logs", "Pro", "$79/mo")}>
                 <Lock className="w-5 h-5 text-indigo-650 mb-1" />
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Pro Feature</span>
@@ -2120,7 +2137,7 @@ Prepare your file as .txt, .docx, .pdf, .xlsx, .csv, or .json and upload it to g
             Client Feedback Log
           </h3>
 
-          {plan === "pro" ? (
+          {plan === "pro" || plan === "arbitrage" ? (
             loadingFeedbacks ? (
               <div className="flex flex-col items-center justify-center py-8 space-y-2">
                 <div className="w-6 h-6 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin"></div>
