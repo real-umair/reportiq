@@ -3757,11 +3757,15 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => {
-                    const portalUrl = profile?.plan === "pro"
-                      ? `${window.location.protocol}//${window.location.host}/portal/${profile.uid}`
-                      : `${window.location.protocol}//${window.location.host}/portal`;
-                    navigator.clipboard.writeText(portalUrl);
-                    alert("Client Portal link copied to clipboard:\n" + portalUrl);
+                    if (profile?.plan === "arbitrage") {
+                      alert("B2B Arbitrage Mode Active:\nTo keep your identity fully hidden and display only your client's custom logo/color override, please copy their specific portal link by clicking the 'Portal Link' button inside the 'Clients Directory' tab!");
+                    } else {
+                      const portalUrl = (profile?.plan === "pro")
+                        ? `${window.location.protocol}//${window.location.host}/portal/${profile.uid}`
+                        : `${window.location.protocol}//${window.location.host}/portal`;
+                      navigator.clipboard.writeText(portalUrl);
+                      alert("Client Portal link copied to clipboard:\n" + portalUrl);
+                    }
                   }}
                   className="w-full py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg font-bold transition-all text-[9px] flex items-center justify-center gap-1 cursor-pointer border border-slate-750"
                 >

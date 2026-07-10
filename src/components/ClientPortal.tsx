@@ -27,13 +27,13 @@ export default function ClientPortal() {
       if (!agencyId) return;
 
       try {
+        // 1. Try fetching agency profile first
         const { data: dbProfile, error: profileError } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", agencyId)
           .maybeSingle();
 
-        if (profileError) throw profileError;
         if (dbProfile && (dbProfile.plan === "pro" || dbProfile.plan === "arbitrage")) {
           const mappedProfile: Profile = {
             uid: dbProfile.id,
@@ -49,9 +49,42 @@ export default function ClientPortal() {
             whiteLabel: dbProfile.white_label || false,
           };
           setPreloadedAgency(mappedProfile);
+          return;
+        }
+
+        // 2. If profile wasn't resolved, try looking up as client ID to show direct client branding overrides
+        const { data: dbClient } = await supabase
+          .from("clients")
+          .select("*")
+          .eq("id", agencyId)
+          .maybeSingle();
+
+        if (dbClient) {
+          let brandColor = "#6366f1";
+          try {
+            const parsed = JSON.parse(dbClient.notes || "{}");
+            if (parsed && typeof parsed === "object" && parsed.brandColor) {
+              brandColor = parsed.brandColor;
+            }
+          } catch (e) {}
+
+          const mappedProfile: Profile = {
+            uid: dbClient.id,
+            email: dbClient.email || "",
+            fullName: dbClient.name,
+            agencyName: dbClient.company || dbClient.name,
+            logoUrl: dbClient.logo_url || null,
+            brandColor: brandColor,
+            plan: "pro", // treat as pro for portal branding bypass
+            avatarUrl: dbClient.logo_url || null,
+            brandLogoUrl: dbClient.logo_url || null,
+            whiteLabel: true,
+            reportsGeneratedThisMonth: 0,
+          };
+          setPreloadedAgency(mappedProfile);
         }
       } catch (e) {
-        console.error("Failed to preload agency profile:", e);
+        console.error("Failed to preload portal branding context:", e);
       }
     };
 
@@ -113,17 +146,19 @@ export default function ClientPortal() {
         }
       } catch (e) {}
 
+      const isArbitrage = agencyProfile.plan === "arbitrage";
+
       return {
-        brandColor: clientBrandColor || agencyProfile.brandColor || "#6366f1",
-        agencyName: clientObj.company || agencyProfile.agencyName || "Agency Partner",
-        logoUrl: clientObj.logoUrl || agencyProfile.brandLogoUrl || null
+        brandColor: clientBrandColor || (isArbitrage ? "#6366f1" : (agencyProfile.brandColor || "#6366f1")),
+        agencyName: clientObj.company || (isArbitrage ? "Agency Partner" : (agencyProfile.agencyName || "Agency Partner")),
+        logoUrl: clientObj.logoUrl || (isArbitrage ? null : (agencyProfile.brandLogoUrl || null))
       };
     };
 
     const { brandColor, agencyName, logoUrl } = getClientBranding();
 
     const getReportLink = (reportSlug: string) => {
-      if (agencyProfile.plan === "pro") {
+      if (agencyProfile.plan === "pro" || agencyProfile.plan === "arbitrage") {
         const slugify = (text: string) =>
           text
             .toLowerCase()
@@ -248,7 +283,7 @@ export default function ClientPortal() {
         </main>
         
         <footer className="bg-white border-t border-slate-200 py-8 px-6 text-center text-slate-400 text-xs mt-12 shrink-0">
-          <p>© 2026 {agencyProfile.agencyName}</p>
+          <p>© 2026 {agencyName}</p>
         </footer>
       </div>
     );
