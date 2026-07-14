@@ -708,7 +708,7 @@ export default function ToolPage({
             <div className="flex-1 flex flex-col items-center justify-center py-12 space-y-3.5">
               <div className="w-9 h-9 rounded-full border-3 border-indigo-600 border-t-transparent animate-spin"></div>
               <p className="text-slate-450 font-mono text-[9px] uppercase tracking-widest animate-pulse">
-                Composing with GPT OSS AI...
+                Composing with Llama 3.3 AI...
               </p>
             </div>
           ) : result ? (

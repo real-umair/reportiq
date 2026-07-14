@@ -211,7 +211,7 @@ export default function ToolsHome() {
             },
             {
               q: "How accurate are the AI generated reports and emails?",
-              a: "The AI uses Groq GPT OSS 120B which is one of the most advanced language models available. The quality of output depends on the quality of your input — the more detail you provide the better the report. Results are professional quality and typically need minimal editing."
+              a: "The AI uses Groq Llama 3.3 70B which is one of the most advanced language models available. The quality of output depends on the quality of your input — the more detail you provide the better the report. Results are professional quality and typically need minimal editing."
             },
             {
               q: "Can I use these tools for commercial client work?",

@@ -486,7 +486,7 @@ Ensure all tables are formatted correctly. Each section must explain ROAS/CPA dy
 
   try {
     const completion = await groqTools.chat.completions.create({
-      model: 'openai/gpt-oss-120b',
+      model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 2500,
     });

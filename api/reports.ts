@@ -95,7 +95,7 @@ async function handleGenerate(req: VercelRequest, res: VercelResponse) {
     const groqApiKey = process.env.GROQ_API_KEY || "";
     if (!groqApiKey) throw new Error("GROQ_API_KEY environment variable is not defined");
 
-    console.log("Generating report using highly accelerated Groq GPT OSS 120B model...");
+    console.log("Generating report using highly accelerated Groq Llama 3.3 70B model...");
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -103,7 +103,7 @@ async function handleGenerate(req: VercelRequest, res: VercelResponse) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "openai/gpt-oss-120b",
+        model: "llama-3.3-70b-versatile",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
@@ -166,7 +166,7 @@ Please generate the section title and content. No markdown or wrappers outside t
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "openai/gpt-oss-120b",
+        model: "llama-3.3-70b-versatile",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: prompt }
