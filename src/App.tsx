@@ -3185,6 +3185,87 @@ export default function App() {
                       </p>
                     </div>
                   </div>
+
+                  {/* Meet Our Team Section */}
+                  <div className="mt-8 pt-6 border-t border-slate-100">
+                    <div className="flex items-center gap-3 mb-5 text-left">
+                      <div className="p-2.5 bg-indigo-50 border border-indigo-100 rounded-xl text-indigo-600 shrink-0">
+                        <Users className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold font-mono tracking-widest text-indigo-600 uppercase">Leadership</span>
+                        <h4 className="text-base font-bold font-display text-slate-950">Meet Our Team</h4>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-6 gap-4">
+                      {[
+                        {
+                          name: "Muhammad Umair Farooqui",
+                          role: "Founder & Lead Developer",
+                          gradient: "from-indigo-500 to-purple-600",
+                          isFounder: true,
+                          span: "col-span-6 sm:col-span-3"
+                        },
+                        {
+                          name: "Muhammad Subhan",
+                          role: "Founder & Lead Developer",
+                          gradient: "from-purple-500 to-pink-600",
+                          isFounder: true,
+                          span: "col-span-6 sm:col-span-3"
+                        },
+                        {
+                          name: "Zaheer Abbas",
+                          role: "Co-Founder & SEO Specialist",
+                          gradient: "from-blue-500 to-cyan-600",
+                          isFounder: false,
+                          span: "col-span-6 sm:col-span-2"
+                        },
+                        {
+                          name: "Talha Ali",
+                          role: "Co-Founder & Sales Director",
+                          gradient: "from-pink-500 to-rose-600",
+                          isFounder: false,
+                          span: "col-span-6 sm:col-span-2"
+                        },
+                        {
+                          name: "Ubaid Ahmed",
+                          role: "Co-Founder & Business Developer",
+                          gradient: "from-emerald-500 to-teal-600",
+                          isFounder: false,
+                          span: "col-span-6 sm:col-span-2"
+                        }
+                      ].map((member, index) => (
+                        <div
+                          key={index}
+                          className={`flex items-center gap-3.5 p-3.5 rounded-2xl border transition-all duration-200 group text-left ${
+                            member.isFounder
+                              ? "bg-indigo-50/15 border-indigo-100/60 hover:bg-indigo-50/25 hover:border-indigo-200/80 hover:shadow-xs"
+                              : "bg-slate-50/40 border-slate-100 hover:bg-white hover:border-slate-200/80 hover:shadow-xs"
+                          } ${member.span}`}
+                        >
+                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${member.gradient} flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform duration-200 shrink-0`}>
+                            <User className="w-5 h-5 text-white/95" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <h5 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-xs sm:text-sm truncate">
+                                {member.name}
+                              </h5>
+                              {member.isFounder && (
+                                <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-700 text-[8px] font-extrabold uppercase tracking-wider rounded-md font-mono shrink-0">
+                                  Founder
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5 truncate">
+                              {member.role}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
 
