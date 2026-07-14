@@ -1683,21 +1683,21 @@ export default function App() {
                           role: "Co-Founder & SEO Specialist",
                           gradient: "from-blue-500 to-cyan-600",
                           isFounder: false,
-                          span: "col-span-6 sm:col-span-2"
+                          span: "col-span-6 sm:col-span-3"
                         },
                         {
                           name: "Talha Ali",
                           role: "Co-Founder & Sales Director",
                           gradient: "from-pink-500 to-rose-600",
                           isFounder: false,
-                          span: "col-span-6 sm:col-span-2"
+                          span: "col-span-6 sm:col-span-3"
                         },
                         {
                           name: "Ubaid Ahmed",
                           role: "Co-Founder & Business Developer",
                           gradient: "from-emerald-500 to-teal-600",
                           isFounder: false,
-                          span: "col-span-6 sm:col-span-2"
+                          span: "col-span-6 sm:col-span-6"
                         }
                       ].map((member, index) => (
                         <div
@@ -1713,7 +1713,7 @@ export default function App() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <h5 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-xs sm:text-sm truncate">
+                              <h5 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-xs sm:text-sm">
                                 {member.name}
                               </h5>
                               {member.isFounder && (
@@ -1722,7 +1722,7 @@ export default function App() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5 truncate">
+                            <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">
                               {member.role}
                             </p>
                           </div>
@@ -3219,21 +3219,21 @@ export default function App() {
                           role: "Co-Founder & SEO Specialist",
                           gradient: "from-blue-500 to-cyan-600",
                           isFounder: false,
-                          span: "col-span-6 sm:col-span-2"
+                          span: "col-span-6 sm:col-span-3"
                         },
                         {
                           name: "Talha Ali",
                           role: "Co-Founder & Sales Director",
                           gradient: "from-pink-500 to-rose-600",
                           isFounder: false,
-                          span: "col-span-6 sm:col-span-2"
+                          span: "col-span-6 sm:col-span-3"
                         },
                         {
                           name: "Ubaid Ahmed",
                           role: "Co-Founder & Business Developer",
                           gradient: "from-emerald-500 to-teal-600",
                           isFounder: false,
-                          span: "col-span-6 sm:col-span-2"
+                          span: "col-span-6 sm:col-span-6"
                         }
                       ].map((member, index) => (
                         <div
@@ -3249,7 +3249,7 @@ export default function App() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <h5 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-xs sm:text-sm truncate">
+                              <h5 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-xs sm:text-sm">
                                 {member.name}
                               </h5>
                               {member.isFounder && (
@@ -3258,7 +3258,7 @@ export default function App() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5 truncate">
+                            <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-tight mt-0.5">
                               {member.role}
                             </p>
                           </div>
