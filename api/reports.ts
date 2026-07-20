@@ -312,35 +312,19 @@ async function handleGetBySlug(req: VercelRequest, res: VercelResponse) {
     if (reportErr) throw reportErr;
     if (!dbReport) return res.status(404).json({ error: "Report not found" });
 
-    const report = {
-      id: dbReport.id,
-      userId: dbReport.user_id,
-      clientId: dbReport.client_id,
-      title: dbReport.title,
-      periodStart: dbReport.period_start,
-      periodEnd: dbReport.period_end,
-      status: dbReport.status,
-      slug: dbReport.slug,
-      aiSummary: dbReport.ai_summary,
-      rawData: dbReport.raw_data || {},
-      sections: dbReport.sections || [],
-      customMessage: dbReport.custom_message,
-      attachments: dbReport.attachments || [],
-      viewCount: dbReport.view_count || 0,
-      createdAt: dbReport.created_at,
-    };
-
     const activeClient = supabaseAdmin || supabase;
 
     let profile = null;
-    if (report.userId) {
+    let plan = "free";
+    if (dbReport.user_id) {
       const { data: dbProfile } = await activeClient
         .from("profiles")
         .select("*")
-        .eq("id", report.userId)
+        .eq("id", dbReport.user_id)
         .maybeSingle();
 
       if (dbProfile) {
+        plan = dbProfile.plan || "free";
         profile = {
           uid: dbProfile.id,
           fullName: dbProfile.full_name,
@@ -352,6 +336,42 @@ async function handleGetBySlug(req: VercelRequest, res: VercelResponse) {
         };
       }
     }
+
+    // Securely increment view count on the database using the admin client to bypass guest RLS limitations
+    const newViewCount = (dbReport.view_count || 0) + 1;
+    let updatedRawData = { ...(dbReport.raw_data || {}) };
+
+    if (plan === "pro" || plan === "arbitrage") {
+      const currentLogs = Array.isArray(updatedRawData.viewsLog) ? [...updatedRawData.viewsLog] : [];
+      currentLogs.push(new Date().toISOString());
+      updatedRawData.viewsLog = currentLogs;
+    }
+
+    await activeClient
+      .from("reports")
+      .update({
+        view_count: newViewCount,
+        raw_data: updatedRawData
+      })
+      .eq("id", dbReport.id);
+
+    const report = {
+      id: dbReport.id,
+      userId: dbReport.user_id,
+      clientId: dbReport.client_id,
+      title: dbReport.title,
+      periodStart: dbReport.period_start,
+      periodEnd: dbReport.period_end,
+      status: dbReport.status,
+      slug: dbReport.slug,
+      aiSummary: dbReport.ai_summary,
+      rawData: updatedRawData,
+      sections: dbReport.sections || [],
+      customMessage: dbReport.custom_message,
+      attachments: dbReport.attachments || [],
+      viewCount: newViewCount,
+      createdAt: dbReport.created_at,
+    };
 
     let client = null;
     if (report.clientId) {

@@ -1012,38 +1012,21 @@ app.get("/api/reports/slug/:slug", async (req, res) => {
       return;
     }
 
-    // Map report fields to React camelCase types
-    const report = {
-      id: dbReport.id,
-      userId: dbReport.user_id,
-      clientId: dbReport.client_id,
-      title: dbReport.title,
-      periodStart: dbReport.period_start,
-      periodEnd: dbReport.period_end,
-      status: dbReport.status,
-      slug: dbReport.slug,
-      aiSummary: dbReport.ai_summary,
-      rawData: dbReport.raw_data || {},
-      sections: dbReport.sections || [],
-      customMessage: dbReport.custom_message,
-      attachments: dbReport.attachments || [],
-      viewCount: dbReport.view_count || 0,
-      createdAt: dbReport.created_at,
-    };
-
     // Use admin client to bypass guest RLS restriction for profiles/clients metadata
     const activeClient = supabaseAdmin || supabase;
 
     // Query Corresponding Profile
     let profile = null;
-    if (report.userId) {
+    let plan = "free";
+    if (dbReport.user_id) {
       const { data: dbProfile } = await activeClient
         .from("profiles")
         .select("*")
-        .eq("id", report.userId)
+        .eq("id", dbReport.user_id)
         .maybeSingle();
 
       if (dbProfile) {
+        plan = dbProfile.plan || "free";
         profile = {
           uid: dbProfile.id,
           fullName: dbProfile.full_name,
@@ -1055,6 +1038,43 @@ app.get("/api/reports/slug/:slug", async (req, res) => {
         };
       }
     }
+
+    // Securely increment view count on the database using the admin client to bypass guest RLS limitations
+    const newViewCount = (dbReport.view_count || 0) + 1;
+    let updatedRawData = { ...(dbReport.raw_data || {}) };
+
+    if (plan === "pro" || plan === "arbitrage") {
+      const currentLogs = Array.isArray(updatedRawData.viewsLog) ? [...updatedRawData.viewsLog] : [];
+      currentLogs.push(new Date().toISOString());
+      updatedRawData.viewsLog = currentLogs;
+    }
+
+    await activeClient
+      .from("reports")
+      .update({
+        view_count: newViewCount,
+        raw_data: updatedRawData
+      })
+      .eq("id", dbReport.id);
+
+    // Map report fields to React camelCase types
+    const report = {
+      id: dbReport.id,
+      userId: dbReport.user_id,
+      clientId: dbReport.client_id,
+      title: dbReport.title,
+      periodStart: dbReport.period_start,
+      periodEnd: dbReport.period_end,
+      status: dbReport.status,
+      slug: dbReport.slug,
+      aiSummary: dbReport.ai_summary,
+      rawData: updatedRawData,
+      sections: dbReport.sections || [],
+      customMessage: dbReport.custom_message,
+      attachments: dbReport.attachments || [],
+      viewCount: newViewCount,
+      createdAt: dbReport.created_at,
+    };
 
     // Query Corresponding Client
     let client = null;
@@ -1446,6 +1466,32 @@ async function initializeDatabaseSchema() {
 
     DROP POLICY IF EXISTS "Admin can manage all blogs" ON public.blogs;
     CREATE POLICY "Admin can manage all blogs" ON public.blogs FOR ALL USING (true);
+
+    -- Create handle_new_user function to automatically create profile
+    CREATE OR REPLACE FUNCTION public.handle_new_user()
+    RETURNS trigger AS $$
+    BEGIN
+      INSERT INTO public.profiles (id, email, full_name, agency_name, plan, brand_color, reports_generated_this_month, white_label)
+      VALUES (
+        new.id,
+        new.email,
+        COALESCE(new.raw_user_meta_data->>'full_name', ''),
+        COALESCE(new.raw_user_meta_data->>'agency_name', 'My Agency'),
+        'free',
+        '#6366f1',
+        0,
+        false
+      )
+      ON CONFLICT (id) DO NOTHING;
+      RETURN new;
+    END;
+    $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+    -- Create trigger to trigger handle_new_user on user creation
+    DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+    CREATE TRIGGER on_auth_user_created
+      AFTER INSERT ON auth.users
+      FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
   `;
 
   try {

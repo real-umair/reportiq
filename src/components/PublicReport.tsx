@@ -79,26 +79,6 @@ export default function PublicReport({ slug }: PublicReportProps) {
         setProfile(profileData);
         setClient(clientData);
 
-        // Increment view count directly on database
-        try {
-          const updatedViews = (reportData.viewCount || 0) + 1;
-          const updatedRawData = { ...reportData.rawData };
-
-          if (profileData?.plan === 'pro' || profileData?.plan === 'arbitrage') {
-            const currentLogs = Array.isArray(updatedRawData.viewsLog) ? [...updatedRawData.viewsLog] : [];
-            currentLogs.push(new Date().toISOString());
-            updatedRawData.viewsLog = currentLogs;
-          }
-
-          const updatedReport = await supabaseDb.updateReport(reportData.id, reportData.userId, {
-            viewCount: updatedViews,
-            rawData: updatedRawData,
-          });
-          setReport(updatedReport);
-        } catch (viewErr) {
-          console.warn("View counter could not be incremented on database (this is expected for guests):", viewErr);
-        }
-
       } catch (err: any) {
         console.error("Error loading public report:", err);
         setError("Unable to load report. Please try again later.");
