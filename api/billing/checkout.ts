@@ -67,7 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        product_id: finalProductId,
+        products: [finalProductId],
         success_url: `${origin}?payment_success=true&plan_choice=${productId}&plan_product_id=${finalProductId}`,
         cancel_url: `${origin}?payment_cancel=true&plan_choice=${productId}&plan_product_id=${finalProductId}`,
         customer_email: email || undefined

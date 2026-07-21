@@ -824,14 +824,13 @@ export default function App() {
           "free"
         );
 
-        setSignupSuccess(true);
-        setAuthError(null);
-        // Do not close the dialog or empty inputs immediately so they know what happened,
-        // or clear inputs except email for easy login later
-        setAuthPassword("");
-        setAuthFullName("");
-        setAuthAgencyName("");
-        return; // Avoid closing dialog
+        setUser(newUser);
+        
+        // Load their profile
+        const dbProfile = await supabaseDb.getProfile(newUser.id);
+        if (dbProfile) {
+          setProfile(dbProfile);
+        }
       } else {
         const loggedInUser = await supabaseAuth.signIn(emailInput, authPassword);
         setUser(loggedInUser);

@@ -82,39 +82,35 @@ export const supabaseAuth = {
   },
 
   async signUp(email: string, password: string, fullName: string, agencyName: string, plan: Plan = "free") {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          full_name: fullName,
-          agency_name: agencyName
-        }
-      }
+    const response = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        fullName,
+        agencyName
+      })
     });
 
-    if (error) throw error;
-    if (!data.user) throw new Error("Signup failed");
-
-    // Upsert public profile record using current credentials/session
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .upsert({
-        id: data.user.id,
-        email: email,
-        full_name: fullName,
-        agency_name: agencyName,
-        plan: plan,
-        brand_color: "#6366f1",
-        reports_generated_this_month: 0,
-        white_label: false
-      });
-
-    if (profileError) {
-      console.warn("Failed to automatically upsert profile row during client-side signup (may require email confirmation first):", profileError);
+    if (!response.ok) {
+      const errText = await response.text();
+      let errMsg = "Signup failed";
+      try {
+        const errJson = JSON.parse(errText);
+        errMsg = errJson.error || errMsg;
+      } catch (e) {}
+      throw new Error(errMsg);
     }
 
-    // Automatically sign in client-side
+    const resJson = await response.json();
+    if (!resJson.user) {
+      throw new Error("Signup response did not return a user.");
+    }
+
+    // Automatically sign in client-side since the user was created successfully
     const signInResult = await this.signIn(email, password);
     return signInResult;
   },
